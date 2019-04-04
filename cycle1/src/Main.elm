@@ -1,11 +1,16 @@
 module Main exposing (main)
 
 import Browser
-import Browser.Navigation
+import Browser.Navigation as Navigation
 import Element
 import Element.Background as Background
 import Element.Border as Border
-import Nav
+import Header
+import Page.Home
+import Page.NotFound
+import Page.Project
+import Page.Register
+import Route exposing (Route)
 import Style.Color as Color
 import Url
 
@@ -19,12 +24,21 @@ type alias Flags =
 
 
 type Model
-    = Project
+    = NotFound Navigation.Key
+    | Home Navigation.Key
+    | Project Navigation.Key
+    | Register Navigation.Key
 
 
-init : Flags -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
-init _ _ _ =
-    ( Project, Cmd.none )
+type alias Session =
+    { key : Navigation.Key
+    , url : Url.Url
+    }
+
+
+init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
+init _ url navKey =
+    changeRouteTo (Route.fromUrl url) (NotFound navKey)
 
 
 
@@ -41,37 +55,101 @@ subscriptions model =
 
 
 type Msg
-    = ChangedUrl Url.Url
-    | ClickedLink Browser.UrlRequest
+    = UrlChanged Url.Url
+    | LinkClicked Browser.UrlRequest
+
+
+toNavKey : Model -> Navigation.Key
+toNavKey model =
+    case model of
+        NotFound key ->
+            key
+
+        Home key ->
+            key
+
+        Project key ->
+            key
+
+        Register key ->
+            key
+
+
+changeRouteTo : Maybe Route -> Model -> ( Model, Cmd Msg )
+changeRouteTo maybeRoute model =
+    let
+        key =
+            toNavKey model
+    in
+    case maybeRoute of
+        Nothing ->
+            ( NotFound key, Cmd.none )
+
+        Just Route.Home ->
+            ( Home key, Cmd.none )
+
+        Just Route.Project ->
+            ( Project key, Cmd.none )
+
+        Just Route.Register ->
+            ( Register key, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case Debug.log "msg" msg of
-        ChangedUrl _ ->
-            ( model, Cmd.none )
+    case ( Debug.log "msg" msg, Debug.log "model" model ) of
+        ( LinkClicked urlRequest, _ ) ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model, Navigation.pushUrl (toNavKey model) (Url.toString url) )
 
-        ClickedLink _ ->
-            ( model, Cmd.none )
+                Browser.External href ->
+                    ( model, Navigation.load href )
+
+        ( UrlChanged url, _ ) ->
+            changeRouteTo (Route.fromUrl url) model
 
 
 
 -- VIEW
 
 
+viewPage : Model -> ( String, Element.Element msg )
+viewPage model =
+    case model of
+        NotFound _ ->
+            Page.NotFound.view
+
+        Home _ ->
+            Page.Home.view
+
+        Project _ ->
+            Page.Project.view
+
+        Register _ ->
+            Page.Register.view
+
+
 view : Model -> Browser.Document Msg
 view model =
-    { title = "oscoin - phase 1"
+    let
+        ( title, content ) =
+            viewPage model
+    in
+    { title = title ++ " <> oscoin"
     , body =
         [ Element.layout
             [ Background.color Color.white
-            , Element.paddingXY 0 20
             ]
           <|
             Element.column
-                [ Element.centerX
+                [ Element.spacing 32
+                , Element.width Element.fill
+
+                -- , Element.explain Debug.todo
                 ]
-                [ Nav.view
+                [ Header.view
+                , Element.el [ Element.centerX ] <| content
                 ]
         ]
     }
@@ -83,6 +161,6 @@ main =
         , view = view
         , update = update
         , subscriptions = subscriptions
-        , onUrlRequest = ClickedLink
-        , onUrlChange = ChangedUrl
+        , onUrlRequest = LinkClicked
+        , onUrlChange = UrlChanged
         }
