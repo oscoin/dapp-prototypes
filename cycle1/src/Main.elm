@@ -23,7 +23,13 @@ type alias Flags =
     ()
 
 
-type Model
+type alias Model =
+    { headerModel : Header.Model
+    , page : Page
+    }
+
+
+type Page
     = NotFound Navigation.Key
     | Home Navigation.Key
     | Project Navigation.Key
@@ -38,7 +44,7 @@ type alias Session =
 
 init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init _ url navKey =
-    changeRouteTo (Route.fromUrl url) (NotFound navKey)
+    changeRouteTo (Route.fromUrl url) (Model Header.init <| NotFound navKey)
 
 
 
@@ -57,11 +63,12 @@ subscriptions model =
 type Msg
     = UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
+    | HeaderMsg Header.Msg
 
 
-toNavKey : Model -> Navigation.Key
-toNavKey model =
-    case model of
+toNavKey : Page -> Navigation.Key
+toNavKey page =
+    case page of
         NotFound key ->
             key
 
@@ -79,29 +86,29 @@ changeRouteTo : Maybe Route -> Model -> ( Model, Cmd Msg )
 changeRouteTo maybeRoute model =
     let
         key =
-            toNavKey model
+            toNavKey model.page
     in
     case maybeRoute of
         Nothing ->
-            ( NotFound key, Cmd.none )
+            ( { model | page = NotFound key }, Cmd.none )
 
         Just Route.Home ->
-            ( Home key, Cmd.none )
+            ( { model | page = Home key }, Cmd.none )
 
         Just Route.Project ->
-            ( Project key, Cmd.none )
+            ( { model | page = Project key }, Cmd.none )
 
         Just Route.Register ->
-            ( Register key, Cmd.none )
+            ( { model | page = Register key }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case ( Debug.log "msg" msg, Debug.log "model" model ) of
+    case ( Debug.log "Main.Msg" msg, Debug.log "Main.model" model ) of
         ( LinkClicked urlRequest, _ ) ->
             case urlRequest of
                 Browser.Internal url ->
-                    ( model, Navigation.pushUrl (toNavKey model) (Url.toString url) )
+                    ( model, Navigation.pushUrl (toNavKey model.page) (Url.toString url) )
 
                 Browser.External href ->
                     ( model, Navigation.load href )
@@ -109,14 +116,21 @@ update msg model =
         ( UrlChanged url, _ ) ->
             changeRouteTo (Route.fromUrl url) model
 
+        ( HeaderMsg subMsg, _ ) ->
+            let
+                ( headerModel, headerMsg ) =
+                    Header.update subMsg model.headerModel
+            in
+            ( { model | headerModel = headerModel }, Cmd.map HeaderMsg headerMsg )
+
 
 
 -- VIEW
 
 
-viewPage : Model -> ( String, Element.Element msg )
-viewPage model =
-    case model of
+viewPage : Page -> ( String, Element.Element msg )
+viewPage page =
+    case page of
         NotFound _ ->
             Page.NotFound.view
 
@@ -134,7 +148,7 @@ view : Model -> Browser.Document Msg
 view model =
     let
         ( title, content ) =
-            viewPage model
+            viewPage model.page
     in
     { title = title ++ " <> oscoin"
     , body =
@@ -148,7 +162,7 @@ view model =
 
                 -- , Element.explain Debug.todo
                 ]
-                [ Header.view
+                [ Element.map HeaderMsg <| Header.view model.headerModel
                 , Element.el [ Element.centerX ] <| content
                 ]
         ]
