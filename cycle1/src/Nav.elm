@@ -2,6 +2,8 @@ module Nav exposing (view)
 
 import Element
 import Element.Border as Border
+import Element.Font as Font
+import Element.Input as Input
 import Style.Color as Color
 
 
@@ -19,4 +21,4 @@ view =
         , Element.height (Element.px 80)
         , Element.width (Element.px 960)
         ]
-        []
+        [        ]
