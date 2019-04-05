@@ -45,7 +45,7 @@ type alias Session =
 
 init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init _ url navKey =
-    changeRouteTo (Route.fromUrl url) (Model (Header.init url) Nothing <| NotFound navKey)
+    changePage (Route.fromUrl url) (Model (Header.init url) Nothing <| NotFound navKey)
 
 
 
@@ -83,8 +83,8 @@ toNavKey page =
             key
 
 
-changeRouteTo : Maybe Route -> Model -> ( Model, Cmd Msg )
-changeRouteTo maybeRoute model =
+changePage : Maybe Route -> Model -> ( Model, Cmd Msg )
+changePage maybeRoute model =
     let
         key =
             toNavKey model.page
@@ -124,7 +124,7 @@ update msg model =
                     ( model, Navigation.load href )
 
         ( UrlChanged url, _ ) ->
-            changeRouteTo (Route.fromUrl url) model
+            changePage (Route.fromUrl url) model
 
         ( HeaderMsg subMsg, _ ) ->
             let
