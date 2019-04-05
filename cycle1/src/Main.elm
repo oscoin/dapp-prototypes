@@ -157,7 +157,7 @@ view model =
             ]
           <|
             Element.column
-                [ Element.spacing 32
+                [ Element.spacing 42
                 , Element.width Element.fill
 
                 -- , Element.explain Debug.todo
