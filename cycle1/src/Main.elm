@@ -5,7 +5,9 @@ import Browser.Navigation as Navigation
 import Element
 import Element.Background as Background
 import Element.Border as Border
+import Element.Events as Events
 import Header
+import Html.Attributes
 import Page.Home
 import Page.NotFound
 import Page.Project
@@ -13,6 +15,7 @@ import Page.Register
 import Route exposing (Route)
 import Style.Color as Color
 import Url
+import Url.Builder
 
 
 
@@ -27,6 +30,7 @@ type alias Model =
     { headerModel : Header.Model
     , overlay : Maybe Page
     , page : Page
+    , url : Url.Url
     }
 
 
@@ -45,7 +49,11 @@ type alias Session =
 
 init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init _ url navKey =
-    changePage (Route.fromUrl url) (Model (Header.init url) Nothing <| NotFound navKey)
+    let
+        model =
+            Model (Header.init url) Nothing (NotFound navKey) url
+    in
+    changePage (Route.fromUrl url) model
 
 
 
@@ -158,21 +166,25 @@ viewOverlay maybePage =
                     content
 
 
-viewOverlayBackground maybePage =
+viewOverlayBackground : Maybe Page -> Url.Url -> Element.Attribute msg
+viewOverlayBackground maybePage url =
     case maybePage of
         Nothing ->
             Element.behindContent Element.none
 
         Just _ ->
             Element.inFront <|
-                Element.el
+                Element.link
                     [ Background.color Color.darkGrey
                     , Element.alpha 0.7
+                    , Element.htmlAttribute <| Html.Attributes.style "cursor" "default"
                     , Element.height Element.fill
                     , Element.width Element.fill
                     ]
-                <|
-                    Element.none
+                    { label = Element.none
+                    , url =
+                        Url.Builder.relative [ url.path ] []
+                    }
 
 
 viewPage : Page -> ( String, Element.Element msg )
@@ -200,7 +212,7 @@ view model =
     { title = title ++ " <> oscoin"
     , body =
         [ Element.layout
-            [ viewOverlayBackground model.overlay
+            [ viewOverlayBackground model.overlay model.url
             , viewOverlay model.overlay
 
             -- , Element.explain Debug.todo

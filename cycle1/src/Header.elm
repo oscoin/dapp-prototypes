@@ -83,7 +83,7 @@ view model =
             , Font.bold
             ]
             { url = toRegisterUrl model.url
-            , label = Element.el [] <| Element.text "register a project"
+            , label = Element.text "register a project"
             }
         ]
 
