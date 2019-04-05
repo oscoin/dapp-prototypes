@@ -1,11 +1,7 @@
 module Page.Project exposing (view)
 
 import Element exposing (Element)
-import Element.Background as Background
-import Element.Border as Border
-import Element.Font as Font
 import Page.Project.Header as Header
-import Style.Color as Color
 
 
 

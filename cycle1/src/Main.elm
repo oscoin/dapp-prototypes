@@ -3,17 +3,13 @@ module Main exposing (main)
 import Browser
 import Browser.Navigation as Navigation
 import Element
-import Element.Background as Background
-import Element.Border as Border
-import Element.Events as Events
 import Header
-import Html.Attributes
+import Overlay
 import Page.Home
 import Page.NotFound
 import Page.Project
 import Page.Register
 import Route exposing (Route)
-import Style.Color as Color
 import Url
 import Url.Builder
 
@@ -41,12 +37,6 @@ type Page
     | Register Navigation.Key
 
 
-type alias Session =
-    { key : Navigation.Key
-    , url : Url.Url
-    }
-
-
 init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init _ url navKey =
     let
@@ -61,7 +51,7 @@ init _ url navKey =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
@@ -97,7 +87,7 @@ changePage maybeRoute model =
         key =
             toNavKey model.page
     in
-    case Debug.log "Route" maybeRoute of
+    case maybeRoute of
         Nothing ->
             ( { model | page = NotFound key }, Cmd.none )
 
@@ -122,7 +112,7 @@ changePage maybeRoute model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case ( Debug.log "Main.Msg" msg, Debug.log "Main.model" model ) of
+    case ( msg, model ) of
         ( LinkClicked urlRequest, _ ) ->
             case urlRequest of
                 Browser.Internal url ->
@@ -132,7 +122,7 @@ update msg model =
                     ( model, Navigation.load href )
 
         ( UrlChanged url, _ ) ->
-            changePage (Route.fromUrl url) model
+            changePage (Route.fromUrl url) { model | url = url }
 
         ( HeaderMsg subMsg, _ ) ->
             let
@@ -146,45 +136,21 @@ update msg model =
 -- VIEW
 
 
-viewOverlay : Maybe Page -> Element.Attribute msg
-viewOverlay maybePage =
+viewOverlay : Maybe Page -> Url.Url -> ( Maybe String, List (Element.Attribute msg) )
+viewOverlay maybePage url =
     case maybePage of
         Nothing ->
-            Element.behindContent Element.none
+            ( Nothing, [] )
 
         Just page ->
             let
-                ( _, content ) =
+                ( title, content ) =
                     viewPage page
+
+                backUrl =
+                    Url.Builder.relative [ url.path ] []
             in
-            Element.inFront <|
-                Element.el
-                    [ Element.centerX
-                    , Element.centerY
-                    ]
-                <|
-                    content
-
-
-viewOverlayBackground : Maybe Page -> Url.Url -> Element.Attribute msg
-viewOverlayBackground maybePage url =
-    case maybePage of
-        Nothing ->
-            Element.behindContent Element.none
-
-        Just _ ->
-            Element.inFront <|
-                Element.link
-                    [ Background.color Color.darkGrey
-                    , Element.alpha 0.7
-                    , Element.htmlAttribute <| Html.Attributes.style "cursor" "default"
-                    , Element.height Element.fill
-                    , Element.width Element.fill
-                    ]
-                    { label = Element.none
-                    , url =
-                        Url.Builder.relative [ url.path ] []
-                    }
+            ( Just title, Overlay.attrs content backUrl )
 
 
 viewPage : Page -> ( String, Element.Element msg )
@@ -206,17 +172,24 @@ viewPage page =
 view : Model -> Browser.Document Msg
 view model =
     let
-        ( title, content ) =
+        ( pageTitle, pageContent ) =
             viewPage model.page
+
+        ( overlayTitle, overlayAttrs ) =
+            viewOverlay model.overlay model.url
+
+        titleParts =
+            case overlayTitle of
+                Nothing ->
+                    [ pageTitle, "oscoin" ]
+
+                Just oTitle ->
+                    [ oTitle, pageTitle, "oscoin" ]
     in
-    { title = title ++ " <> oscoin"
+    { title = String.join " <> " titleParts
     , body =
         [ Element.layout
-            [ viewOverlayBackground model.overlay model.url
-            , viewOverlay model.overlay
-
-            -- , Element.explain Debug.todo
-            ]
+            overlayAttrs
           <|
             Element.column
                 [ Element.spacing 42
@@ -224,12 +197,13 @@ view model =
                 , Element.width Element.fill
                 ]
                 [ Element.map HeaderMsg <| Header.view model.headerModel
-                , Element.el [ Element.centerX ] <| content
+                , Element.el [ Element.centerX ] <| pageContent
                 ]
         ]
     }
 
 
+main : Program Flags Model Msg
 main =
     Browser.application
         { init = init

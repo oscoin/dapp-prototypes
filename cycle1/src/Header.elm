@@ -36,7 +36,7 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case Debug.log "Header.Msg" msg of
+    case msg of
         SearchUpdated term ->
             ( { model | searchTerm = term }, Cmd.none )
 
@@ -92,5 +92,6 @@ view model =
 -- HELPER
 
 
+toRegisterUrl : Url.Url -> String
 toRegisterUrl url =
     Url.Builder.relative [ url.path ] [ Url.Builder.string "overlay" "register" ]

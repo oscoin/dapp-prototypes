@@ -3,10 +3,9 @@ module Route exposing (Route(..), fromUrl, href, replaceUrl)
 import Browser.Navigation as Nav
 import Dict
 import Element
-import Html exposing (Attribute)
 import Html.Attributes as Attr
 import Url exposing (Url)
-import Url.Parser as Parser exposing ((<?>), Parser, custom, oneOf, s, string)
+import Url.Parser as Parser exposing ((<?>), Parser, oneOf, s)
 import Url.Parser.Query as Query
 
 
@@ -18,13 +17,6 @@ type Route
     = Home
     | Project (Maybe Route)
     | Register
-
-
-overlay : Parser (String -> a) a
-overlay =
-    custom "OVERLAY" <|
-        \segment ->
-            Just segment
 
 
 queryOverlay : Query.Parser (Maybe Route)
@@ -50,7 +42,7 @@ href targetRoute =
     Element.htmlAttribute <| Attr.href (routeToString targetRoute)
 
 
-fromUrl : Url.Url -> Maybe Route
+fromUrl : Url -> Maybe Route
 fromUrl url =
     Parser.parse parser url
 
@@ -72,7 +64,7 @@ routeToString page =
                 Home ->
                     []
 
-                Project maybeOverlay ->
+                Project _ ->
                     [ "project" ]
 
                 Register ->
