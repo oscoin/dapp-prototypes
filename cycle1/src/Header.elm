@@ -7,6 +7,8 @@ import Element.Font as Font
 import Element.Input as Input
 import Html.Attributes
 import Style.Color as Color
+import Url
+import Url.Builder
 
 
 
@@ -15,12 +17,13 @@ import Style.Color as Color
 
 type alias Model =
     { searchTerm : String
+    , url : Url.Url
     }
 
 
-init : Model
-init =
-    Model ""
+init : Url.Url -> Model
+init url =
+    Model "" url
 
 
 
@@ -79,7 +82,15 @@ view model =
             , Font.color Color.white
             , Font.bold
             ]
-            { url = "/register"
+            { url = toRegisterUrl model.url
             , label = Element.el [] <| Element.text "register a project"
             }
         ]
+
+
+
+-- HELPER
+
+
+toRegisterUrl url =
+    Url.Builder.relative [ url.path ] [ Url.Builder.string "overlay" "register" ]

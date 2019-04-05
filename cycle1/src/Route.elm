@@ -1,11 +1,13 @@
 module Route exposing (Route(..), fromUrl, href, replaceUrl)
 
 import Browser.Navigation as Nav
+import Dict
 import Element
 import Html exposing (Attribute)
 import Html.Attributes as Attr
 import Url exposing (Url)
-import Url.Parser as Parser exposing (Parser, oneOf, s, string)
+import Url.Parser as Parser exposing ((<?>), Parser, custom, oneOf, s, string)
+import Url.Parser.Query as Query
 
 
 
@@ -14,15 +16,27 @@ import Url.Parser as Parser exposing (Parser, oneOf, s, string)
 
 type Route
     = Home
-    | Project
+    | Project (Maybe Route)
     | Register
+
+
+overlay : Parser (String -> a) a
+overlay =
+    custom "OVERLAY" <|
+        \segment ->
+            Just segment
+
+
+queryOverlay : Query.Parser (Maybe Route)
+queryOverlay =
+    Query.enum "overlay" (Dict.fromList [ ( "register", Register ) ])
 
 
 parser : Parser (Route -> a) a
 parser =
     oneOf
-        [ Parser.map Home Parser.top
-        , Parser.map Project (s "project")
+        [ Parser.map Project (Parser.top <?> queryOverlay)
+        , Parser.map Project (s "project" <?> queryOverlay)
         , Parser.map Register (s "register")
         ]
 
@@ -58,7 +72,7 @@ routeToString page =
                 Home ->
                     []
 
-                Project ->
+                Project maybeOverlay ->
                     [ "project" ]
 
                 Register ->

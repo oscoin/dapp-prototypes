@@ -25,6 +25,7 @@ type alias Flags =
 
 type alias Model =
     { headerModel : Header.Model
+    , overlay : Maybe Page
     , page : Page
     }
 
@@ -44,7 +45,7 @@ type alias Session =
 
 init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init _ url navKey =
-    changeRouteTo (Route.fromUrl url) (Model Header.init <| NotFound navKey)
+    changeRouteTo (Route.fromUrl url) (Model (Header.init url) Nothing <| NotFound navKey)
 
 
 
@@ -88,15 +89,24 @@ changeRouteTo maybeRoute model =
         key =
             toNavKey model.page
     in
-    case maybeRoute of
+    case Debug.log "Route" maybeRoute of
         Nothing ->
             ( { model | page = NotFound key }, Cmd.none )
 
         Just Route.Home ->
             ( { model | page = Home key }, Cmd.none )
 
-        Just Route.Project ->
-            ( { model | page = Project key }, Cmd.none )
+        Just (Route.Project maybeOverlay) ->
+            let
+                overlay =
+                    case maybeOverlay of
+                        Just Route.Register ->
+                            Just <| Register key
+
+                        _ ->
+                            Nothing
+            in
+            ( { model | overlay = overlay, page = Project key }, Cmd.none )
 
         Just Route.Register ->
             ( { model | page = Register key }, Cmd.none )
@@ -128,6 +138,43 @@ update msg model =
 -- VIEW
 
 
+viewOverlay : Maybe Page -> Element.Attribute msg
+viewOverlay maybePage =
+    case maybePage of
+        Nothing ->
+            Element.behindContent Element.none
+
+        Just page ->
+            let
+                ( _, content ) =
+                    viewPage page
+            in
+            Element.inFront <|
+                Element.el
+                    [ Element.centerX
+                    , Element.centerY
+                    ]
+                <|
+                    content
+
+
+viewOverlayBackground maybePage =
+    case maybePage of
+        Nothing ->
+            Element.behindContent Element.none
+
+        Just _ ->
+            Element.inFront <|
+                Element.el
+                    [ Background.color Color.darkGrey
+                    , Element.alpha 0.7
+                    , Element.height Element.fill
+                    , Element.width Element.fill
+                    ]
+                <|
+                    Element.none
+
+
 viewPage : Page -> ( String, Element.Element msg )
 viewPage page =
     case page of
@@ -153,14 +200,16 @@ view model =
     { title = title ++ " <> oscoin"
     , body =
         [ Element.layout
-            [ Background.color Color.white
+            [ viewOverlayBackground model.overlay
+            , viewOverlay model.overlay
+
+            -- , Element.explain Debug.todo
             ]
           <|
             Element.column
                 [ Element.spacing 42
+                , Element.height Element.fill
                 , Element.width Element.fill
-
-                -- , Element.explain Debug.todo
                 ]
                 [ Element.map HeaderMsg <| Header.view model.headerModel
                 , Element.el [ Element.centerX ] <| content
