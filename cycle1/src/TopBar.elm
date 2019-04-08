@@ -2,9 +2,7 @@ module TopBar exposing (Model, Msg, init, update, view)
 
 import Atom.Button as Button
 import Element
-import Element.Background as Background
 import Element.Border as Border
-import Element.Font as Font
 import Element.Input as Input
 import Html.Attributes
 import Style.Color as Color
