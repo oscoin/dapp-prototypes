@@ -1,10 +1,12 @@
 module Page.Project.Header exposing (view)
 
+-- import Element.Font as Font
+
 import Element exposing (Element)
 import Element.Background as Background
 import Element.Border as Border
-import Element.Font as Font
 import Style.Color as Color
+import Style.Font as Font
 
 
 
@@ -30,8 +32,6 @@ viewLogo =
         [ Background.color Color.radicleBlue
         , Element.height (Element.px 72)
         , Element.width (Element.px 72)
-        , Font.color Color.radicleGreen
-        , Font.bold
         , Element.alignTop
         ]
     <|
@@ -45,21 +45,17 @@ viewMeta =
         [ Element.spacing 8
         , Element.width
             (Element.fill |> Element.maximum 420)
-        , Font.color Color.black
         , Element.alignTop
         ]
         -- Title
         [ Element.el
-            [ Font.bold
-            , Font.size 36
-            ]
+            (Font.bigHeader Color.black)
           <|
             Element.text "Radicle"
 
         -- Description
         , Element.paragraph
-            [ Font.size 16
-            ]
+            (Font.bodyText Color.black)
             [ Element.text "A peer-to-peer stack for code collaboration and some more text here to show how it is on 2 lines"
             ]
         ]
@@ -96,21 +92,12 @@ statsColumn stat unit info =
         , Element.width <| Element.fillPortion 1
         ]
         [ Element.paragraph
-            [ Font.bold
-            , Font.color Color.black
-            , Font.family [ Font.monospace ]
-            , Font.size 36
-            ]
-            [ Element.text stat
-            ]
+            (Font.bigHeaderMono Color.black)
+            [ Element.text stat ]
         , Element.paragraph
-            [ Font.color Color.black
-            , Font.size 16
-            ]
+            (Font.bodyText Color.black)
             [ Element.text unit ]
         , Element.paragraph
-            [ Font.color Color.lightBlue
-            , Font.size 14
-            ]
+            (Font.smallTextMono Color.grey)
             [ Element.text info ]
         ]
