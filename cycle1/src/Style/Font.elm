@@ -3,6 +3,7 @@ module Style.Font exposing
     , bigHeaderMono
     , bodyText
     , bodyTextMono
+    , boldBodyTextMono
     , linkText
     , mediumBodyText
     , mediumHeader
@@ -148,6 +149,21 @@ bodyTextMono textColor =
         ]
     , Font.size 16
     , Font.regular
+    ]
+
+
+boldBodyTextMono : Color -> List (Attribute msg)
+boldBodyTextMono textColor =
+    [ Font.color textColor
+    , Font.family
+        [ Font.external
+            { name = "GT America Mono Bold"
+            , url = "./assets/fonts/GTAmericaMonoBold.otf"
+            }
+        , Font.monospace
+        ]
+    , Font.size 16
+    , Font.bold
     ]
 
 
