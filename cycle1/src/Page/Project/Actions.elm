@@ -12,9 +12,10 @@ view : Element msg
 view =
     Element.row
         [ Element.spacing 16
+        , Element.paddingEach { top = 16, right = 0, bottom = 0, left = 0 }
         , Element.width Element.fill
         ]
         [ Button.primary "Donate"
         , Button.secondary "Follow"
-        , Button.accent "Make dependency"
+        , Button.secondaryAccent "Make dependency"
         ]
