@@ -1,5 +1,6 @@
 module TopBar exposing (Model, Msg, init, update, view)
 
+import Atom.Button as Button
 import Element
 import Element.Background as Background
 import Element.Border as Border
@@ -74,17 +75,9 @@ view model =
 
         -- Register link
         , Element.link
-            [ Background.color Color.pink
-            , Border.rounded 2
-            , Element.alignRight
-            , Element.paddingEach { top = 11, right = 16, bottom = 9, left = 16 }
-            , Font.color Color.white
-            , Font.bold
-            , Font.size 16
-            , Element.mouseOver [ Background.color Color.black ]
-            ]
+            [ Element.alignRight ]
             { url = toRegisterUrl model.url
-            , label = Element.text "Register a project"
+            , label = Button.accent "Register a project"
             }
         ]
 
