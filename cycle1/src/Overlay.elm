@@ -17,8 +17,8 @@ background : String -> Attribute msg
 background backUrl =
     Element.inFront <|
         Element.link
-            [ Background.color Color.darkGrey
-            , Element.alpha 0.7
+            [ Background.color Color.black
+            , Element.alpha 0.6
             , Element.htmlAttribute <| Html.Attributes.style "cursor" "default"
             , Element.height Element.fill
             , Element.width Element.fill

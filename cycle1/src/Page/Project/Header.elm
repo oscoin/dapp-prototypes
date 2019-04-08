@@ -17,7 +17,6 @@ view =
         [ Element.spacing 24
         , Element.height (Element.px 112)
         , Element.width Element.fill
-        , Font.color Color.white
         ]
         [ viewLogo
         , viewMeta
@@ -29,11 +28,11 @@ viewLogo : Element msg
 viewLogo =
     Element.el
         [ Background.color Color.radicleBlue
-        , Element.alignTop
         , Element.height (Element.px 72)
         , Element.width (Element.px 72)
         , Font.color Color.radicleGreen
         , Font.bold
+        , Element.alignTop
         ]
     <|
         Element.el [ Element.centerX, Element.centerY ] <|
@@ -44,8 +43,10 @@ viewMeta : Element msg
 viewMeta =
     Element.column
         [ Element.spacing 8
-        , Element.width (Element.px 424)
+        , Element.width
+            (Element.fill |> Element.maximum 420)
         , Font.color Color.black
+        , Element.alignTop
         ]
         -- Title
         [ Element.el
@@ -71,7 +72,7 @@ viewStats =
         , Border.rounded 2
         , Border.width 2
         , Element.alignRight
-        , Element.height (Element.px 112)
+        , Element.height Element.fill
         , Element.width (Element.px 366)
         ]
         -- Dependents
