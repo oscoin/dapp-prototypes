@@ -1,4 +1,9 @@
-module Atom.Button exposing (accent, primary, secondary)
+module Atom.Button exposing
+    ( accent
+    , primary
+    , secondary
+    , secondaryAccent
+    )
 
 import Element exposing (Element)
 import Element.Background as Background
@@ -24,6 +29,11 @@ secondary btnText =
 accent : String -> Element msg
 accent btnText =
     style Color.pink Color.white Color.black btnText
+
+
+secondaryAccent : String -> Element msg
+secondaryAccent btnText =
+    style Color.green Color.white Color.black btnText
 
 
 style : Element.Color -> Element.Color -> Element.Color -> String -> Element msg
