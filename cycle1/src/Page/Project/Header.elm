@@ -55,7 +55,11 @@ viewMeta =
 
         -- Description
         , Element.paragraph
-            (Font.bodyText Color.black)
+            ([ Element.spacing 8
+             , Element.paddingEach { top = 6, right = 0, bottom = 0, left = 0 }
+             ]
+                ++ Font.bodyText Color.black
+            )
             [ Element.text "A peer-to-peer stack for code collaboration and some more text here to show how it is on 2 lines"
             ]
         ]
@@ -66,10 +70,10 @@ viewStats =
     Element.row
         [ Border.color Color.lightGrey
         , Border.rounded 2
-        , Border.width 2
+        , Border.width 1
         , Element.alignRight
         , Element.height Element.fill
-        , Element.width (Element.px 366)
+        , Element.width (Element.px 364)
         ]
         -- Dependents
         [ statsColumn "1043" "dependents" "192 immediate"
@@ -95,9 +99,9 @@ statsColumn stat unit info =
             (Font.bigHeaderMono Color.black)
             [ Element.text stat ]
         , Element.paragraph
-            (Font.bodyText Color.black)
+            (Font.mediumBodyText Color.black)
             [ Element.text unit ]
         , Element.paragraph
-            (Font.smallTextMono Color.grey)
+            ([ Element.paddingEach { top = 4, right = 0, bottom = 0, left = 0 } ] ++ Font.smallTextMono Color.grey)
             [ Element.text info ]
         ]
