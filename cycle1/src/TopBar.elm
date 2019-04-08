@@ -1,4 +1,4 @@
-module Header exposing (Model, Msg, init, update, view)
+module TopBar exposing (Model, Msg, init, update, view)
 
 import Element
 import Element.Background as Background
@@ -50,7 +50,8 @@ view model =
     Element.row
         [ Border.color Color.lightGrey
         , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
-        , Element.paddingXY 20 14
+        , Element.paddingXY 24 0
+        , Element.height <| Element.px 64
         , Element.width Element.fill
         ]
         -- oscoin.io link
@@ -59,31 +60,31 @@ view model =
             { url = "http://oscoin.io"
             , label = Element.el [] <| Element.text "oscoin"
             }
-        , Element.el
-            [ Element.centerX
+        , Input.text
+            [ Element.paddingXY 16 6
+            , Element.height <| Element.px 32
+            , Element.centerX
             , Element.width (Element.px 540)
             ]
-          <|
-            Input.text
-                []
-                { label = Input.labelHidden "search"
-                , onChange = SearchUpdated
-                , placeholder = Just <| Input.placeholder [] <| Element.text "search projects"
-                , text = model.searchTerm
-                }
+            { label = Input.labelHidden "search"
+            , onChange = SearchUpdated
+            , placeholder = Just <| Input.placeholder [] <| Element.text "search projects"
+            , text = model.searchTerm
+            }
 
         -- Register link
         , Element.link
             [ Background.color Color.pink
             , Border.rounded 2
             , Element.alignRight
-            , Element.htmlAttribute <| Html.Attributes.style "text-transform" "capitalize"
             , Element.paddingEach { top = 11, right = 16, bottom = 9, left = 16 }
             , Font.color Color.white
             , Font.bold
+            , Font.size 16
+            , Element.mouseOver [ Background.color Color.black ]
             ]
             { url = toRegisterUrl model.url
-            , label = Element.text "register a project"
+            , label = Element.text "Register a project"
             }
         ]
 

@@ -3,13 +3,13 @@ module Main exposing (main)
 import Browser
 import Browser.Navigation as Navigation
 import Element
-import Header
 import Overlay
 import Page.Home
 import Page.NotFound
 import Page.Project
 import Page.Register
 import Route exposing (Route)
+import TopBar
 import Url
 import Url.Builder
 
@@ -23,7 +23,7 @@ type alias Flags =
 
 
 type alias Model =
-    { headerModel : Header.Model
+    { topBarModel : TopBar.Model
     , overlay : Maybe Page
     , page : Page
     , url : Url.Url
@@ -41,7 +41,7 @@ init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init _ url navKey =
     let
         model =
-            Model (Header.init url) Nothing (NotFound navKey) url
+            Model (TopBar.init url) Nothing (NotFound navKey) url
     in
     changePage (Route.fromUrl url) model
 
@@ -62,7 +62,7 @@ subscriptions _ =
 type Msg
     = UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
-    | HeaderMsg Header.Msg
+    | TopBarMsg TopBar.Msg
 
 
 toNavKey : Page -> Navigation.Key
@@ -124,12 +124,12 @@ update msg model =
         ( UrlChanged url, _ ) ->
             changePage (Route.fromUrl url) { model | url = url }
 
-        ( HeaderMsg subMsg, _ ) ->
+        ( TopBarMsg subMsg, _ ) ->
             let
-                ( headerModel, headerMsg ) =
-                    Header.update subMsg model.headerModel
+                ( topBarModel, topBarMsg ) =
+                    TopBar.update subMsg model.topBarModel
             in
-            ( { model | headerModel = headerModel }, Cmd.map HeaderMsg headerMsg )
+            ( { model | topBarModel = topBarModel }, Cmd.map TopBarMsg topBarMsg )
 
 
 
@@ -196,7 +196,7 @@ view model =
                 , Element.height Element.fill
                 , Element.width Element.fill
                 ]
-                [ Element.map HeaderMsg <| Header.view model.headerModel
+                [ Element.map TopBarMsg <| TopBar.view model.topBarModel
                 , Element.el [ Element.centerX ] <| pageContent
                 ]
         ]
