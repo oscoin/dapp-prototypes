@@ -1,5 +1,6 @@
 module Style.Color exposing
-    ( black
+    ( almostWhite
+    , black
     , blue
     , bordeaux
     , darkGrey
