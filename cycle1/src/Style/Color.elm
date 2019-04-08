@@ -1,14 +1,22 @@
 module Style.Color exposing
     ( black
+    , blue
+    , bordeaux
     , darkGrey
+    , green
     , grey
     , lightBlue
+    , lightGreen
     , lightGrey
+    , orange
     , pink
     , purple
     , radicleBlue
     , radicleGreen
+    , red
+    , teal
     , white
+    , yellow
     )
 
 import Element exposing (Color, rgb255)
@@ -44,9 +52,49 @@ white =
     rgb255 255 255 255
 
 
+blue : Color
+blue =
+    rgb255 0 146 210
+
+
 lightBlue : Color
 lightBlue =
     rgb255 144 160 175
+
+
+purple : Color
+purple =
+    rgb255 120 52 232
+
+
+teal : Color
+teal =
+    rgb255 0 229 248
+
+
+green : Color
+green =
+    rgb255 0 217 110
+
+
+lightGreen : Color
+lightGreen =
+    rgb255 0 249 126
+
+
+orange : Color
+orange =
+    rgb255 254 190 0
+
+
+yellow : Color
+yellow =
+    rgb255 223 239 0
+
+
+red : Color
+red =
+    rgb255 250 64 72
 
 
 pink : Color
@@ -54,9 +102,9 @@ pink =
     rgb255 224 116 203
 
 
-purple : Color
-purple =
-    rgb255 120 52 232
+bordeaux : Color
+bordeaux =
+    rgb255 207 56 107
 
 
 radicleBlue : Color
