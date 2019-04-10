@@ -2,10 +2,12 @@ module TopBar exposing (Model, Msg, init, update, view)
 
 import Atom.Button as Button
 import Element
+import Element.Background as Background
 import Element.Border as Border
 import Element.Input as Input
 import Html.Attributes
 import Style.Color as Color
+import Style.Font as Font
 import Url
 import Url.Builder
 
@@ -60,14 +62,20 @@ view model =
             , label = Element.el [] <| Element.text "oscoin"
             }
         , Input.text
-            [ Element.paddingXY 16 6
-            , Element.height <| Element.px 32
-            , Element.centerX
-            , Element.width (Element.px 540)
-            ]
+            ([ Element.paddingXY 16 9
+             , Element.height <| Element.px 36
+             , Element.centerX
+             , Element.width (Element.px 540)
+             , Border.width 1
+             , Border.rounded 2
+             , Border.color Color.lightGrey
+             , Background.color Color.almostWhite
+             ]
+                ++ Font.bodyText Color.darkGrey
+            )
             { label = Input.labelHidden "search"
             , onChange = SearchUpdated
-            , placeholder = Just <| Input.placeholder [] <| Element.text "search projects"
+            , placeholder = Just <| Input.placeholder [] <| Element.text "Search projects"
             , text = model.searchTerm
             }
 
