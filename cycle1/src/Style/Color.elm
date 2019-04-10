@@ -1,5 +1,6 @@
 module Style.Color exposing
     ( almostWhite
+    , alpha
     , black
     , blue
     , bordeaux
@@ -20,7 +21,16 @@ module Style.Color exposing
     , yellow
     )
 
-import Element exposing (Color, rgb255)
+import Element exposing (Color, rgb255, rgba, toRgb)
+
+
+alpha : Color -> Float -> Color
+alpha color transparency =
+    let
+        original =
+            toRgb color
+    in
+    rgba original.red original.green original.blue transparency
 
 
 black : Color
