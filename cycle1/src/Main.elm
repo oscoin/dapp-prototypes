@@ -1,10 +1,11 @@
-module Main exposing (main)
+port module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Navigation
 import Element
 import Overlay
 import Page.Home
+import Page.KeySetup
 import Page.NotFound
 import Page.Project
 import Page.Register
@@ -33,6 +34,7 @@ type alias Model =
 type Page
     = NotFound Navigation.Key
     | Home Navigation.Key
+    | KeySetup Navigation.Key
     | Project Navigation.Key
     | Register Navigation.Key
 
@@ -41,9 +43,16 @@ init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init _ url navKey =
     let
         model =
-            Model (TopBar.init url) Nothing (NotFound navKey) url
+            Model TopBar.init Nothing (NotFound navKey) url
     in
     changePage (Route.fromUrl url) model
+
+
+
+-- PORTS
+
+
+port keySetupComplete : (Bool -> msg) -> Sub msg
 
 
 
@@ -52,7 +61,9 @@ init _ url navKey =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.none
+    Sub.batch
+        [ keySetupComplete KeySetupComplete
+        ]
 
 
 
@@ -63,6 +74,7 @@ type Msg
     = UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
     | TopBarMsg TopBar.Msg
+    | KeySetupComplete Bool
 
 
 toNavKey : Page -> Navigation.Key
@@ -72,6 +84,9 @@ toNavKey page =
             key
 
         Home key ->
+            key
+
+        KeySetup key ->
             key
 
         Project key ->
@@ -86,34 +101,44 @@ changePage maybeRoute model =
     let
         key =
             toNavKey model.page
-    in
-    case maybeRoute of
-        Nothing ->
-            ( { model | page = NotFound key }, Cmd.none )
 
-        Just Route.Home ->
-            ( { model | page = Home key }, Cmd.none )
+        page =
+            case maybeRoute of
+                Nothing ->
+                    NotFound key
 
-        Just (Route.Project maybeOverlay) ->
-            let
-                overlay =
+                Just Route.Home ->
+                    Home key
+
+                Just Route.KeySetup ->
+                    KeySetup key
+
+                Just Route.Project ->
+                    Project key
+
+                Just (Route.Register _) ->
+                    Register key
+
+        overlay =
+            case maybeRoute of
+                Just (Route.Register maybeOverlay) ->
                     case maybeOverlay of
-                        Just Route.Register ->
-                            Just <| Register key
+                        Just Route.KeySetup ->
+                            Just <| KeySetup key
 
                         _ ->
                             Nothing
-            in
-            ( { model | overlay = overlay, page = Project key }, Cmd.none )
 
-        Just Route.Register ->
-            ( { model | page = Register key }, Cmd.none )
+                _ ->
+                    Nothing
+    in
+    ( { model | overlay = overlay, page = page }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case ( msg, model ) of
-        ( LinkClicked urlRequest, _ ) ->
+    case Debug.log "Main.msg" msg of
+        LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
                     ( model, Navigation.pushUrl (toNavKey model.page) (Url.toString url) )
@@ -121,15 +146,23 @@ update msg model =
                 Browser.External href ->
                     ( model, Navigation.load href )
 
-        ( UrlChanged url, _ ) ->
+        UrlChanged url ->
             changePage (Route.fromUrl url) { model | url = url }
 
-        ( TopBarMsg subMsg, _ ) ->
+        TopBarMsg subMsg ->
             let
                 ( topBarModel, topBarMsg ) =
                     TopBar.update subMsg model.topBarModel
             in
             ( { model | topBarModel = topBarModel }, Cmd.map TopBarMsg topBarMsg )
+
+        KeySetupComplete _ ->
+            case model.overlay of
+                Just (KeySetup _) ->
+                    ( model, Navigation.pushUrl (toNavKey model.page) (Route.toString (Route.Register Nothing)) )
+
+                _ ->
+                    ( model, Cmd.none )
 
 
 
@@ -161,6 +194,9 @@ viewPage page =
 
         Home _ ->
             Page.Home.view
+
+        KeySetup _ ->
+            Page.KeySetup.view
 
         Project _ ->
             Page.Project.view

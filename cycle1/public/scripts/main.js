@@ -4903,6 +4903,9 @@ var author$project$Main$NotFound = function (a) {
 var author$project$Main$Home = function (a) {
 	return {$: 'Home', a: a};
 };
+var author$project$Main$KeySetup = function (a) {
+	return {$: 'KeySetup', a: a};
+};
 var author$project$Main$Project = function (a) {
 	return {$: 'Project', a: a};
 };
@@ -4915,6 +4918,9 @@ var author$project$Main$toNavKey = function (page) {
 			var key = page.a;
 			return key;
 		case 'Home':
+			var key = page.a;
+			return key;
+		case 'KeySetup':
 			var key = page.a;
 			return key;
 		case 'Project':
@@ -5405,60 +5411,200 @@ var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var author$project$Main$changePage = F2(
 	function (maybeRoute, model) {
 		var key = author$project$Main$toNavKey(model.page);
-		if (maybeRoute.$ === 'Nothing') {
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{
-						page: author$project$Main$NotFound(key)
-					}),
-				elm$core$Platform$Cmd$none);
+		var overlay = function () {
+			if ((maybeRoute.$ === 'Just') && (maybeRoute.a.$ === 'Register')) {
+				var maybeOverlay = maybeRoute.a.a;
+				if ((maybeOverlay.$ === 'Just') && (maybeOverlay.a.$ === 'KeySetup')) {
+					var _n6 = maybeOverlay.a;
+					return elm$core$Maybe$Just(
+						author$project$Main$KeySetup(key));
+				} else {
+					return elm$core$Maybe$Nothing;
+				}
+			} else {
+				return elm$core$Maybe$Nothing;
+			}
+		}();
+		var page = function () {
+			if (maybeRoute.$ === 'Nothing') {
+				return author$project$Main$NotFound(key);
+			} else {
+				switch (maybeRoute.a.$) {
+					case 'Home':
+						var _n1 = maybeRoute.a;
+						return author$project$Main$Home(key);
+					case 'KeySetup':
+						var _n2 = maybeRoute.a;
+						return author$project$Main$KeySetup(key);
+					case 'Project':
+						var _n3 = maybeRoute.a;
+						return author$project$Main$Project(key);
+					default:
+						return author$project$Main$Register(key);
+				}
+			}
+		}();
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{overlay: overlay, page: page}),
+			elm$core$Platform$Cmd$none);
+	});
+var author$project$Route$Project = {$: 'Project'};
+var author$project$Route$Register = function (a) {
+	return {$: 'Register', a: a};
+};
+var author$project$Route$KeySetup = {$: 'KeySetup'};
+var author$project$Route$routeToPaths = function (route) {
+	switch (route.$) {
+		case 'Home':
+			return _List_Nil;
+		case 'KeySetup':
+			return _List_fromArray(
+				['key-setup']);
+		case 'Project':
+			return _List_fromArray(
+				['project']);
+		default:
+			return _List_fromArray(
+				['register']);
+	}
+};
+var elm$core$List$foldrHelper = F4(
+	function (fn, acc, ctr, ls) {
+		if (!ls.b) {
+			return acc;
 		} else {
-			switch (maybeRoute.a.$) {
-				case 'Home':
-					var _n1 = maybeRoute.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								page: author$project$Main$Home(key)
-							}),
-						elm$core$Platform$Cmd$none);
-				case 'Project':
-					var maybeOverlay = maybeRoute.a.a;
-					var overlay = function () {
-						if ((maybeOverlay.$ === 'Just') && (maybeOverlay.a.$ === 'Register')) {
-							var _n3 = maybeOverlay.a;
-							return elm$core$Maybe$Just(
-								author$project$Main$Register(key));
-						} else {
-							return elm$core$Maybe$Nothing;
-						}
-					}();
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								overlay: overlay,
-								page: author$project$Main$Project(key)
-							}),
-						elm$core$Platform$Cmd$none);
-				default:
-					var _n4 = maybeRoute.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								page: author$project$Main$Register(key)
-							}),
-						elm$core$Platform$Cmd$none);
+			var a = ls.a;
+			var r1 = ls.b;
+			if (!r1.b) {
+				return A2(fn, a, acc);
+			} else {
+				var b = r1.a;
+				var r2 = r1.b;
+				if (!r2.b) {
+					return A2(
+						fn,
+						a,
+						A2(fn, b, acc));
+				} else {
+					var c = r2.a;
+					var r3 = r2.b;
+					if (!r3.b) {
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(fn, c, acc)));
+					} else {
+						var d = r3.a;
+						var r4 = r3.b;
+						var res = (ctr > 500) ? A3(
+							elm$core$List$foldl,
+							fn,
+							acc,
+							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(
+									fn,
+									c,
+									A2(fn, d, res))));
+					}
+				}
 			}
 		}
 	});
-var author$project$Route$Project = function (a) {
-	return {$: 'Project', a: a};
+var elm$core$List$foldr = F3(
+	function (fn, acc, ls) {
+		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
+	});
+var elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var elm$url$Url$Builder$toQueryPair = function (_n0) {
+	var key = _n0.a;
+	var value = _n0.b;
+	return key + ('=' + value);
 };
-var author$project$Route$Register = {$: 'Register'};
+var elm$url$Url$Builder$toQuery = function (parameters) {
+	if (!parameters.b) {
+		return '';
+	} else {
+		return '?' + A2(
+			elm$core$String$join,
+			'&',
+			A2(elm$core$List$map, elm$url$Url$Builder$toQueryPair, parameters));
+	}
+};
+var elm$url$Url$Builder$relative = F2(
+	function (pathSegments, parameters) {
+		return _Utils_ap(
+			A2(elm$core$String$join, '/', pathSegments),
+			elm$url$Url$Builder$toQuery(parameters));
+	});
+var elm$url$Url$percentEncode = _Url_percentEncode;
+var elm$url$Url$Builder$QueryParameter = F2(
+	function (a, b) {
+		return {$: 'QueryParameter', a: a, b: b};
+	});
+var elm$url$Url$Builder$string = F2(
+	function (key, value) {
+		return A2(
+			elm$url$Url$Builder$QueryParameter,
+			elm$url$Url$percentEncode(key),
+			elm$url$Url$percentEncode(value));
+	});
+var author$project$Route$toString = function (route) {
+	var _n0 = function () {
+		if (route.$ === 'Register') {
+			var overlay = route.a;
+			if ((overlay.$ === 'Just') && (overlay.a.$ === 'KeySetup')) {
+				var _n3 = overlay.a;
+				return _Utils_Tuple2(
+					author$project$Route$routeToPaths(route),
+					_List_fromArray(
+						[
+							A2(
+							elm$url$Url$Builder$string,
+							'overlay',
+							A2(
+								elm$url$Url$Builder$relative,
+								author$project$Route$routeToPaths(author$project$Route$KeySetup),
+								_List_Nil))
+						]));
+			} else {
+				return _Utils_Tuple2(
+					author$project$Route$routeToPaths(route),
+					_List_Nil);
+			}
+		} else {
+			return _Utils_Tuple2(
+				author$project$Route$routeToPaths(route),
+				_List_Nil);
+		}
+	}();
+	var paths = _n0.a;
+	var queryParams = _n0.b;
+	return A2(elm$url$Url$Builder$relative, paths, queryParams);
+};
 var elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
 var elm$core$Dict$empty = elm$core$Dict$RBEmpty_elm_builtin;
 var elm$core$Dict$Black = {$: 'Black'};
@@ -5659,77 +5805,10 @@ var author$project$Route$queryOverlay = A2(
 	elm$core$Dict$fromList(
 		_List_fromArray(
 			[
-				_Utils_Tuple2('register', author$project$Route$Register)
+				_Utils_Tuple2(
+				author$project$Route$toString(author$project$Route$KeySetup),
+				author$project$Route$KeySetup)
 			])));
-var elm$core$List$foldrHelper = F4(
-	function (fn, acc, ctr, ls) {
-		if (!ls.b) {
-			return acc;
-		} else {
-			var a = ls.a;
-			var r1 = ls.b;
-			if (!r1.b) {
-				return A2(fn, a, acc);
-			} else {
-				var b = r1.a;
-				var r2 = r1.b;
-				if (!r2.b) {
-					return A2(
-						fn,
-						a,
-						A2(fn, b, acc));
-				} else {
-					var c = r2.a;
-					var r3 = r2.b;
-					if (!r3.b) {
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(fn, c, acc)));
-					} else {
-						var d = r3.a;
-						var r4 = r3.b;
-						var res = (ctr > 500) ? A3(
-							elm$core$List$foldl,
-							fn,
-							acc,
-							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(
-									fn,
-									c,
-									A2(fn, d, res))));
-					}
-				}
-			}
-		}
-	});
-var elm$core$List$foldr = F3(
-	function (fn, acc, ls) {
-		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
-	});
-var elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
 var elm$url$Url$Parser$Parser = function (a) {
 	return {$: 'Parser', a: a};
 };
@@ -5872,21 +5951,18 @@ var elm$url$Url$Parser$top = elm$url$Url$Parser$Parser(
 var author$project$Route$parser = elm$url$Url$Parser$oneOf(
 	_List_fromArray(
 		[
+			A2(elm$url$Url$Parser$map, author$project$Route$Project, elm$url$Url$Parser$top),
 			A2(
 			elm$url$Url$Parser$map,
 			author$project$Route$Project,
-			A2(elm$url$Url$Parser$questionMark, elm$url$Url$Parser$top, author$project$Route$queryOverlay)),
-			A2(
-			elm$url$Url$Parser$map,
-			author$project$Route$Project,
-			A2(
-				elm$url$Url$Parser$questionMark,
-				elm$url$Url$Parser$s('project'),
-				author$project$Route$queryOverlay)),
+			elm$url$Url$Parser$s('project')),
 			A2(
 			elm$url$Url$Parser$map,
 			author$project$Route$Register,
-			elm$url$Url$Parser$s('register'))
+			A2(
+				elm$url$Url$Parser$questionMark,
+				elm$url$Url$Parser$s('register'),
+				author$project$Route$queryOverlay))
 		]));
 var elm$url$Url$Parser$getFirstMatch = function (states) {
 	getFirstMatch:
@@ -6379,18 +6455,15 @@ var elm$url$Url$Parser$parse = F2(
 var author$project$Route$fromUrl = function (url) {
 	return A2(elm$url$Url$Parser$parse, author$project$Route$parser, url);
 };
-var author$project$TopBar$Model = F2(
-	function (searchTerm, url) {
-		return {searchTerm: searchTerm, url: url};
-	});
-var author$project$TopBar$init = function (url) {
-	return A2(author$project$TopBar$Model, '', url);
+var author$project$TopBar$Model = function (searchTerm) {
+	return {searchTerm: searchTerm};
 };
+var author$project$TopBar$init = author$project$TopBar$Model('');
 var author$project$Main$init = F3(
 	function (_n0, url, navKey) {
 		var model = A4(
 			author$project$Main$Model,
-			author$project$TopBar$init(url),
+			author$project$TopBar$init,
 			elm$core$Maybe$Nothing,
 			author$project$Main$NotFound(navKey),
 			url);
@@ -6399,10 +6472,18 @@ var author$project$Main$init = F3(
 			author$project$Route$fromUrl(url),
 			model);
 	});
+var author$project$Main$KeySetupComplete = function (a) {
+	return {$: 'KeySetupComplete', a: a};
+};
+var elm$json$Json$Decode$bool = _Json_decodeBool;
+var author$project$Main$keySetupComplete = _Platform_incomingPort('keySetupComplete', elm$json$Json$Decode$bool);
 var elm$core$Platform$Sub$batch = _Platform_batch;
-var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
 var author$project$Main$subscriptions = function (_n0) {
-	return elm$core$Platform$Sub$none;
+	return elm$core$Platform$Sub$batch(
+		_List_fromArray(
+			[
+				author$project$Main$keySetupComplete(author$project$Main$KeySetupComplete)
+			]));
 };
 var author$project$Main$TopBarMsg = function (a) {
 	return {$: 'TopBarMsg', a: a};
@@ -10073,6 +10154,7 @@ var elm$url$Url$fromString = function (str) {
 };
 var elm$browser$Browser$Navigation$load = _Browser_load;
 var elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
+var elm$core$Debug$log = _Debug_log;
 var elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
 		if (maybePort.$ === 'Nothing') {
@@ -10119,10 +10201,10 @@ var elm$url$Url$toString = function (url) {
 };
 var author$project$Main$update = F2(
 	function (msg, model) {
-		var _n0 = _Utils_Tuple2(msg, model);
-		switch (_n0.a.$) {
+		var _n0 = A2(elm$core$Debug$log, 'Main.msg', msg);
+		switch (_n0.$) {
 			case 'LinkClicked':
-				var urlRequest = _n0.a.a;
+				var urlRequest = _n0.a;
 				if (urlRequest.$ === 'Internal') {
 					var url = urlRequest.a;
 					return _Utils_Tuple2(
@@ -10138,15 +10220,15 @@ var author$project$Main$update = F2(
 						elm$browser$Browser$Navigation$load(href));
 				}
 			case 'UrlChanged':
-				var url = _n0.a.a;
+				var url = _n0.a;
 				return A2(
 					author$project$Main$changePage,
 					author$project$Route$fromUrl(url),
 					_Utils_update(
 						model,
 						{url: url}));
-			default:
-				var subMsg = _n0.a.a;
+			case 'TopBarMsg':
+				var subMsg = _n0.a;
 				var _n2 = A2(author$project$TopBar$update, subMsg, model.topBarModel);
 				var topBarModel = _n2.a;
 				var topBarMsg = _n2.b;
@@ -10155,6 +10237,19 @@ var author$project$Main$update = F2(
 						model,
 						{topBarModel: topBarModel}),
 					A2(elm$core$Platform$Cmd$map, author$project$Main$TopBarMsg, topBarMsg));
+			default:
+				var _n3 = model.overlay;
+				if ((_n3.$ === 'Just') && (_n3.a.$ === 'KeySetup')) {
+					return _Utils_Tuple2(
+						model,
+						A2(
+							elm$browser$Browser$Navigation$pushUrl,
+							author$project$Main$toNavKey(model.page),
+							author$project$Route$toString(
+								author$project$Route$Register(elm$core$Maybe$Nothing))));
+				} else {
+					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				}
 		}
 	});
 var mdgriffith$elm_ui$Internal$Model$Height = function (a) {
@@ -15309,20 +15404,21 @@ var author$project$Page$Home$view = _Utils_Tuple2(
 			[
 				mdgriffith$elm_ui$Element$text('home')
 			])));
-var author$project$Page$NotFound$view = _Utils_Tuple2(
-	'Page Not Found',
-	A2(
-		mdgriffith$elm_ui$Element$column,
-		_List_Nil,
-		_List_fromArray(
-			[
-				mdgriffith$elm_ui$Element$text('Page Not Found')
-			])));
+var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
+	function (a, b, c, d) {
+		return {$: 'Rgba', a: a, b: b, c: c, d: d};
+	});
+var mdgriffith$elm_ui$Element$rgb255 = F3(
+	function (red, green, blue) {
+		return A4(mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
+	});
+var author$project$Style$Color$darkGrey = A3(mdgriffith$elm_ui$Element$rgb255, 84, 100, 116);
+var author$project$Style$Color$white = A3(mdgriffith$elm_ui$Element$rgb255, 255, 255, 255);
 var mdgriffith$elm_ui$Internal$Model$Typeface = function (a) {
 	return {$: 'Typeface', a: a};
 };
 var mdgriffith$elm_ui$Element$Font$typeface = mdgriffith$elm_ui$Internal$Model$Typeface;
-var author$project$Style$Font$fontGTAmericaMedium = mdgriffith$elm_ui$Element$Font$typeface('GT America Medium');
+var author$project$Style$Font$fontGTAmericaRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America Regular');
 var mdgriffith$elm_ui$Internal$Flag$fontColor = mdgriffith$elm_ui$Internal$Flag$flag(14);
 var mdgriffith$elm_ui$Internal$Model$Colored = F3(
 	function (a, b, c) {
@@ -15414,16 +15510,26 @@ var mdgriffith$elm_ui$Element$Font$size = function (i) {
 		mdgriffith$elm_ui$Internal$Flag$fontSize,
 		mdgriffith$elm_ui$Internal$Model$FontSize(i));
 };
-var author$project$Style$Font$mediumBodyText = function (textColor) {
+var author$project$Style$Font$bodyText = function (textColor) {
 	return _List_fromArray(
 		[
 			mdgriffith$elm_ui$Element$Font$color(textColor),
 			mdgriffith$elm_ui$Element$Font$family(
 			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaMedium, mdgriffith$elm_ui$Element$Font$sansSerif])),
+				[author$project$Style$Font$fontGTAmericaRegular, mdgriffith$elm_ui$Element$Font$sansSerif])),
 			mdgriffith$elm_ui$Element$Font$size(16)
 		]);
 };
+var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
+	return {$: 'AlignX', a: a};
+};
+var mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var mdgriffith$elm_ui$Element$centerX = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$CenterX);
+var mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
+	return {$: 'AlignY', a: a};
+};
+var mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var mdgriffith$elm_ui$Element$centerY = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$CenterY);
 var mdgriffith$elm_ui$Element$el = F2(
 	function (attrs, child) {
 		return A4(
@@ -15441,6 +15547,63 @@ var mdgriffith$elm_ui$Element$el = F2(
 				_List_fromArray(
 					[child])));
 	});
+var mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var mdgriffith$elm_ui$Element$px = mdgriffith$elm_ui$Internal$Model$Px;
+var mdgriffith$elm_ui$Internal$Flag$bgColor = mdgriffith$elm_ui$Internal$Flag$flag(8);
+var mdgriffith$elm_ui$Element$Background$color = function (clr) {
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$bgColor,
+		A3(
+			mdgriffith$elm_ui$Internal$Model$Colored,
+			'bg-' + mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'background-color',
+			clr));
+};
+var author$project$Page$KeySetup$view = _Utils_Tuple2(
+	'key setup',
+	A2(
+		mdgriffith$elm_ui$Element$column,
+		_Utils_ap(
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
+					mdgriffith$elm_ui$Element$height(
+					mdgriffith$elm_ui$Element$px(214)),
+					mdgriffith$elm_ui$Element$width(
+					mdgriffith$elm_ui$Element$px(396))
+				]),
+			author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
+		_List_fromArray(
+			[
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+				mdgriffith$elm_ui$Element$text('Please finish process in oscoin Key Manager.'))
+			])));
+var author$project$Page$NotFound$view = _Utils_Tuple2(
+	'Page Not Found',
+	A2(
+		mdgriffith$elm_ui$Element$column,
+		_List_Nil,
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$text('Page Not Found')
+			])));
+var author$project$Style$Font$fontGTAmericaMedium = mdgriffith$elm_ui$Element$Font$typeface('GT America Medium');
+var author$project$Style$Font$mediumBodyText = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaMedium, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(16)
+		]);
+};
 var mdgriffith$elm_ui$Internal$Flag$hover = mdgriffith$elm_ui$Internal$Flag$flag(33);
 var mdgriffith$elm_ui$Internal$Model$Hover = {$: 'Hover'};
 var mdgriffith$elm_ui$Internal$Model$PseudoSelector = F2(
@@ -15448,12 +15611,6 @@ var mdgriffith$elm_ui$Internal$Model$PseudoSelector = F2(
 		return {$: 'PseudoSelector', a: a, b: b};
 	});
 var elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
-var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
-	return {$: 'AlignX', a: a};
-};
-var mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
-	return {$: 'AlignY', a: a};
-};
 var mdgriffith$elm_ui$Internal$Model$Class = F2(
 	function (a, b) {
 		return {$: 'Class', a: a, b: b};
@@ -15626,17 +15783,6 @@ var mdgriffith$elm_ui$Element$paddingEach = function (_n0) {
 			bottom,
 			left));
 };
-var mdgriffith$elm_ui$Internal$Flag$bgColor = mdgriffith$elm_ui$Internal$Flag$flag(8);
-var mdgriffith$elm_ui$Element$Background$color = function (clr) {
-	return A2(
-		mdgriffith$elm_ui$Internal$Model$StyleClass,
-		mdgriffith$elm_ui$Internal$Flag$bgColor,
-		A3(
-			mdgriffith$elm_ui$Internal$Model$Colored,
-			'bg-' + mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
-			'background-color',
-			clr));
-};
 var mdgriffith$elm_ui$Internal$Flag$borderRound = mdgriffith$elm_ui$Internal$Flag$flag(17);
 var mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
 	return A2(
@@ -15668,21 +15814,11 @@ var author$project$Atom$Button$style = F4(
 				author$project$Style$Font$mediumBodyText(textColor)),
 			mdgriffith$elm_ui$Element$text(btnText));
 	});
-var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
-	function (a, b, c, d) {
-		return {$: 'Rgba', a: a, b: b, c: c, d: d};
-	});
-var mdgriffith$elm_ui$Element$rgb255 = F3(
-	function (red, green, blue) {
-		return A4(mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
-	});
 var author$project$Style$Color$black = A3(mdgriffith$elm_ui$Element$rgb255, 40, 51, 61);
 var author$project$Style$Color$purple = A3(mdgriffith$elm_ui$Element$rgb255, 120, 52, 232);
-var author$project$Style$Color$white = A3(mdgriffith$elm_ui$Element$rgb255, 255, 255, 255);
 var author$project$Atom$Button$primary = function (btnText) {
 	return A4(author$project$Atom$Button$style, author$project$Style$Color$purple, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
 };
-var author$project$Style$Color$darkGrey = A3(mdgriffith$elm_ui$Element$rgb255, 84, 100, 116);
 var author$project$Style$Color$lightGrey = A3(mdgriffith$elm_ui$Element$rgb255, 206, 216, 225);
 var author$project$Atom$Button$secondary = function (btnText) {
 	return A4(author$project$Atom$Button$style, author$project$Style$Color$lightGrey, author$project$Style$Color$darkGrey, author$project$Style$Color$black, btnText);
@@ -15763,17 +15899,6 @@ var author$project$Style$Color$alpha = F2(
 		return A4(mdgriffith$elm_ui$Element$rgba, original.red, original.green, original.blue, transparency);
 	});
 var author$project$Style$Color$blue = A3(mdgriffith$elm_ui$Element$rgb255, 0, 146, 210);
-var author$project$Style$Font$fontGTAmericaRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America Regular');
-var author$project$Style$Font$bodyText = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaRegular, mdgriffith$elm_ui$Element$Font$sansSerif])),
-			mdgriffith$elm_ui$Element$Font$size(16)
-		]);
-};
 var mdgriffith$elm_ui$Internal$Flag$fontWeight = mdgriffith$elm_ui$Internal$Flag$flag(13);
 var mdgriffith$elm_ui$Element$Font$medium = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$fontWeight, mdgriffith$elm_ui$Internal$Style$classes.textMedium);
 var mdgriffith$elm_ui$Element$Font$underline = mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.underline);
@@ -15937,10 +16062,6 @@ var author$project$Style$Font$mediumHeader = function (textColor) {
 			mdgriffith$elm_ui$Element$Font$size(24)
 		]);
 };
-var mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var mdgriffith$elm_ui$Element$px = mdgriffith$elm_ui$Internal$Model$Px;
 var mdgriffith$elm_ui$Element$Border$widthXY = F2(
 	function (x, y) {
 		return A2(
@@ -16019,10 +16140,6 @@ var author$project$Page$Project$Contract$view = A2(
 var author$project$Style$Color$radicleBlue = A3(mdgriffith$elm_ui$Element$rgb255, 85, 85, 255);
 var mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var mdgriffith$elm_ui$Element$alignTop = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$Top);
-var mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
-var mdgriffith$elm_ui$Element$centerX = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$CenterX);
-var mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
-var mdgriffith$elm_ui$Element$centerY = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$CenterY);
 var author$project$Page$Project$Header$viewLogo = A2(
 	mdgriffith$elm_ui$Element$el,
 	_List_fromArray(
@@ -16598,15 +16715,15 @@ var author$project$Page$Register$view = _Utils_Tuple2(
 		mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
 			[
-				mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
-				mdgriffith$elm_ui$Element$height(
-				mdgriffith$elm_ui$Element$px(320)),
 				mdgriffith$elm_ui$Element$width(
-				mdgriffith$elm_ui$Element$px(480))
+				mdgriffith$elm_ui$Element$px(1074))
 			]),
 		_List_fromArray(
 			[
-				mdgriffith$elm_ui$Element$text('register')
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				author$project$Style$Font$bigHeader(author$project$Style$Color$black),
+				mdgriffith$elm_ui$Element$text('Register your project'))
 			])));
 var author$project$Main$viewPage = function (page) {
 	switch (page.$) {
@@ -16614,6 +16731,8 @@ var author$project$Main$viewPage = function (page) {
 			return author$project$Page$NotFound$view;
 		case 'Home':
 			return author$project$Page$Home$view;
+		case 'KeySetup':
+			return author$project$Page$KeySetup$view;
 		case 'Project':
 			return author$project$Page$Project$view;
 		default:
@@ -16709,27 +16828,6 @@ var author$project$Overlay$attrs = F2(
 				author$project$Overlay$foreground(content)
 			]);
 	});
-var elm$url$Url$Builder$toQueryPair = function (_n0) {
-	var key = _n0.a;
-	var value = _n0.b;
-	return key + ('=' + value);
-};
-var elm$url$Url$Builder$toQuery = function (parameters) {
-	if (!parameters.b) {
-		return '';
-	} else {
-		return '?' + A2(
-			elm$core$String$join,
-			'&',
-			A2(elm$core$List$map, elm$url$Url$Builder$toQueryPair, parameters));
-	}
-};
-var elm$url$Url$Builder$relative = F2(
-	function (pathSegments, parameters) {
-		return _Utils_ap(
-			A2(elm$core$String$join, '/', pathSegments),
-			elm$url$Url$Builder$toQuery(parameters));
-	});
 var author$project$Main$viewOverlay = F2(
 	function (maybePage, url) {
 		if (maybePage.$ === 'Nothing') {
@@ -16755,28 +16853,6 @@ var author$project$Atom$Button$accent = function (btnText) {
 };
 var author$project$TopBar$SearchUpdated = function (a) {
 	return {$: 'SearchUpdated', a: a};
-};
-var elm$url$Url$percentEncode = _Url_percentEncode;
-var elm$url$Url$Builder$QueryParameter = F2(
-	function (a, b) {
-		return {$: 'QueryParameter', a: a, b: b};
-	});
-var elm$url$Url$Builder$string = F2(
-	function (key, value) {
-		return A2(
-			elm$url$Url$Builder$QueryParameter,
-			elm$url$Url$percentEncode(key),
-			elm$url$Url$percentEncode(value));
-	});
-var author$project$TopBar$toRegisterUrl = function (url) {
-	return A2(
-		elm$url$Url$Builder$relative,
-		_List_fromArray(
-			[url.path]),
-		_List_fromArray(
-			[
-				A2(elm$url$Url$Builder$string, 'overlay', 'register')
-			]));
 };
 var mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
 var mdgriffith$elm_ui$Element$alignLeft = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$Left);
@@ -17522,7 +17598,9 @@ var author$project$TopBar$view = function (model) {
 					[mdgriffith$elm_ui$Element$alignRight]),
 				{
 					label: author$project$Atom$Button$accent('Register a project'),
-					url: author$project$TopBar$toRegisterUrl(model.url)
+					url: author$project$Route$toString(
+						author$project$Route$Register(
+							elm$core$Maybe$Just(author$project$Route$KeySetup)))
 				})
 			]));
 };
@@ -17782,4 +17860,4 @@ var elm$browser$Browser$application = _Browser_application;
 var author$project$Main$main = elm$browser$Browser$application(
 	{init: author$project$Main$init, onUrlChange: author$project$Main$UrlChanged, onUrlRequest: author$project$Main$LinkClicked, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
-	elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"TopBarMsg":["TopBar.Msg"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
+	elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"TopBarMsg":["TopBar.Msg"],"KeySetupComplete":["Basics.Bool"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));

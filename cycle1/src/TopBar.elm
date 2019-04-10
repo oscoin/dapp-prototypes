@@ -5,9 +5,8 @@ import Element
 import Element.Border as Border
 import Element.Input as Input
 import Html.Attributes
+import Route exposing (Route(..))
 import Style.Color as Color
-import Url
-import Url.Builder
 
 
 
@@ -16,13 +15,12 @@ import Url.Builder
 
 type alias Model =
     { searchTerm : String
-    , url : Url.Url
     }
 
 
-init : Url.Url -> Model
-init url =
-    Model "" url
+init : Model
+init =
+    Model ""
 
 
 
@@ -74,16 +72,7 @@ view model =
         -- Register link
         , Element.link
             [ Element.alignRight ]
-            { url = toRegisterUrl model.url
+            { url = Route.toString <| Route.Register <| Just Route.KeySetup
             , label = Button.accent "Register a project"
             }
         ]
-
-
-
--- HELPER
-
-
-toRegisterUrl : Url.Url -> String
-toRegisterUrl url =
-    Url.Builder.relative [ url.path ] [ Url.Builder.string "overlay" "register" ]
