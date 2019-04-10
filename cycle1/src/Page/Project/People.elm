@@ -64,7 +64,6 @@ viewTopPeople title count =
             ]
         , Element.el
             [ Border.color Color.lightGrey
-            , Border.rounded 2
             , Border.widthEach { top = 1, right = 0, bottom = 0, left = 0 }
             , Element.height (Element.px 44)
             , Element.width Element.fill
@@ -86,6 +85,10 @@ viewTopPeopleSingle name =
         [ Element.image
             [ Element.height (Element.px 48)
             , Element.width (Element.px 48)
+            , Border.color Color.lightGrey
+            , Border.rounded 24
+            , Border.width 1
+            , Element.clip
             ]
             { src = "https://res.cloudinary.com/juliendonck/image/upload/v1536080565/avatars/6163.png"
             , description = "avatar"
