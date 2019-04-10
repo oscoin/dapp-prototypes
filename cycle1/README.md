@@ -13,5 +13,5 @@ It is advised to use [elm-live](https://github.com/wking-io/elm-live) for
 development, which can be used as such:
 
 ```
-elm-live src/Main.elm --pushstate -- --debug
+elm-live src/Main.elm --dir public/ --pushstate -- --debug --output public/scripts/main.js
 ```

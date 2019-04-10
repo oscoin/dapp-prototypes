@@ -20,14 +20,10 @@ bigHeader : Color -> List (Attribute msg)
 bigHeader textColor =
     [ Font.color textColor
     , Font.family
-        [ Font.external
-            { name = "GT America Bold"
-            , url = "./assets/fonts/GTAmericaBold.otf"
-            }
+        [ fontGTAmericaBold
         , Font.sansSerif
         ]
     , Font.size 36
-    , Font.bold
     ]
 
 
@@ -35,14 +31,10 @@ mediumHeader : Color -> List (Attribute msg)
 mediumHeader textColor =
     [ Font.color textColor
     , Font.family
-        [ Font.external
-            { name = "GT America Bold"
-            , url = "./assets/fonts/GTAmericaBold.otf"
-            }
+        [ fontGTAmericaBold
         , Font.sansSerif
         ]
     , Font.size 24
-    , Font.bold
     ]
 
 
@@ -50,14 +42,10 @@ bodyText : Color -> List (Attribute msg)
 bodyText textColor =
     [ Font.color textColor
     , Font.family
-        [ Font.external
-            { name = "GT America"
-            , url = "./assets/fonts/GTAmericaRegular.otf"
-            }
+        [ fontGTAmericaRegular
         , Font.sansSerif
         ]
     , Font.size 16
-    , Font.regular
     ]
 
 
@@ -65,14 +53,10 @@ mediumBodyText : Color -> List (Attribute msg)
 mediumBodyText textColor =
     [ Font.color textColor
     , Font.family
-        [ Font.external
-            { name = "GT America Medium"
-            , url = "./assets/fonts/GTAmericaMedium.otf"
-            }
+        [ fontGTAmericaMedium
         , Font.sansSerif
         ]
     , Font.size 16
-    , Font.medium
     ]
 
 
@@ -80,10 +64,7 @@ linkText : Color -> List (Attribute msg)
 linkText textColor =
     [ Font.color textColor
     , Font.family
-        [ Font.external
-            { name = "GT America Medium"
-            , url = "./assets/fonts/GTAmericaMedium.otf"
-            }
+        [ fontGTAmericaMedium
         , Font.sansSerif
         ]
     , Font.size 16
@@ -96,14 +77,10 @@ smallText : Color -> List (Attribute msg)
 smallText textColor =
     [ Font.color textColor
     , Font.family
-        [ Font.external
-            { name = "GT America"
-            , url = "./assets/fonts/GTAmericaRegular.otf"
-            }
+        [ fontGTAmericaRegular
         , Font.sansSerif
         ]
     , Font.size 14
-    , Font.regular
     ]
 
 
@@ -111,14 +88,10 @@ smallMediumText : Color -> List (Attribute msg)
 smallMediumText textColor =
     [ Font.color textColor
     , Font.family
-        [ Font.external
-            { name = "GT America Medium"
-            , url = "./assets/fonts/GTAmericaMedium.otf"
-            }
+        [ fontGTAmericaMedium
         , Font.sansSerif
         ]
     , Font.size 14
-    , Font.medium
     ]
 
 
@@ -126,14 +99,10 @@ bigHeaderMono : Color -> List (Attribute msg)
 bigHeaderMono textColor =
     [ Font.color textColor
     , Font.family
-        [ Font.external
-            { name = "GT America Mono Bold"
-            , url = "./assets/fonts/GTAmericaMonoBold.otf"
-            }
+        [ fontGTAmericaMonoBold
         , Font.monospace
         ]
     , Font.size 36
-    , Font.bold
     ]
 
 
@@ -141,14 +110,10 @@ bodyTextMono : Color -> List (Attribute msg)
 bodyTextMono textColor =
     [ Font.color textColor
     , Font.family
-        [ Font.external
-            { name = "GT America Mono"
-            , url = "./assets/fonts/GTAmericaMono.otf"
-            }
+        [ fontGTAmericaMonoRegular
         , Font.monospace
         ]
     , Font.size 16
-    , Font.regular
     ]
 
 
@@ -156,14 +121,10 @@ boldBodyTextMono : Color -> List (Attribute msg)
 boldBodyTextMono textColor =
     [ Font.color textColor
     , Font.family
-        [ Font.external
-            { name = "GT America Mono Bold"
-            , url = "./assets/fonts/GTAmericaMonoBold.otf"
-            }
+        [ fontGTAmericaMonoBold
         , Font.monospace
         ]
     , Font.size 16
-    , Font.bold
     ]
 
 
@@ -171,12 +132,37 @@ smallTextMono : Color -> List (Attribute msg)
 smallTextMono textColor =
     [ Font.color textColor
     , Font.family
-        [ Font.external
-            { name = "GT America Mono"
-            , url = "./assets/fonts/GTAmericaMono.otf"
-            }
+        [ fontGTAmericaMonoRegular
         , Font.monospace
         ]
     , Font.size 14
-    , Font.regular
     ]
+
+
+
+-- FONTS
+
+
+fontGTAmericaBold : Font.Font
+fontGTAmericaBold =
+    Font.typeface "GT America Bold"
+
+
+fontGTAmericaMedium : Font.Font
+fontGTAmericaMedium =
+    Font.typeface "GT America Medium"
+
+
+fontGTAmericaRegular : Font.Font
+fontGTAmericaRegular =
+    Font.typeface "GT America Regular"
+
+
+fontGTAmericaMonoBold : Font.Font
+fontGTAmericaMonoBold =
+    Font.typeface "GT America Mono Bold"
+
+
+fontGTAmericaMonoRegular : Font.Font
+fontGTAmericaMonoRegular =
+    Font.typeface "GT America Mono Regular"
