@@ -15763,7 +15763,7 @@ var author$project$Style$Color$alpha = F2(
 		return A4(mdgriffith$elm_ui$Element$rgba, original.red, original.green, original.blue, transparency);
 	});
 var author$project$Style$Color$blue = A3(mdgriffith$elm_ui$Element$rgb255, 0, 146, 210);
-var author$project$Style$Font$fontGTAmericaRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America Regular');
+var author$project$Style$Font$fontGTAmericaRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America');
 var author$project$Style$Font$bodyText = function (textColor) {
 	return _List_fromArray(
 		[
@@ -16101,7 +16101,7 @@ var author$project$Style$Font$bigHeaderMono = function (textColor) {
 			mdgriffith$elm_ui$Element$Font$size(36)
 		]);
 };
-var author$project$Style$Font$fontGTAmericaMonoRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America Mono Regular');
+var author$project$Style$Font$fontGTAmericaMonoRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America Mono');
 var author$project$Style$Font$smallTextMono = function (textColor) {
 	return _List_fromArray(
 		[
@@ -16308,7 +16308,6 @@ var author$project$Page$Project$People$viewTopPeopleSingle = function (name) {
 					]))
 			]));
 };
-var author$project$Style$Color$almostWhite = A3(mdgriffith$elm_ui$Element$rgb255, 248, 248, 248);
 var author$project$Style$Font$boldBodyTextMono = function (textColor) {
 	return _List_fromArray(
 		[
@@ -16496,7 +16495,6 @@ var author$project$Page$Project$People$viewTopPeople = F2(
 					mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
 					mdgriffith$elm_ui$Element$Border$rounded(2),
 					mdgriffith$elm_ui$Element$Border$width(1),
-					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$almostWhite),
 					mdgriffith$elm_ui$Element$height(
 					mdgriffith$elm_ui$Element$px(270)),
 					mdgriffith$elm_ui$Element$width(
@@ -16554,8 +16552,7 @@ var author$project$Page$Project$People$viewTopPeople = F2(
 							mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
 							mdgriffith$elm_ui$Element$Border$widthEach(
 							{bottom: 0, left: 0, right: 0, top: 1}),
-							mdgriffith$elm_ui$Element$height(
-							mdgriffith$elm_ui$Element$px(44)),
+							mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
 							mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
 						]),
 					A2(
@@ -16753,6 +16750,7 @@ var author$project$Style$Color$pink = A3(mdgriffith$elm_ui$Element$rgb255, 224, 
 var author$project$Atom$Button$accent = function (btnText) {
 	return A4(author$project$Atom$Button$style, author$project$Style$Color$pink, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
 };
+var author$project$Style$Color$almostWhite = A3(mdgriffith$elm_ui$Element$rgb255, 248, 248, 248);
 var author$project$TopBar$SearchUpdated = function (a) {
 	return {$: 'SearchUpdated', a: a};
 };
@@ -17497,15 +17495,21 @@ var author$project$TopBar$view = function (model) {
 				}),
 				A2(
 				mdgriffith$elm_ui$Element$Input$text,
-				_List_fromArray(
-					[
-						A2(mdgriffith$elm_ui$Element$paddingXY, 16, 6),
-						mdgriffith$elm_ui$Element$height(
-						mdgriffith$elm_ui$Element$px(32)),
-						mdgriffith$elm_ui$Element$centerX,
-						mdgriffith$elm_ui$Element$width(
-						mdgriffith$elm_ui$Element$px(540))
-					]),
+				_Utils_ap(
+					_List_fromArray(
+						[
+							A2(mdgriffith$elm_ui$Element$paddingXY, 16, 8),
+							mdgriffith$elm_ui$Element$height(
+							mdgriffith$elm_ui$Element$px(36)),
+							mdgriffith$elm_ui$Element$centerX,
+							mdgriffith$elm_ui$Element$width(
+							mdgriffith$elm_ui$Element$px(540)),
+							mdgriffith$elm_ui$Element$Border$width(1),
+							mdgriffith$elm_ui$Element$Border$rounded(2),
+							mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
+							mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$almostWhite)
+						]),
+					author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
 				{
 					label: mdgriffith$elm_ui$Element$Input$labelHidden('search'),
 					onChange: author$project$TopBar$SearchUpdated,
@@ -17513,7 +17517,7 @@ var author$project$TopBar$view = function (model) {
 						A2(
 							mdgriffith$elm_ui$Element$Input$placeholder,
 							_List_Nil,
-							mdgriffith$elm_ui$Element$text('search projects'))),
+							mdgriffith$elm_ui$Element$text('Search projects'))),
 					text: model.searchTerm
 				}),
 				A2(

@@ -62,7 +62,7 @@ view model =
             , label = Element.el [] <| Element.text "oscoin"
             }
         , Input.text
-            ([ Element.paddingXY 16 9
+            ([ Element.paddingXY 16 8
              , Element.height <| Element.px 36
              , Element.centerX
              , Element.width (Element.px 540)
