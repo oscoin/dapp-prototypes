@@ -1,5 +1,6 @@
 module Page.Project.Contract exposing (view)
 
+import Atom.Heading as Heading
 import Element exposing (Element)
 import Element.Background as Background
 import Element.Border as Border
@@ -18,7 +19,7 @@ view =
         , Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
         , Element.width Element.fill
         ]
-        [ viewTitleBox "Project contracts"
+        [ Heading.section "Project contracts"
         , Element.row
             [ Element.spacing 24
             , Element.width <| Element.fillPortion 3
@@ -29,21 +30,6 @@ view =
             , viewContract "Roles & responsibility" "Maintainer Single Signer contract"
             ]
         ]
-
-
-viewTitleBox : String -> Element msg
-viewTitleBox title =
-    Element.el
-        ([ Border.color Color.lightGrey
-         , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
-         , Element.paddingXY 24 17
-         , Element.width Element.fill
-         , Element.height (Element.px 60)
-         ]
-            ++ Font.mediumHeader Color.black
-        )
-    <|
-        Element.text title
 
 
 viewContract : String -> String -> Element msg
