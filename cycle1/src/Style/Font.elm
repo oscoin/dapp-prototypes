@@ -155,7 +155,7 @@ fontGTAmericaMedium =
 
 fontGTAmericaRegular : Font.Font
 fontGTAmericaRegular =
-    Font.typeface "GT America Regular"
+    Font.typeface "GT America"
 
 
 fontGTAmericaMonoBold : Font.Font
@@ -165,4 +165,4 @@ fontGTAmericaMonoBold =
 
 fontGTAmericaMonoRegular : Font.Font
 fontGTAmericaMonoRegular =
-    Font.typeface "GT America Mono Regular"
+    Font.typeface "GT America Mono"

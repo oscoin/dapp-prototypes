@@ -29,7 +29,6 @@ viewTopPeople title count =
         [ Border.color Color.lightGrey
         , Border.rounded 2
         , Border.width 1
-        , Background.color Color.almostWhite
         , Element.height (Element.px 270)
         , Element.width <| Element.fillPortion 1
         ]
@@ -65,7 +64,7 @@ viewTopPeople title count =
         , Element.el
             [ Border.color Color.lightGrey
             , Border.widthEach { top = 1, right = 0, bottom = 0, left = 0 }
-            , Element.height (Element.px 44)
+            , Element.height Element.fill
             , Element.width Element.fill
             ]
             (Element.el
