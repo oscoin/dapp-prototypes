@@ -1,24 +1,24 @@
 {
   "description": "",
   "manifest_version": 2,
-  "name": "oscoin key manager",
+  "name": "oscoin wallet",
   "version": "1.0",
   "homepage_url": "https://oscoin.io",
   "icons": {
-    "48": "icon.svg",
-    "96": "icon.svg"
+    "48": "icons/wallet.svg",
+    "96": "icons/wallet.svg"
   },
   "permissions": [
     "activeTab",
     "*://localhost:8000/*"
   ],
   "browser_action": {
-    "default_popup": "popup.html",
-    "default_title": "oscoin key manager"
+    "default_popup": "wallet-popup.html",
+    "default_title": "oscoin wallet"
   },
   "background": {
     "scripts": [
-      "background.js"
+      "scripts/wallet-background.js"
     ],
     "persistent": true
   },
@@ -30,7 +30,7 @@
         "https://*/*"
       ],
       "js": [
-        "contentscript.js"
+        "scripts/wallet-contentscript.js"
       ],
       "run_at": "document_start",
       "all_frames": true

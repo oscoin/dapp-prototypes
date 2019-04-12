@@ -1,6 +1,6 @@
-console.log('oscoin key manager | background | init')
+console.log('oscoin wallet | background | init')
 
-browser.browserAction.setIcon({ path: "diff.svg" })
+browser.browserAction.setIcon({ path: "icons/wallet-error.svg" })
   .then(() => {
     console.log('icon success')
   }, () => {
@@ -19,7 +19,7 @@ browser.runtime.onMessage.addListener((msg, sender) => {
 
   browser.windows.create({
     type: 'popup',
-    url: 'popup.html',
+    url: 'wallet-popup.html',
     height: 534,
     width: 420
   }).then(windowInfo => {

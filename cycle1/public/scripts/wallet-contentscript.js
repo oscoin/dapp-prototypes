@@ -1,5 +1,5 @@
 (function () {
-  console.log('oscoin key manager | contentscript | init')
+  console.log('oscoin wallet | contentscript | init')
 
   // Send messages from the extension to the page.
   browser.runtime.onMessage.addListener((msg) => {
