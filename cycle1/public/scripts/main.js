@@ -4912,42 +4912,11 @@ var author$project$Main$Project = function (a) {
 var author$project$Main$Register = function (a) {
 	return {$: 'Register', a: a};
 };
-var author$project$Main$toNavKey = function (page) {
-	switch (page.$) {
-		case 'NotFound':
-			var key = page.a;
-			return key;
-		case 'Home':
-			var key = page.a;
-			return key;
-		case 'KeySetup':
-			var key = page.a;
-			return key;
-		case 'Project':
-			var key = page.a;
-			return key;
-		default:
-			var key = page.a;
-			return key;
-	}
-};
-var elm$core$Basics$apL = F2(
-	function (f, x) {
-		return f(x);
+var elm$core$Array$branchFactor = 32;
+var elm$core$Array$Array_elm_builtin = F4(
+	function (a, b, c, d) {
+		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
 	});
-var elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
-};
-var elm$core$Maybe$Nothing = {$: 'Nothing'};
-var elm$core$Basics$False = {$: 'False'};
-var elm$core$Basics$True = {$: 'True'};
-var elm$core$Result$isOk = function (result) {
-	if (result.$ === 'Ok') {
-		return true;
-	} else {
-		return false;
-	}
-};
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$GT = {$: 'GT'};
 var elm$core$Basics$LT = {$: 'LT'};
@@ -5028,11 +4997,6 @@ var elm$core$Array$foldr = F3(
 var elm$core$Array$toList = function (array) {
 	return A3(elm$core$Array$foldr, elm$core$List$cons, _List_Nil, array);
 };
-var elm$core$Array$branchFactor = 32;
-var elm$core$Array$Array_elm_builtin = F4(
-	function (a, b, c, d) {
-		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
-	});
 var elm$core$Basics$ceiling = _Basics_ceiling;
 var elm$core$Basics$fdiv = _Basics_fdiv;
 var elm$core$Basics$logBase = F2(
@@ -5121,6 +5085,10 @@ var elm$core$Array$treeFromBuilder = F2(
 		}
 	});
 var elm$core$Basics$add = _Basics_add;
+var elm$core$Basics$apL = F2(
+	function (f, x) {
+		return f(x);
+	});
 var elm$core$Basics$floor = _Basics_floor;
 var elm$core$Basics$gt = _Utils_gt;
 var elm$core$Basics$max = F2(
@@ -5153,6 +5121,7 @@ var elm$core$Array$builderToArray = F2(
 				builder.tail);
 		}
 	});
+var elm$core$Basics$False = {$: 'False'};
 var elm$core$Basics$idiv = _Basics_idiv;
 var elm$core$Basics$lt = _Utils_lt;
 var elm$core$Elm$JsArray$initialize = _JsArray_initialize;
@@ -5195,11 +5164,23 @@ var elm$core$Array$initialize = F2(
 			return A5(elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
+var elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
+var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
 var elm$core$Result$Ok = function (a) {
 	return {$: 'Ok', a: a};
+};
+var elm$core$Basics$True = {$: 'True'};
+var elm$core$Result$isOk = function (result) {
+	if (result.$ === 'Ok') {
+		return true;
+	} else {
+		return false;
+	}
 };
 var elm$json$Json$Decode$Failure = F2(
 	function (a, b) {
@@ -5406,6 +5387,31 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 			}
 		}
 	});
+var elm$json$Json$Encode$null = _Json_encodeNull;
+var author$project$Main$requireKeySetup = _Platform_outgoingPort(
+	'requireKeySetup',
+	function ($) {
+		return elm$json$Json$Encode$null;
+	});
+var author$project$Main$toNavKey = function (page) {
+	switch (page.$) {
+		case 'NotFound':
+			var key = page.a;
+			return key;
+		case 'Home':
+			var key = page.a;
+			return key;
+		case 'KeySetup':
+			var key = page.a;
+			return key;
+		case 'Project':
+			var key = page.a;
+			return key;
+		default:
+			var key = page.a;
+			return key;
+	}
+};
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var author$project$Main$changePage = F2(
@@ -5415,7 +5421,7 @@ var author$project$Main$changePage = F2(
 			if ((maybeRoute.$ === 'Just') && (maybeRoute.a.$ === 'Register')) {
 				var maybeOverlay = maybeRoute.a.a;
 				if ((maybeOverlay.$ === 'Just') && (maybeOverlay.a.$ === 'KeySetup')) {
-					var _n6 = maybeOverlay.a;
+					var _n7 = maybeOverlay.a;
 					return elm$core$Maybe$Just(
 						author$project$Main$KeySetup(key));
 				} else {
@@ -5431,24 +5437,31 @@ var author$project$Main$changePage = F2(
 			} else {
 				switch (maybeRoute.a.$) {
 					case 'Home':
-						var _n1 = maybeRoute.a;
+						var _n2 = maybeRoute.a;
 						return author$project$Main$Home(key);
 					case 'KeySetup':
-						var _n2 = maybeRoute.a;
+						var _n3 = maybeRoute.a;
 						return author$project$Main$KeySetup(key);
 					case 'Project':
-						var _n3 = maybeRoute.a;
+						var _n4 = maybeRoute.a;
 						return author$project$Main$Project(key);
 					default:
 						return author$project$Main$Register(key);
 				}
 			}
 		}();
+		var cmd = function () {
+			if ((overlay.$ === 'Just') && (overlay.a.$ === 'KeySetup')) {
+				return author$project$Main$requireKeySetup(_Utils_Tuple0);
+			} else {
+				return elm$core$Platform$Cmd$none;
+			}
+		}();
 		return _Utils_Tuple2(
 			_Utils_update(
 				model,
 				{overlay: overlay, page: page}),
-			elm$core$Platform$Cmd$none);
+			cmd);
 	});
 var author$project$Route$Project = {$: 'Project'};
 var author$project$Route$Register = function (a) {

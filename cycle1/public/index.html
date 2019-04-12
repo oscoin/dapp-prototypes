@@ -15,9 +15,23 @@
       node: document.getElementById('app')
     });
 
+    app.ports.requireKeySetup.subscribe(function () {
+      window.postMessage({
+        direction: 'page-to-extension',
+        type: 'keySetup'
+      });
+      console.log('requireKeySetup')
+      console.log(arguments)
+    });
+
     window.addEventListener('message', function (event) {
       console.log('window.message', event);
-      app.ports.keySetupComplete.send(true);
+      let msg = event.data;
+
+      if (msg.direction === 'extension-to-page' &&
+        msg.type === 'keySetupComplete') {
+        app.ports.keySetupComplete.send(true);
+      }
     })
   </script>
 </body>

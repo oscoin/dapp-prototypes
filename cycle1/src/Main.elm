@@ -52,6 +52,9 @@ init _ url navKey =
 -- PORTS
 
 
+port requireKeySetup : () -> Cmd msg
+
+
 port keySetupComplete : (Bool -> msg) -> Sub msg
 
 
@@ -131,8 +134,16 @@ changePage maybeRoute model =
 
                 _ ->
                     Nothing
+
+        cmd =
+            case overlay of
+                Just (KeySetup _) ->
+                    requireKeySetup ()
+
+                _ ->
+                    Cmd.none
     in
-    ( { model | overlay = overlay, page = page }, Cmd.none )
+    ( { model | overlay = overlay, page = page }, cmd )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -141,7 +152,9 @@ update msg model =
         LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
-                    ( model, Navigation.pushUrl (toNavKey model.page) (Url.toString url) )
+                    ( model
+                    , Navigation.pushUrl (toNavKey model.page) (Url.toString url)
+                    )
 
                 Browser.External href ->
                     ( model, Navigation.load href )
@@ -159,7 +172,11 @@ update msg model =
         KeySetupComplete _ ->
             case model.overlay of
                 Just (KeySetup _) ->
-                    ( model, Navigation.pushUrl (toNavKey model.page) (Route.toString (Route.Register Nothing)) )
+                    ( model
+                    , Navigation.pushUrl
+                        (toNavKey model.page)
+                        (Route.toString (Route.Register Nothing))
+                    )
 
                 _ ->
                     ( model, Cmd.none )
@@ -169,7 +186,10 @@ update msg model =
 -- VIEW
 
 
-viewOverlay : Maybe Page -> Url.Url -> ( Maybe String, List (Element.Attribute msg) )
+viewOverlay :
+    Maybe Page
+    -> Url.Url
+    -> ( Maybe String, List (Element.Attribute msg) )
 viewOverlay maybePage url =
     case maybePage of
         Nothing ->
