@@ -6468,10 +6468,7 @@ var elm$url$Url$Parser$parse = F2(
 var author$project$Route$fromUrl = function (url) {
 	return A2(elm$url$Url$Parser$parse, author$project$Route$parser, url);
 };
-var author$project$TopBar$Model = function (searchTerm) {
-	return {searchTerm: searchTerm};
-};
-var author$project$TopBar$init = author$project$TopBar$Model('');
+var author$project$TopBar$init = '';
 var author$project$Main$init = F3(
 	function (_n0, url, navKey) {
 		var model = A4(
@@ -6502,13 +6499,9 @@ var author$project$Main$TopBarMsg = function (a) {
 	return {$: 'TopBarMsg', a: a};
 };
 var author$project$TopBar$update = F2(
-	function (msg, model) {
+	function (msg, _n0) {
 		var term = msg.a;
-		return _Utils_Tuple2(
-			_Utils_update(
-				model,
-				{searchTerm: term}),
-			elm$core$Platform$Cmd$none);
+		return _Utils_Tuple2(term, elm$core$Platform$Cmd$none);
 	});
 var elm$browser$Browser$External = function (a) {
 	return {$: 'External', a: a};
@@ -15796,6 +15789,8 @@ var mdgriffith$elm_ui$Element$paddingEach = function (_n0) {
 			bottom,
 			left));
 };
+var mdgriffith$elm_ui$Internal$Flag$cursor = mdgriffith$elm_ui$Internal$Flag$flag(21);
+var mdgriffith$elm_ui$Element$pointer = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$cursor, mdgriffith$elm_ui$Internal$Style$classes.cursorPointer);
 var mdgriffith$elm_ui$Internal$Flag$borderRound = mdgriffith$elm_ui$Internal$Flag$flag(17);
 var mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
 	return A2(
@@ -15822,7 +15817,8 @@ var author$project$Atom$Button$style = F4(
 						_List_fromArray(
 							[
 								mdgriffith$elm_ui$Element$Background$color(hoverColor)
-							]))
+							])),
+						mdgriffith$elm_ui$Element$pointer
 					]),
 				author$project$Style$Font$mediumBodyText(textColor)),
 			mdgriffith$elm_ui$Element$text(btnText));
@@ -17102,7 +17098,6 @@ var elm$html$Html$Attributes$value = elm$html$Html$Attributes$stringProperty('va
 var mdgriffith$elm_ui$Element$Input$value = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Attr, elm$html$Html$Attributes$value);
 var mdgriffith$elm_ui$Internal$Model$LivePolite = {$: 'LivePolite'};
 var mdgriffith$elm_ui$Element$Region$announce = mdgriffith$elm_ui$Internal$Model$Describe(mdgriffith$elm_ui$Internal$Model$LivePolite);
-var mdgriffith$elm_ui$Internal$Flag$cursor = mdgriffith$elm_ui$Internal$Flag$flag(21);
 var mdgriffith$elm_ui$Internal$Model$filter = function (attrs) {
 	return A3(
 		elm$core$List$foldr,
@@ -17607,7 +17602,7 @@ var author$project$TopBar$view = function (model) {
 							mdgriffith$elm_ui$Element$Input$placeholder,
 							_List_Nil,
 							mdgriffith$elm_ui$Element$text('Search projects'))),
-					text: model.searchTerm
+					text: model
 				}),
 				A2(
 				mdgriffith$elm_ui$Element$link,

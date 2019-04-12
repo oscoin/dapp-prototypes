@@ -5,12 +5,9 @@ import Element
 import Element.Background as Background
 import Element.Border as Border
 import Element.Input as Input
-import Html.Attributes
 import Route exposing (Route(..))
 import Style.Color as Color
 import Style.Font as Font
-import Url
-import Url.Builder
 
 
 
@@ -18,13 +15,17 @@ import Url.Builder
 
 
 type alias Model =
-    { searchTerm : String
-    }
+    String
+
+
+
+-- { searchTerm : String
+-- }
 
 
 init : Model
 init =
-    Model ""
+    ""
 
 
 
@@ -36,10 +37,10 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update msg _ =
     case msg of
         SearchUpdated term ->
-            ( { model | searchTerm = term }, Cmd.none )
+            ( term, Cmd.none )
 
 
 
@@ -76,7 +77,7 @@ view model =
             { label = Input.labelHidden "search"
             , onChange = SearchUpdated
             , placeholder = Just <| Input.placeholder [] <| Element.text "Search projects"
-            , text = model.searchTerm
+            , text = model
             }
 
         -- Register link
