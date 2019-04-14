@@ -4,6 +4,7 @@ import Atom.Button as Button
 import Browser
 import Element
 import Element.Events as Events
+import Page exposing (Page)
 import Style.Color as Color
 import Style.Font as Font
 
@@ -17,12 +18,13 @@ type alias Flags =
 
 
 type alias Model =
-    {}
+    { page : Page
+    }
 
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model, Cmd.none )
+    ( Model Page.NotFound, Cmd.none )
 
 
 
@@ -61,30 +63,20 @@ update msg model =
 
 
 view : Model -> Browser.Document Msg
-view _ =
-    { title = "wallet <> oscoin"
+view model =
+    let
+        ( pageTitle, pageContent ) =
+            Page.view model.page
+    in
+    { title = String.join " <> " [ pageTitle, "oscoin wallet" ]
     , body =
-        [ Element.layout
-            [ Element.height (Element.fill |> Element.minimum 564)
-            , Element.width (Element.fill |> Element.minimum 420)
-            ]
-          <|
+        [ Element.layout [] <|
             Element.column
-                [ Element.centerX
-                , Element.centerY
-                , Element.spacing 20
+                [ Element.spacing 42
+                , Element.height (Element.fill |> Element.minimum 564)
+                , Element.width (Element.fill |> Element.minimum 420)
                 ]
-                [ Element.el
-                    (Font.bigHeader Color.black)
-                  <|
-                    Element.text "oscoin wallet"
-                , Element.el
-                    [ Element.centerX
-                    , Element.centerY
-                    , Events.onClick KeyPairSetupComplete
-                    ]
-                  <|
-                    Button.accent "All done"
+                [ Element.el [ Element.centerX ] <| pageContent
                 ]
         ]
     }
