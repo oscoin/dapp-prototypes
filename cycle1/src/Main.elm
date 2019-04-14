@@ -4,11 +4,7 @@ import Browser
 import Browser.Navigation as Navigation
 import Element
 import Overlay
-import Page.Home
-import Page.KeySetup
-import Page.NotFound
-import Page.Project
-import Page.Register
+import Page exposing (Page, view)
 import Route exposing (Route)
 import TopBar
 import Url
@@ -24,26 +20,19 @@ type alias Flags =
 
 
 type alias Model =
-    { topBarModel : TopBar.Model
+    { navKey : Navigation.Key
     , overlay : Maybe Page
     , page : Page
+    , topBarModel : TopBar.Model
     , url : Url.Url
     }
-
-
-type Page
-    = NotFound Navigation.Key
-    | Home Navigation.Key
-    | KeySetup Navigation.Key
-    | Project Navigation.Key
-    | Register Navigation.Key
 
 
 init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init _ url navKey =
     let
         model =
-            Model TopBar.init Nothing (NotFound navKey) url
+            Model navKey Nothing Page.NotFound TopBar.init url
     in
     changePage (Route.fromUrl url) model
 
@@ -80,54 +69,18 @@ type Msg
     | KeySetupComplete Bool
 
 
-toNavKey : Page -> Navigation.Key
-toNavKey page =
-    case page of
-        NotFound key ->
-            key
-
-        Home key ->
-            key
-
-        KeySetup key ->
-            key
-
-        Project key ->
-            key
-
-        Register key ->
-            key
-
-
 changePage : Maybe Route -> Model -> ( Model, Cmd Msg )
 changePage maybeRoute model =
     let
-        key =
-            toNavKey model.page
-
         page =
-            case maybeRoute of
-                Nothing ->
-                    NotFound key
-
-                Just Route.Home ->
-                    Home key
-
-                Just Route.KeySetup ->
-                    KeySetup key
-
-                Just Route.Project ->
-                    Project key
-
-                Just (Route.Register _) ->
-                    Register key
+            Page.fromRoute maybeRoute
 
         overlay =
             case maybeRoute of
                 Just (Route.Register maybeOverlay) ->
                     case maybeOverlay of
                         Just Route.KeySetup ->
-                            Just <| KeySetup key
+                            Just <| Page.KeySetup
 
                         _ ->
                             Nothing
@@ -137,7 +90,7 @@ changePage maybeRoute model =
 
         cmd =
             case overlay of
-                Just (KeySetup _) ->
+                Just Page.KeySetup ->
                     requireKeySetup ()
 
                 _ ->
@@ -153,7 +106,7 @@ update msg model =
             case urlRequest of
                 Browser.Internal url ->
                     ( model
-                    , Navigation.pushUrl (toNavKey model.page) (Url.toString url)
+                    , Navigation.pushUrl model.navKey (Url.toString url)
                     )
 
                 Browser.External href ->
@@ -171,10 +124,10 @@ update msg model =
 
         KeySetupComplete _ ->
             case model.overlay of
-                Just (KeySetup _) ->
+                Just Page.KeySetup ->
                     ( model
                     , Navigation.pushUrl
-                        (toNavKey model.page)
+                        model.navKey
                         (Route.toString (Route.Register Nothing))
                     )
 
@@ -198,7 +151,7 @@ viewOverlay maybePage url =
         Just page ->
             let
                 ( title, content ) =
-                    viewPage page
+                    Page.view page
 
                 backUrl =
                     Url.Builder.relative [ url.path ] []
@@ -206,30 +159,11 @@ viewOverlay maybePage url =
             ( Just title, Overlay.attrs content backUrl )
 
 
-viewPage : Page -> ( String, Element.Element msg )
-viewPage page =
-    case page of
-        NotFound _ ->
-            Page.NotFound.view
-
-        Home _ ->
-            Page.Home.view
-
-        KeySetup _ ->
-            Page.KeySetup.view
-
-        Project _ ->
-            Page.Project.view
-
-        Register _ ->
-            Page.Register.view
-
-
 view : Model -> Browser.Document Msg
 view model =
     let
         ( pageTitle, pageContent ) =
-            viewPage model.page
+            Page.view model.page
 
         ( overlayTitle, overlayAttrs ) =
             viewOverlay model.overlay model.url
