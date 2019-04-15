@@ -19,15 +19,15 @@ view =
         , Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
         , Element.width Element.fill
         ]
-        [ Heading.section "Project contracts"
+        [ Heading.section "Project contract"
         , Element.row
             [ Element.spacing 24
             , Element.width <| Element.fillPortion 3
             , Element.padding 0
             ]
-            [ viewContract "Block reward distribution" "Equal Distribution contract"
-            , viewContract "Donation distribution" "Donation Treasury contract"
-            , viewContract "Roles & responsibility" "Maintainer Single Signer contract"
+            [ viewContract "Block reward distribution" "Equal Distribution rule"
+            , viewContract "Donation distribution" "Donation Treasury rule"
+            , viewContract "Roles & responsibility" "Maintainer Single Signer rule"
             ]
         ]
 
