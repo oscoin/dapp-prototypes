@@ -14,7 +14,7 @@ import Style.Font as Font
 
 
 type alias Flags =
-    ()
+    Maybe String
 
 
 type alias Model =
@@ -23,8 +23,8 @@ type alias Model =
 
 
 init : Flags -> ( Model, Cmd Msg )
-init _ =
-    ( Model <| Page.KeyPairSetup Page.KeyPairSetup.init, Cmd.none )
+init keyPair =
+    ( Model <| Page.KeyPairSetup <| Page.KeyPairSetup.init keyPair, Cmd.none )
 
 
 

@@ -5,9 +5,9 @@
   browser.runtime.onMessage.addListener((msg) => {
     console.log('browser.runtime.onMessage', msg)
 
-    msg.direction = 'extension-to-page'
-
-    window.postMessage(msg, '*')
+    if (msg.direction = 'extension-to-page') {
+      window.postMessage(msg, '*')
+    }
   })
 
   // Send messages from the page to the extension.

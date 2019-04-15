@@ -4878,7 +4878,15 @@ var author$project$Page$KeyPairSetup$Model = F2(
 	function (keyPairId, step) {
 		return {keyPairId: keyPairId, step: step};
 	});
-var author$project$Page$KeyPairSetup$init = A2(author$project$Page$KeyPairSetup$Model, '', author$project$Page$KeyPairSetup$Initial);
+var author$project$Page$KeyPairSetup$Passphrase = {$: 'Passphrase'};
+var author$project$Page$KeyPairSetup$init = function (maybeKeyPair) {
+	if (maybeKeyPair.$ === 'Nothing') {
+		return A2(author$project$Page$KeyPairSetup$Model, '', author$project$Page$KeyPairSetup$Initial);
+	} else {
+		var keyPair = maybeKeyPair.a;
+		return A2(author$project$Page$KeyPairSetup$Model, keyPair, author$project$Page$KeyPairSetup$Passphrase);
+	}
+};
 var author$project$WalletPopup$Model = function (page) {
 	return {page: page};
 };
@@ -5359,10 +5367,11 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 	});
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
-var author$project$WalletPopup$init = function (_n0) {
+var author$project$WalletPopup$init = function (keyPair) {
 	return _Utils_Tuple2(
 		author$project$WalletPopup$Model(
-			author$project$Page$KeyPairSetup(author$project$Page$KeyPairSetup$init)),
+			author$project$Page$KeyPairSetup(
+				author$project$Page$KeyPairSetup$init(keyPair))),
 		elm$core$Platform$Cmd$none);
 };
 var author$project$Msg$KeyPairCreated = function (a) {
@@ -5381,7 +5390,6 @@ var author$project$WalletPopup$subscriptions = function (_n0) {
 var author$project$Msg$PageKeyPairSetup = function (a) {
 	return {$: 'PageKeyPairSetup', a: a};
 };
-var author$project$Page$KeyPairSetup$Passphrase = {$: 'Passphrase'};
 var author$project$Page$KeyPairSetup$Setup = {$: 'Setup'};
 var elm$core$Debug$log = _Debug_log;
 var author$project$Page$KeyPairSetup$update = F2(
@@ -17324,7 +17332,14 @@ var elm$url$Url$fromString = function (str) {
 		A2(elm$core$String$dropLeft, 8, str)) : elm$core$Maybe$Nothing);
 };
 var elm$browser$Browser$document = _Browser_document;
+var elm$json$Json$Decode$null = _Json_decodeNull;
+var elm$json$Json$Decode$oneOf = _Json_oneOf;
 var author$project$WalletPopup$main = elm$browser$Browser$document(
 	{init: author$project$WalletPopup$init, subscriptions: author$project$WalletPopup$subscriptions, update: author$project$WalletPopup$update, view: author$project$WalletPopup$view});
 _Platform_export({'WalletPopup':{'init':author$project$WalletPopup$main(
-	elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeySetupComplete":["Basics.Bool"]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
+	elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
+				A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
+			])))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeySetupComplete":["Basics.Bool"]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));

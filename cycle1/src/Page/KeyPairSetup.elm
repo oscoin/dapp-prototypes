@@ -24,9 +24,14 @@ type alias Model =
     }
 
 
-init : Model
-init =
-    Model "" Initial
+init : Maybe String -> Model
+init maybeKeyPair =
+    case maybeKeyPair of
+        Nothing ->
+            Model "" Initial
+
+        Just keyPair ->
+            Model keyPair Passphrase
 
 
 
@@ -46,7 +51,7 @@ update msg model =
     case Debug.log "KeyPairSetup.Msg" msg of
         -- We expect Complete and Create to be handled in the portion of the app
         -- that has access to ports in order to signal the completion of the
-        -- setup to extension code.
+        -- setup to extension code which makes this part a Noop.
         Complete ->
             ( model, Cmd.none )
 
