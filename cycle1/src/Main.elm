@@ -3,6 +3,7 @@ port module Main exposing (main)
 import Browser
 import Browser.Navigation as Navigation
 import Element
+import Msg exposing (Msg)
 import Overlay
 import Page exposing (Page, view)
 import Route exposing (Route)
@@ -54,19 +55,12 @@ port keySetupComplete : (Bool -> msg) -> Sub msg
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ keySetupComplete KeySetupComplete
+        [ keySetupComplete Msg.KeySetupComplete
         ]
 
 
 
 -- UPDATE
-
-
-type Msg
-    = UrlChanged Url.Url
-    | LinkClicked Browser.UrlRequest
-    | TopBarMsg TopBar.Msg
-    | KeySetupComplete Bool
 
 
 changePage : Maybe Route -> Model -> ( Model, Cmd Msg )
@@ -102,7 +96,7 @@ changePage maybeRoute model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case Debug.log "Main.msg" msg of
-        LinkClicked urlRequest ->
+        Msg.LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
                     ( model
@@ -112,17 +106,10 @@ update msg model =
                 Browser.External href ->
                     ( model, Navigation.load href )
 
-        UrlChanged url ->
+        Msg.UrlChanged url ->
             changePage (Route.fromUrl url) { model | url = url }
 
-        TopBarMsg subMsg ->
-            let
-                ( topBarModel, topBarMsg ) =
-                    TopBar.update subMsg model.topBarModel
-            in
-            ( { model | topBarModel = topBarModel }, Cmd.map TopBarMsg topBarMsg )
-
-        KeySetupComplete _ ->
+        Msg.KeySetupComplete _ ->
             case model.overlay of
                 Just Page.KeySetup ->
                     ( model
@@ -134,6 +121,16 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        Msg.PageKeyPairSetup _ ->
+            ( model, Cmd.none )
+
+        Msg.TopBarMsg subMsg ->
+            let
+                ( topBarModel, topBarMsg ) =
+                    TopBar.update subMsg model.topBarModel
+            in
+            ( { model | topBarModel = topBarModel }, Cmd.map Msg.TopBarMsg topBarMsg )
+
 
 
 -- VIEW
@@ -142,7 +139,7 @@ update msg model =
 viewOverlay :
     Maybe Page
     -> Url.Url
-    -> ( Maybe String, List (Element.Attribute msg) )
+    -> ( Maybe String, List (Element.Attribute Msg) )
 viewOverlay maybePage url =
     case maybePage of
         Nothing ->
@@ -186,7 +183,7 @@ view model =
                 , Element.height Element.fill
                 , Element.width Element.fill
                 ]
-                [ Element.map TopBarMsg <| TopBar.view model.topBarModel
+                [ Element.map Msg.TopBarMsg <| TopBar.view model.topBarModel
                 , Element.el [ Element.centerX ] <| pageContent
                 ]
         ]
@@ -200,6 +197,6 @@ main =
         , view = view
         , update = update
         , subscriptions = subscriptions
-        , onUrlRequest = LinkClicked
-        , onUrlChange = UrlChanged
+        , onUrlRequest = Msg.LinkClicked
+        , onUrlChange = Msg.UrlChanged
         }

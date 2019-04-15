@@ -5,6 +5,10 @@ import Style.Color as Color
 import Style.Font as Font
 
 
+
+-- VIEW
+
+
 view : ( String, Element msg )
 view =
     ( "register"

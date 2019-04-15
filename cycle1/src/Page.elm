@@ -1,7 +1,9 @@
 module Page exposing (Page(..), fromRoute, view)
 
 import Element exposing (Element)
+import Msg exposing (Msg)
 import Page.Home
+import Page.KeyPairSetup
 import Page.KeySetup
 import Page.NotFound
 import Page.Project
@@ -10,9 +12,10 @@ import Route exposing (Route)
 
 
 type Page
-    = NotFound
-    | Home
+    = Home
+    | KeyPairSetup Page.KeyPairSetup.Model
     | KeySetup
+    | NotFound
     | Project
     | Register
 
@@ -36,14 +39,23 @@ fromRoute maybeRoute =
             Register
 
 
-view : Page -> ( String, Element msg )
+view : Page -> ( String, Element Msg )
 view page =
     case page of
+        Home ->
+            Page.Home.view
+
         NotFound ->
             Page.NotFound.view
 
-        Home ->
-            Page.Home.view
+        KeyPairSetup pageModel ->
+            let
+                ( pageTitle, pageView ) =
+                    Page.KeyPairSetup.view pageModel
+            in
+            ( pageTitle
+            , Element.map Msg.PageKeyPairSetup <| pageView
+            )
 
         KeySetup ->
             Page.KeySetup.view

@@ -1,10 +1,10 @@
 port module WalletPopup exposing (main)
 
-import Atom.Button as Button
 import Browser
 import Element
-import Element.Events as Events
+import Msg exposing (Msg)
 import Page exposing (Page)
+import Page.KeyPairSetup
 import Style.Color as Color
 import Style.Font as Font
 
@@ -24,14 +24,24 @@ type alias Model =
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model Page.NotFound, Cmd.none )
+    ( Model <| Page.KeyPairSetup Page.KeyPairSetup.init, Cmd.none )
 
 
 
--- PORTS
+-- PORTS - OUTBOUND
+
+
+port keyPairCreate : String -> Cmd msg
 
 
 port keyPairSetupComplete : () -> Cmd msg
+
+
+
+-- PORTS - INBOUND
+
+
+port keyPairCreated : (String -> msg) -> Sub msg
 
 
 
@@ -40,26 +50,70 @@ port keyPairSetupComplete : () -> Cmd msg
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.none
+    Sub.batch
+        [ keyPairCreated Msg.KeyPairCreated
+        ]
 
 
 
 -- UPDATE
 
 
-type Msg
-    = KeyPairSetupComplete
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        KeyPairSetupComplete ->
-            ( model, keyPairSetupComplete () )
+    case ( Debug.log "WalletPopup.Msg" msg, Debug.log "WalletPopup.Page" model.page ) of
+        -- Relay created key pair event to the page.
+        ( Msg.KeyPairCreated id, Page.KeyPairSetup oldModel ) ->
+            let
+                ( pageModel, pageCmd ) =
+                    Page.KeyPairSetup.updateCreated oldModel id
+            in
+            ( { model | page = Page.KeyPairSetup pageModel }
+            , Cmd.map Msg.PageKeyPairSetup <| pageCmd
+            )
+
+        ( Msg.PageKeyPairSetup subCmd, Page.KeyPairSetup oldModel ) ->
+            let
+                ( pageModel, pageCmd ) =
+                    Page.KeyPairSetup.update subCmd oldModel
+
+                portCmd =
+                    case subCmd of
+                        -- Call out to our port once the key setup is complete.
+                        Page.KeyPairSetup.Complete ->
+                            keyPairSetupComplete ()
+
+                        -- Call out to our port to signal key creation, the wallet backend
+                        -- should take care of persisting it.
+                        Page.KeyPairSetup.Create id ->
+                            keyPairCreate id
+
+                        _ ->
+                            Cmd.none
+            in
+            ( { model | page = Page.KeyPairSetup pageModel }
+            , Cmd.batch
+                [ Cmd.map Msg.PageKeyPairSetup <| pageCmd
+                , portCmd
+                ]
+            )
+
+        _ ->
+            ( model, Cmd.none )
 
 
 
 -- VIEW
+
+
+viewHeader : Element.Element msg
+viewHeader =
+    Element.el
+        ([ Element.centerX ]
+            ++ Font.bigHeader Color.black
+        )
+    <|
+        Element.text "oscoin wallet"
 
 
 view : Model -> Browser.Document Msg
@@ -73,10 +127,16 @@ view model =
         [ Element.layout [] <|
             Element.column
                 [ Element.spacing 42
-                , Element.height (Element.fill |> Element.minimum 564)
-                , Element.width (Element.fill |> Element.minimum 420)
+                , Element.height
+                    (Element.fill |> Element.minimum 564)
+                , Element.width
+                    (Element.fill |> Element.minimum 420)
                 ]
-                [ Element.el [ Element.centerX ] <| pageContent
+                [ viewHeader
+                , Element.el
+                    [ Element.centerX ]
+                  <|
+                    pageContent
                 ]
         ]
     }
