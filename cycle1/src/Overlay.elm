@@ -15,8 +15,8 @@ import Style.Color as Color
 
 
 type Overlay
-    = WalletSetup Overlay.WalletSetup.Model
-    | WaitForKeyPair
+    = WaitForKeyPair
+    | WalletSetup Overlay.WalletSetup.Model
 
 
 fromRoute : Maybe Route -> Maybe Overlay
@@ -24,6 +24,9 @@ fromRoute maybeRoute =
     case maybeRoute of
         Just (Route.Register maybeOverlay) ->
             case maybeOverlay of
+                Just Route.WaitForKeyPair ->
+                    Just WaitForKeyPair
+
                 Just Route.WalletSetup ->
                     Just <| WalletSetup Overlay.WalletSetup.init
 

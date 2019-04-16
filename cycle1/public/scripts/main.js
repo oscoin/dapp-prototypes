@@ -5378,6 +5378,7 @@ var author$project$Main$cmdFromOverlay = function (maybePage) {
 		return elm$core$Platform$Cmd$none;
 	}
 };
+var author$project$Overlay$WaitForKeyPair = {$: 'WaitForKeyPair'};
 var author$project$Overlay$WalletSetup = function (a) {
 	return {$: 'WalletSetup', a: a};
 };
@@ -5389,13 +5390,25 @@ var author$project$Overlay$WalletSetup$init = author$project$Overlay$WalletSetup
 var author$project$Overlay$fromRoute = function (maybeRoute) {
 	if ((maybeRoute.$ === 'Just') && (maybeRoute.a.$ === 'Register')) {
 		var maybeOverlay = maybeRoute.a.a;
-		if ((maybeOverlay.$ === 'Just') && (maybeOverlay.a.$ === 'WalletSetup')) {
-			var _n2 = maybeOverlay.a;
-			return elm$core$Maybe$Just(
-				author$project$Overlay$WalletSetup(author$project$Overlay$WalletSetup$init));
-		} else {
-			return elm$core$Maybe$Nothing;
+		_n1$2:
+		while (true) {
+			if (maybeOverlay.$ === 'Just') {
+				switch (maybeOverlay.a.$) {
+					case 'WaitForKeyPair':
+						var _n2 = maybeOverlay.a;
+						return elm$core$Maybe$Just(author$project$Overlay$WaitForKeyPair);
+					case 'WalletSetup':
+						var _n3 = maybeOverlay.a;
+						return elm$core$Maybe$Just(
+							author$project$Overlay$WalletSetup(author$project$Overlay$WalletSetup$init));
+					default:
+						break _n1$2;
+				}
+			} else {
+				break _n1$2;
+			}
 		}
+		return elm$core$Maybe$Nothing;
 	} else {
 		return elm$core$Maybe$Nothing;
 	}
