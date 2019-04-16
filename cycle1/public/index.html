@@ -10,30 +10,7 @@
 <body>
   <div id="app"></div>
   <script src="/scripts/main.js"></script>
-  <script>
-    var app = Elm.Main.init({
-      node: document.getElementById('app')
-    });
-
-    app.ports.requireKeySetup.subscribe(function () {
-      window.postMessage({
-        direction: 'page-to-extension',
-        type: 'keySetup'
-      });
-      console.log('requireKeySetup')
-      console.log(arguments)
-    });
-
-    window.addEventListener('message', function (event) {
-      console.log('window.message', event);
-      let msg = event.data;
-
-      if (msg.direction === 'extension-to-page' &&
-        msg.type === 'keySetupComplete') {
-        app.ports.keySetupComplete.send(true);
-      }
-    })
-  </script>
+  <script src="/scripts/init.js"></script>
 </body>
 
 </html>

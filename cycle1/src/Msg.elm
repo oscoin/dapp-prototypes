@@ -12,4 +12,4 @@ type Msg
     | PageKeyPairSetup Page.KeyPairSetup.Msg
     | TopBarMsg TopBar.Msg
     | KeyPairCreated String
-    | KeySetupComplete Bool
+    | KeyPairFetched String

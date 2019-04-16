@@ -3,7 +3,7 @@
 
   // Get background object to call API on it and current key pair if exists.
   let background = browser.extension.getBackgroundPage()
-  let keyPair = background.getKeyPair()
+  let keyPair = background.getKeyPair() || null
 
   // Init elm ui.
   var popup = Elm.WalletPopup.init({

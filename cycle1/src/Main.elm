@@ -16,12 +16,17 @@ import Url.Builder
 -- MODEL
 
 
+type alias KeyPair =
+    String
+
+
 type alias Flags =
-    ()
+    Maybe KeyPair
 
 
 type alias Model =
-    { navKey : Navigation.Key
+    { keyPair : Maybe KeyPair
+    , navKey : Navigation.Key
     , overlay : Maybe Page
     , page : Page
     , topBarModel : TopBar.Model
@@ -30,22 +35,29 @@ type alias Model =
 
 
 init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
-init _ url navKey =
+init maybeKeyPair url navKey =
     let
         model =
-            Model navKey Nothing Page.NotFound TopBar.init url
+            Model maybeKeyPair navKey Nothing Page.NotFound TopBar.init url
     in
     changePage (Route.fromUrl url) model
 
 
 
--- PORTS
+-- PORTS - OUTGOING
 
 
-port requireKeySetup : () -> Cmd msg
+port requireKeyPair : () -> Cmd msg
 
 
-port keySetupComplete : (Bool -> msg) -> Sub msg
+
+-- PORTS - INCOMING
+
+
+port keyPairCreated : (String -> msg) -> Sub msg
+
+
+port keyPairFetched : (String -> msg) -> Sub msg
 
 
 
@@ -55,7 +67,8 @@ port keySetupComplete : (Bool -> msg) -> Sub msg
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ keySetupComplete Msg.KeySetupComplete
+        [ keyPairCreated Msg.KeyPairCreated
+        , keyPairFetched Msg.KeyPairFetched
         ]
 
 
@@ -85,7 +98,7 @@ changePage maybeRoute model =
         cmd =
             case overlay of
                 Just Page.KeySetup ->
-                    requireKeySetup ()
+                    requireKeyPair ()
 
                 _ ->
                     Cmd.none
@@ -109,10 +122,10 @@ update msg model =
         Msg.UrlChanged url ->
             changePage (Route.fromUrl url) { model | url = url }
 
-        Msg.KeySetupComplete _ ->
+        Msg.KeyPairCreated id ->
             case model.overlay of
                 Just Page.KeySetup ->
-                    ( model
+                    ( { model | keyPair = Just id }
                     , Navigation.pushUrl
                         model.navKey
                         (Route.toString (Route.Register Nothing))
@@ -120,6 +133,9 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none )
+
+        Msg.KeyPairFetched id ->
+            ( { model | keyPair = Just id }, Cmd.none )
 
         Msg.PageKeyPairSetup _ ->
             ( model, Cmd.none )
@@ -134,6 +150,28 @@ update msg model =
 
 
 -- VIEW
+
+
+viewKeyPair : Maybe KeyPair -> Element.Element msg
+viewKeyPair maybeKeyPair =
+    case maybeKeyPair of
+        Nothing ->
+            Element.none
+
+        Just keyPair ->
+            Element.row
+                [ Element.width Element.fill
+                ]
+                [ Element.el
+                    [ Element.centerX
+                    , Element.centerY
+                    ]
+                  <|
+                    Element.text
+                        ("Your current key pair: "
+                            ++ keyPair
+                        )
+                ]
 
 
 viewOverlay :
@@ -172,6 +210,14 @@ view model =
 
                 Just oTitle ->
                     [ oTitle, pageTitle, "oscoin" ]
+
+        registerUrl =
+            case model.keyPair of
+                Nothing ->
+                    Route.toString <| Route.Register <| Just Route.KeySetup
+
+                Just _ ->
+                    Route.toString <| Route.Register Nothing
     in
     { title = String.join " <> " titleParts
     , body =
@@ -183,7 +229,8 @@ view model =
                 , Element.height Element.fill
                 , Element.width Element.fill
                 ]
-                [ Element.map Msg.TopBarMsg <| TopBar.view model.topBarModel
+                [ Element.map Msg.TopBarMsg <| TopBar.view model.topBarModel registerUrl
+                , viewKeyPair model.keyPair
                 , Element.el [ Element.centerX ] <| pageContent
                 ]
         ]

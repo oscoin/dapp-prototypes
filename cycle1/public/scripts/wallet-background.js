@@ -17,19 +17,30 @@ let keyPair = null;
 browser.runtime.onMessage.addListener((msg, sender) => {
   console.log(msg, sender)
 
-  if (msg.direction === 'page-to-extension' &&
-    msg.type === 'keySetup') {
+  if (msg.direction === 'page-to-extension') {
+    // The page wants to fetch a key pair if existent.
+    if (msg.type === 'getKeyPair') {
+      browser.tabs.sendMessage(sender.tab.id, {
+        direction: 'extension-to-page',
+        type: 'keyPairFetched',
+        id: getKeyPair(),
+      })
+    }
 
-    currentTab = sender.tab;
+    // A key pair is required to continue with the current operation on the
+    // page.
+    if (msg.type === 'requireKeyPair') {
+      currentTab = sender.tab;
 
-    browser.windows.create({
-      type: 'popup',
-      url: 'wallet-popup.html',
-      height: 534,
-      width: 420
-    }).then(windowInfo => {
-      console.log('popup window info', windowInfo)
-    })
+      browser.windows.create({
+        type: 'popup',
+        url: 'wallet-popup.html',
+        height: 534,
+        width: 420
+      }).then(windowInfo => {
+        console.log('popup window info', windowInfo)
+      })
+    }
   }
 })
 
@@ -50,6 +61,7 @@ function getCurrentTab() {
 function keyPairSetupComplete() {
     browser.tabs.sendMessage(getCurrentTab().id, {
       direction: 'extension-to-page',
-      type: 'keySetupComplete'
+      type: 'keyPairCreated',
+      id: getKeyPair(),
     })
 }

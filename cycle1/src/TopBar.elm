@@ -47,8 +47,8 @@ update msg _ =
 -- VIEW
 
 
-view : Model -> Element.Element Msg
-view model =
+view : Model -> String -> Element.Element Msg
+view searchTerm registerUrl =
     Element.row
         [ Border.color Color.lightGrey
         , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
@@ -77,13 +77,13 @@ view model =
             { label = Input.labelHidden "search"
             , onChange = SearchUpdated
             , placeholder = Just <| Input.placeholder [] <| Element.text "Search projects"
-            , text = model
+            , text = searchTerm
             }
 
         -- Register link
         , Element.link
             [ Element.alignRight ]
-            { url = Route.toString <| Route.Register <| Just Route.KeySetup
+            { url = registerUrl
             , label = Button.accent "Register a project"
             }
         ]
