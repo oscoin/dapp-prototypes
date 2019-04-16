@@ -209,6 +209,25 @@ viewOverlay maybePage url =
             ( Just title, Overlay.attrs content backUrl )
 
 
+viewWallet : Maybe Wallet -> Element.Element msg
+viewWallet maybeWallet =
+    case maybeWallet of
+        Just WebExt ->
+            Element.row
+                [ Element.width Element.fill
+                ]
+                [ Element.el
+                    [ Element.centerX
+                    , Element.centerY
+                    ]
+                  <|
+                    Element.text "Wallet connected: web extension"
+                ]
+
+        _ ->
+            Element.none
+
+
 view : Model -> Browser.Document Msg
 view model =
     let
@@ -256,6 +275,7 @@ view model =
                 , Element.width Element.fill
                 ]
                 [ Element.map Msg.TopBarMsg <| TopBar.view model.topBarModel registerUrl
+                , viewWallet model.wallet
                 , viewKeyPair model.keyPair
                 , Element.el [ Element.centerX ] <| pageContent
                 ]

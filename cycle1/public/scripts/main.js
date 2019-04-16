@@ -17757,6 +17757,27 @@ var author$project$Main$viewOverlay = F2(
 				A2(author$project$Overlay$attrs, content, backUrl));
 		}
 	});
+var author$project$Main$viewWallet = function (maybeWallet) {
+	if (maybeWallet.$ === 'Just') {
+		var _n1 = maybeWallet.a;
+		return A2(
+			mdgriffith$elm_ui$Element$row,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+				]),
+			_List_fromArray(
+				[
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_List_fromArray(
+						[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+					mdgriffith$elm_ui$Element$text('Wallet connected: web extension'))
+				]));
+	} else {
+		return mdgriffith$elm_ui$Element$none;
+	}
+};
 var author$project$Style$Color$almostWhite = A3(mdgriffith$elm_ui$Element$rgb255, 248, 248, 248);
 var author$project$TopBar$SearchUpdated = function (a) {
 	return {$: 'SearchUpdated', a: a};
@@ -18103,6 +18124,7 @@ var author$project$Main$view = function (model) {
 							mdgriffith$elm_ui$Element$map,
 							author$project$Msg$TopBarMsg,
 							A2(author$project$TopBar$view, model.topBarModel, registerUrl)),
+							author$project$Main$viewWallet(model.wallet),
 							author$project$Main$viewKeyPair(model.keyPair),
 							A2(
 							mdgriffith$elm_ui$Element$el,
