@@ -16016,6 +16016,88 @@ var author$project$Page$Project$Contract$view = A2(
 					A2(author$project$Page$Project$Contract$viewContract, 'Roles & responsibility', 'Maintainer Single Signer rule')
 				]))
 		]));
+var author$project$Style$Color$toCssString = function (color) {
+	var rgb = mdgriffith$elm_ui$Element$toRgb(color);
+	var redRgb = rgb.red * 255;
+	var greenRgb = rgb.green * 255;
+	var blueRgb = rgb.blue * 255;
+	return 'rgba(' + (elm$core$String$fromFloat(redRgb) + (', ' + (elm$core$String$fromFloat(greenRgb) + (', ' + (elm$core$String$fromFloat(blueRgb) + (', ' + (elm$core$String$fromFloat(rgb.alpha) + ')')))))));
+};
+var elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var elm$svg$Svg$circle = elm$svg$Svg$trustedNode('circle');
+var elm$svg$Svg$svg = elm$svg$Svg$trustedNode('svg');
+var elm$svg$Svg$Attributes$cx = _VirtualDom_attribute('cx');
+var elm$svg$Svg$Attributes$cy = _VirtualDom_attribute('cy');
+var elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
+var elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
+var elm$svg$Svg$Attributes$r = _VirtualDom_attribute('r');
+var elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
+var elm$svg$Svg$Attributes$strokeWidth = _VirtualDom_attribute('stroke-width');
+var elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
+var elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
+var author$project$Atom$Currency$largeCircle = function (bgColor) {
+	return A2(
+		elm$svg$Svg$svg,
+		_List_fromArray(
+			[
+				elm$svg$Svg$Attributes$width('20'),
+				elm$svg$Svg$Attributes$height('20'),
+				elm$svg$Svg$Attributes$viewBox('0 0 20 20'),
+				elm$svg$Svg$Attributes$fill('none')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				elm$svg$Svg$circle,
+				_List_fromArray(
+					[
+						elm$svg$Svg$Attributes$cx('10'),
+						elm$svg$Svg$Attributes$cy('10'),
+						elm$svg$Svg$Attributes$r('8.5'),
+						elm$svg$Svg$Attributes$stroke(
+						author$project$Style$Color$toCssString(bgColor)),
+						elm$svg$Svg$Attributes$strokeWidth('3')
+					]),
+				_List_Nil)
+			]));
+};
+var author$project$Style$Font$fontGTAmericaMonoBold = mdgriffith$elm_ui$Element$Font$typeface('GT America Mono Bold');
+var author$project$Style$Font$mediumHeaderMono = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaMonoBold, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(22)
+		]);
+};
+var mdgriffith$elm_ui$Internal$Model$unstyled = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Unstyled, elm$core$Basics$always);
+var mdgriffith$elm_ui$Element$html = mdgriffith$elm_ui$Internal$Model$unstyled;
+var author$project$Atom$Currency$large = F2(
+	function (amount, bgColor) {
+		return A2(
+			mdgriffith$elm_ui$Element$row,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_List_Nil,
+					mdgriffith$elm_ui$Element$html(
+						author$project$Atom$Currency$largeCircle(bgColor))),
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$paddingEach(
+								{bottom: 0, left: 8, right: 0, top: 0})
+							]),
+						author$project$Style$Font$mediumHeaderMono(bgColor)),
+					mdgriffith$elm_ui$Element$text(amount))
+				]));
+	});
 var mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
 var mdgriffith$elm_ui$Element$alignRight = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$Right);
 var author$project$Atom$Heading$sectionWithInfo = F2(
@@ -16048,7 +16130,6 @@ var author$project$Atom$Heading$sectionWithInfo = F2(
 				]));
 	});
 var author$project$Style$Color$grey = A3(mdgriffith$elm_ui$Element$rgb255, 144, 160, 174);
-var author$project$Style$Font$fontGTAmericaMonoBold = mdgriffith$elm_ui$Element$Font$typeface('GT America Mono Bold');
 var author$project$Style$Font$mediumBodyTextMono = function (textColor) {
 	return _List_fromArray(
 		[
@@ -16057,16 +16138,6 @@ var author$project$Style$Font$mediumBodyTextMono = function (textColor) {
 			_List_fromArray(
 				[author$project$Style$Font$fontGTAmericaMonoBold, mdgriffith$elm_ui$Element$Font$sansSerif])),
 			mdgriffith$elm_ui$Element$Font$size(16)
-		]);
-};
-var author$project$Style$Font$mediumHeaderMono = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaMonoBold, mdgriffith$elm_ui$Element$Font$sansSerif])),
-			mdgriffith$elm_ui$Element$Font$size(22)
 		]);
 };
 var mdgriffith$elm_ui$Internal$Model$Bottom = {$: 'Bottom'};
@@ -16090,21 +16161,16 @@ var author$project$Page$Project$Funds$view = A2(
 				_List_Nil,
 				_List_fromArray(
 					[
+						A2(author$project$Atom$Currency$large, '824', author$project$Style$Color$purple),
 						A2(
 						mdgriffith$elm_ui$Element$el,
 						_Utils_ap(
 							_List_fromArray(
 								[
-									A2(mdgriffith$elm_ui$Element$paddingXY, 12, 0),
-									mdgriffith$elm_ui$Element$alignBottom
+									mdgriffith$elm_ui$Element$alignBottom,
+									mdgriffith$elm_ui$Element$paddingEach(
+									{bottom: 0, left: 12, right: 0, top: 0})
 								]),
-							author$project$Style$Font$mediumHeaderMono(author$project$Style$Color$purple)),
-						mdgriffith$elm_ui$Element$text('824')),
-						A2(
-						mdgriffith$elm_ui$Element$el,
-						_Utils_ap(
-							_List_fromArray(
-								[mdgriffith$elm_ui$Element$alignBottom]),
 							author$project$Style$Font$mediumBodyTextMono(author$project$Style$Color$grey)),
 						mdgriffith$elm_ui$Element$text('($12.462)'))
 					]))),
@@ -16119,17 +16185,25 @@ var author$project$Page$Project$Funds$view = A2(
 				[
 					A2(
 					mdgriffith$elm_ui$Element$el,
-					_List_fromArray(
-						[
-							mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-						]),
+					_Utils_ap(
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
+								mdgriffith$elm_ui$Element$paddingEach(
+								{bottom: 0, left: 24, right: 0, top: 0})
+							]),
+						author$project$Style$Font$mediumBodyText(author$project$Style$Color$black)),
 					mdgriffith$elm_ui$Element$text('Incoming funds')),
 					A2(
 					mdgriffith$elm_ui$Element$el,
-					_List_fromArray(
-						[
-							mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-						]),
+					_Utils_ap(
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
+								mdgriffith$elm_ui$Element$paddingEach(
+								{bottom: 0, left: 24, right: 0, top: 0})
+							]),
+						author$project$Style$Font$mediumBodyText(author$project$Style$Color$black)),
 					mdgriffith$elm_ui$Element$text('Outgoing funds'))
 				]))
 		]));
@@ -17224,7 +17298,6 @@ var mdgriffith$elm_ui$Internal$Model$isContent = function (len) {
 		}
 	}
 };
-var mdgriffith$elm_ui$Internal$Model$unstyled = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Unstyled, elm$core$Basics$always);
 var mdgriffith$elm_ui$Element$Input$textHelper = F3(
 	function (textInput, attrs, textOptions) {
 		var forNearby = function (attr) {

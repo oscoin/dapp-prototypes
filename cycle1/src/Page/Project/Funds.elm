@@ -1,5 +1,6 @@
 module Page.Project.Funds exposing (view)
 
+import Atom.Currency as Currency
 import Atom.Heading as Heading
 import Element exposing (Element)
 import Element.Background as Background
@@ -22,12 +23,13 @@ view =
         [ Heading.sectionWithInfo "Funds"
             (Element.row
                 []
-                [ Element.el
-                    ([ Element.paddingXY 12 0, Element.alignBottom ] ++ Font.mediumHeaderMono Color.purple)
-                  <|
-                    Element.text "824"
+                [ Currency.large "824" Color.purple
                 , Element.el
-                    ([ Element.alignBottom ] ++ Font.mediumBodyTextMono Color.grey)
+                    ([ Element.alignBottom
+                     , Element.paddingEach { top = 0, right = 0, bottom = 0, left = 12 }
+                     ]
+                        ++ Font.mediumBodyTextMono Color.grey
+                    )
                   <|
                     Element.text "($12.462)"
                 ]
@@ -35,11 +37,19 @@ view =
         , Element.row
             [ Element.width <| Element.fillPortion 2 ]
             [ Element.el
-                [ Element.width Element.fill ]
+                ([ Element.width Element.fill
+                 , Element.paddingEach { top = 0, right = 0, bottom = 0, left = 24 }
+                 ]
+                    ++ Font.mediumBodyText Color.black
+                )
               <|
                 Element.text "Incoming funds"
             , Element.el
-                [ Element.width Element.fill ]
+                ([ Element.width Element.fill
+                 , Element.paddingEach { top = 0, right = 0, bottom = 0, left = 24 }
+                 ]
+                    ++ Font.mediumBodyText Color.black
+                )
               <|
                 Element.text "Outgoing funds"
             ]
