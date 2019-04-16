@@ -13,3 +13,4 @@ type Msg
     | TopBarMsg TopBar.Msg
     | KeyPairCreated String
     | KeyPairFetched String
+    | WalletWebExtPresent ()

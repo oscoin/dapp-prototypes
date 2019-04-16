@@ -4887,10 +4887,6 @@ function _Browser_load(url)
 		}
 	}));
 }
-var author$project$Main$Model = F6(
-	function (keyPair, navKey, overlay, page, topBarModel, url) {
-		return {keyPair: keyPair, navKey: navKey, overlay: overlay, page: page, topBarModel: topBarModel, url: url};
-	});
 var elm$core$Array$branchFactor = 32;
 var elm$core$Array$Array_elm_builtin = F4(
 	function (a, b, c, d) {
@@ -6436,20 +6432,26 @@ var author$project$Route$fromUrl = function (url) {
 var author$project$TopBar$init = '';
 var author$project$Main$init = F3(
 	function (maybeKeyPair, url, navKey) {
-		var model = A6(author$project$Main$Model, maybeKeyPair, navKey, elm$core$Maybe$Nothing, author$project$Page$NotFound, author$project$TopBar$init, url);
 		return A2(
 			author$project$Main$changePage,
 			author$project$Route$fromUrl(url),
-			model);
+			{keyPair: maybeKeyPair, navKey: navKey, overlay: elm$core$Maybe$Nothing, page: author$project$Page$NotFound, topBarModel: author$project$TopBar$init, url: url, wallet: elm$core$Maybe$Nothing});
 	});
 var elm$json$Json$Decode$string = _Json_decodeString;
 var author$project$Main$keyPairCreated = _Platform_incomingPort('keyPairCreated', elm$json$Json$Decode$string);
 var author$project$Main$keyPairFetched = _Platform_incomingPort('keyPairFetched', elm$json$Json$Decode$string);
+var elm$json$Json$Decode$null = _Json_decodeNull;
+var author$project$Main$walletWebExtPresent = _Platform_incomingPort(
+	'walletWebExtPresent',
+	elm$json$Json$Decode$null(_Utils_Tuple0));
 var author$project$Msg$KeyPairCreated = function (a) {
 	return {$: 'KeyPairCreated', a: a};
 };
 var author$project$Msg$KeyPairFetched = function (a) {
 	return {$: 'KeyPairFetched', a: a};
+};
+var author$project$Msg$WalletWebExtPresent = function (a) {
+	return {$: 'WalletWebExtPresent', a: a};
 };
 var elm$core$Platform$Sub$batch = _Platform_batch;
 var author$project$Main$subscriptions = function (_n0) {
@@ -6457,9 +6459,11 @@ var author$project$Main$subscriptions = function (_n0) {
 		_List_fromArray(
 			[
 				author$project$Main$keyPairCreated(author$project$Msg$KeyPairCreated),
-				author$project$Main$keyPairFetched(author$project$Msg$KeyPairFetched)
+				author$project$Main$keyPairFetched(author$project$Msg$KeyPairFetched),
+				author$project$Main$walletWebExtPresent(author$project$Msg$WalletWebExtPresent)
 			]));
 };
+var author$project$Main$WebExt = {$: 'WebExt'};
 var author$project$Msg$TopBarMsg = function (a) {
 	return {$: 'TopBarMsg', a: a};
 };
@@ -10227,7 +10231,7 @@ var author$project$Main$update = F2(
 					elm$core$Platform$Cmd$none);
 			case 'PageKeyPairSetup':
 				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
-			default:
+			case 'TopBarMsg':
 				var subMsg = _n0.a;
 				var _n4 = A2(author$project$TopBar$update, subMsg, model.topBarModel);
 				var topBarModel = _n4.a;
@@ -10237,6 +10241,14 @@ var author$project$Main$update = F2(
 						model,
 						{topBarModel: topBarModel}),
 					A2(elm$core$Platform$Cmd$map, author$project$Msg$TopBarMsg, topBarMsg));
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							wallet: elm$core$Maybe$Just(author$project$Main$WebExt)
+						}),
+					elm$core$Platform$Cmd$none);
 		}
 	});
 var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
@@ -18033,7 +18045,6 @@ var author$project$Msg$UrlChanged = function (a) {
 	return {$: 'UrlChanged', a: a};
 };
 var elm$browser$Browser$application = _Browser_application;
-var elm$json$Json$Decode$null = _Json_decodeNull;
 var elm$json$Json$Decode$oneOf = _Json_oneOf;
 var author$project$Main$main = elm$browser$Browser$application(
 	{init: author$project$Main$init, onUrlChange: author$project$Msg$UrlChanged, onUrlRequest: author$project$Msg$LinkClicked, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
@@ -18043,4 +18054,4 @@ _Platform_export({'Main':{'init':author$project$Main$main(
 			[
 				elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
 				A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
-			])))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
+			])))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"],"WalletWebExtPresent":["()"]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));

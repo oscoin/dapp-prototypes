@@ -4,17 +4,17 @@
     node: document.getElementById('app')
   });
 
-  // Fetch key pair on app startup to reflect state of the wallet.
+  // Check if wallet is installed.
   window.postMessage({
-    direction: 'page-to-extension',
-    type: 'getKeyPair'
+    direction: 'page-to-wallet',
+    type: 'getWallet'
   });
 
   app.ports.requireKeyPair.subscribe(function () {
     console.log('ports.requireKeyPair')
 
     window.postMessage({
-      direction: 'page-to-extension',
+      direction: 'page-to-wallet',
       type: 'requireKeyPair'
     });
   });
@@ -26,7 +26,18 @@
 
     console.log('window.message.msg', msg)
 
-    if (msg.direction === 'extension-to-page') {
+    if (msg.direction === 'wallet-to-page') {
+      // Web extension wallet is signaling presence.
+      if (msg.type === 'walletPresent') {
+        app.ports.walletWebExtPresent.send(null);
+
+        // Fetch key pair on app startup to reflect state of the wallet.
+        window.postMessage({
+          direction: 'page-to-wallet',
+          type: 'getKeyPair'
+        });
+      }
+
       // A new key pair was created.
       if (msg.type === 'keyPairCreated') {
         app.ports.keyPairCreated.send(msg.id);

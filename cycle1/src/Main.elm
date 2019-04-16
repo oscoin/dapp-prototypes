@@ -20,6 +20,10 @@ type alias KeyPair =
     String
 
 
+type Wallet
+    = WebExt
+
+
 type alias Flags =
     Maybe KeyPair
 
@@ -31,16 +35,22 @@ type alias Model =
     , page : Page
     , topBarModel : TopBar.Model
     , url : Url.Url
+    , wallet : Maybe Wallet
     }
 
 
 init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init maybeKeyPair url navKey =
-    let
-        model =
-            Model maybeKeyPair navKey Nothing Page.NotFound TopBar.init url
-    in
-    changePage (Route.fromUrl url) model
+    changePage
+        (Route.fromUrl url)
+        { keyPair = maybeKeyPair
+        , navKey = navKey
+        , overlay = Nothing
+        , page = Page.NotFound
+        , topBarModel = TopBar.init
+        , url = url
+        , wallet = Nothing
+        }
 
 
 
@@ -60,6 +70,9 @@ port keyPairCreated : (String -> msg) -> Sub msg
 port keyPairFetched : (String -> msg) -> Sub msg
 
 
+port walletWebExtPresent : (() -> msg) -> Sub msg
+
+
 
 -- SUBSCRIPTIONS
 
@@ -69,6 +82,7 @@ subscriptions _ =
     Sub.batch
         [ keyPairCreated Msg.KeyPairCreated
         , keyPairFetched Msg.KeyPairFetched
+        , walletWebExtPresent Msg.WalletWebExtPresent
         ]
 
 
@@ -146,6 +160,9 @@ update msg model =
                     TopBar.update subMsg model.topBarModel
             in
             ( { model | topBarModel = topBarModel }, Cmd.map Msg.TopBarMsg topBarMsg )
+
+        Msg.WalletWebExtPresent _ ->
+            ( { model | wallet = Just WebExt }, Cmd.none )
 
 
 

@@ -17,11 +17,19 @@ let keyPair = null;
 browser.runtime.onMessage.addListener((msg, sender) => {
   console.log(msg, sender)
 
-  if (msg.direction === 'page-to-extension') {
+  if (msg.direction === 'page-to-wallet') {
+    // The page requests wallet information to see if the wallet is installed at
+    // all.
+    if (msg.type === 'getWallet') {
+      browser.tabs.sendMessage(sender.tab.id, {
+        direction: 'wallet-to-page',
+        type: 'walletPresent',
+      })
+    }
     // The page wants to fetch a key pair if existent.
     if (msg.type === 'getKeyPair') {
       browser.tabs.sendMessage(sender.tab.id, {
-        direction: 'extension-to-page',
+        direction: 'wallet-to-page',
         type: 'keyPairFetched',
         id: getKeyPair(),
       })
@@ -60,7 +68,7 @@ function getCurrentTab() {
 
 function keyPairSetupComplete() {
     browser.tabs.sendMessage(getCurrentTab().id, {
-      direction: 'extension-to-page',
+      direction: 'wallet-to-page',
       type: 'keyPairCreated',
       id: getKeyPair(),
     })

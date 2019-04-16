@@ -5,7 +5,7 @@
   browser.runtime.onMessage.addListener((msg) => {
     console.log('browser.runtime.onMessage', msg)
 
-    if (msg.direction = 'extension-to-page') {
+    if (msg.direction = 'wallet-to-page') {
       window.postMessage(msg, '*')
     }
   })
@@ -14,7 +14,7 @@
   window.addEventListener('message', event => {
     let msg = event.data;
 
-    if (msg.direction === 'page-to-extension') {
+    if (msg.direction === 'page-to-wallet') {
       browser.runtime.sendMessage(msg)
         .then(() => {
           console.log(arguments)
