@@ -1,4 +1,4 @@
-module Page exposing (Page(..), fromRoute, view)
+module Page exposing (Page(..), fromRoute, overlayFromRoute, view)
 
 import Element exposing (Element)
 import Msg exposing (Msg)
@@ -21,7 +21,7 @@ type Page
     | Project
     | Register
     | WaitForKeyPair
-    | WalletSetup
+    | WalletSetup Page.WalletSetup.Model
 
 
 fromRoute : Maybe Route -> Page
@@ -43,7 +43,22 @@ fromRoute maybeRoute =
             WaitForKeyPair
 
         Just Route.WalletSetup ->
-            WalletSetup
+            WalletSetup Page.WalletSetup.init
+
+
+overlayFromRoute : Maybe Route -> Maybe Page
+overlayFromRoute maybeRoute =
+    case maybeRoute of
+        Just (Route.Register maybeOverlay) ->
+            case fromRoute maybeOverlay of
+                NotFound ->
+                    Nothing
+
+                page ->
+                    Just page
+
+        _ ->
+            Nothing
 
 
 view : Page -> ( String, Element Msg )
@@ -76,5 +91,11 @@ view page =
         WaitForKeyPair ->
             Page.WaitForKeyPair.view
 
-        WalletSetup ->
-            Page.WalletSetup.view
+        WalletSetup pageModel ->
+            let
+                ( pageTitle, pageView ) =
+                    Page.WalletSetup.view pageModel
+            in
+            ( pageTitle
+            , Element.map Msg.PageWalletSetup <| pageView
+            )

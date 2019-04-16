@@ -5378,37 +5378,19 @@ var author$project$Main$cmdFromOverlay = function (maybePage) {
 		return elm$core$Platform$Cmd$none;
 	}
 };
-var author$project$Page$WaitForKeyPair = {$: 'WaitForKeyPair'};
-var author$project$Page$WalletSetup = {$: 'WalletSetup'};
-var author$project$Main$overlayFromRoute = function (maybeRoute) {
-	if ((maybeRoute.$ === 'Just') && (maybeRoute.a.$ === 'Register')) {
-		var maybeOverlay = maybeRoute.a.a;
-		_n1$2:
-		while (true) {
-			if (maybeOverlay.$ === 'Just') {
-				switch (maybeOverlay.a.$) {
-					case 'WaitForKeyPair':
-						var _n2 = maybeOverlay.a;
-						return elm$core$Maybe$Just(author$project$Page$WaitForKeyPair);
-					case 'WalletSetup':
-						var _n3 = maybeOverlay.a;
-						return elm$core$Maybe$Just(author$project$Page$WalletSetup);
-					default:
-						break _n1$2;
-				}
-			} else {
-				break _n1$2;
-			}
-		}
-		return elm$core$Maybe$Nothing;
-	} else {
-		return elm$core$Maybe$Nothing;
-	}
-};
 var author$project$Page$Home = {$: 'Home'};
 var author$project$Page$NotFound = {$: 'NotFound'};
 var author$project$Page$Project = {$: 'Project'};
 var author$project$Page$Register = {$: 'Register'};
+var author$project$Page$WaitForKeyPair = {$: 'WaitForKeyPair'};
+var author$project$Page$WalletSetup = function (a) {
+	return {$: 'WalletSetup', a: a};
+};
+var author$project$Page$WalletSetup$Info = {$: 'Info'};
+var author$project$Page$WalletSetup$Model = function (step) {
+	return {step: step};
+};
+var author$project$Page$WalletSetup$init = author$project$Page$WalletSetup$Model(author$project$Page$WalletSetup$Info);
 var author$project$Page$fromRoute = function (maybeRoute) {
 	if (maybeRoute.$ === 'Nothing') {
 		return author$project$Page$NotFound;
@@ -5427,8 +5409,22 @@ var author$project$Page$fromRoute = function (maybeRoute) {
 				return author$project$Page$WaitForKeyPair;
 			default:
 				var _n4 = maybeRoute.a;
-				return author$project$Page$WalletSetup;
+				return author$project$Page$WalletSetup(author$project$Page$WalletSetup$init);
 		}
+	}
+};
+var author$project$Page$overlayFromRoute = function (maybeRoute) {
+	if ((maybeRoute.$ === 'Just') && (maybeRoute.a.$ === 'Register')) {
+		var maybeOverlay = maybeRoute.a.a;
+		var _n1 = author$project$Page$fromRoute(maybeOverlay);
+		if (_n1.$ === 'NotFound') {
+			return elm$core$Maybe$Nothing;
+		} else {
+			var page = _n1;
+			return elm$core$Maybe$Just(page);
+		}
+	} else {
+		return elm$core$Maybe$Nothing;
 	}
 };
 var author$project$Route$Project = {$: 'Project'};
@@ -6461,7 +6457,7 @@ var author$project$TopBar$init = '';
 var author$project$Main$init = F3(
 	function (maybeKeyPair, url, navKey) {
 		var maybeRoute = author$project$Route$fromUrl(url);
-		var overlay = author$project$Main$overlayFromRoute(maybeRoute);
+		var overlay = author$project$Page$overlayFromRoute(maybeRoute);
 		var page = author$project$Page$fromRoute(maybeRoute);
 		var cmd = author$project$Main$cmdFromOverlay(overlay);
 		return _Utils_Tuple2(
@@ -6495,9 +6491,23 @@ var author$project$Main$subscriptions = function (_n0) {
 			]));
 };
 var author$project$Main$WebExt = {$: 'WebExt'};
+var author$project$Msg$PageWalletSetup = function (a) {
+	return {$: 'PageWalletSetup', a: a};
+};
 var author$project$Msg$TopBarMsg = function (a) {
 	return {$: 'TopBarMsg', a: a};
 };
+var author$project$Page$WalletSetup$Pick = {$: 'Pick'};
+var elm$core$Debug$log = _Debug_log;
+var author$project$Page$WalletSetup$update = F2(
+	function (msg, model) {
+		var _n0 = A2(elm$core$Debug$log, 'WalletSetup.Msg', msg);
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{step: author$project$Page$WalletSetup$Pick}),
+			elm$core$Platform$Cmd$none);
+	});
 var author$project$TopBar$update = F2(
 	function (msg, _n0) {
 		var term = msg.a;
@@ -10159,7 +10169,6 @@ var elm$url$Url$fromString = function (str) {
 };
 var elm$browser$Browser$Navigation$load = _Browser_load;
 var elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
-var elm$core$Debug$log = _Debug_log;
 var elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
 		if (maybePort.$ === 'Nothing') {
@@ -10227,7 +10236,7 @@ var author$project$Main$update = F2(
 			case 'UrlChanged':
 				var url = _n0.a;
 				var maybeRoute = author$project$Route$fromUrl(url);
-				var overlay = author$project$Main$overlayFromRoute(maybeRoute);
+				var overlay = author$project$Page$overlayFromRoute(maybeRoute);
 				var page = author$project$Page$fromRoute(maybeRoute);
 				var cmd = author$project$Main$cmdFromOverlay(overlay);
 				return _Utils_Tuple2(
@@ -10268,11 +10277,30 @@ var author$project$Main$update = F2(
 					elm$core$Platform$Cmd$none);
 			case 'PageKeyPairSetup':
 				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+			case 'PageWalletSetup':
+				var subCmd = _n0.a;
+				var _n4 = model.overlay;
+				if ((_n4.$ === 'Just') && (_n4.a.$ === 'WalletSetup')) {
+					var oldModel = _n4.a.a;
+					var _n5 = A2(author$project$Page$WalletSetup$update, subCmd, oldModel);
+					var pageModel = _n5.a;
+					var pageCmd = _n5.b;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								overlay: elm$core$Maybe$Just(
+									author$project$Page$WalletSetup(pageModel))
+							}),
+						A2(elm$core$Platform$Cmd$map, author$project$Msg$PageWalletSetup, pageCmd));
+				} else {
+					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				}
 			case 'TopBarMsg':
 				var subMsg = _n0.a;
-				var _n4 = A2(author$project$TopBar$update, subMsg, model.topBarModel);
-				var topBarModel = _n4.a;
-				var topBarMsg = _n4.b;
+				var _n6 = A2(author$project$TopBar$update, subMsg, model.topBarModel);
+				var topBarModel = _n6.a;
+				var topBarMsg = _n6.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -17688,28 +17716,83 @@ var author$project$Page$WaitForKeyPair$view = _Utils_Tuple2(
 					[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
 				mdgriffith$elm_ui$Element$text('Please finish process in oscoin wallet.'))
 			])));
-var author$project$Page$WalletSetup$view = _Utils_Tuple2(
-	'wallet setup',
-	A2(
-		mdgriffith$elm_ui$Element$column,
-		_Utils_ap(
+var author$project$Page$WalletSetup$MoveToPick = {$: 'MoveToPick'};
+var author$project$Page$WalletSetup$viewInfo = A2(
+	mdgriffith$elm_ui$Element$column,
+	_List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$padding(20),
+			mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+		]),
+	_List_fromArray(
+		[
+			A2(
+			mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+			mdgriffith$elm_ui$Element$text('Setup your oscoin wallet.')),
+			A2(
+			mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$alignRight,
+					mdgriffith$elm_ui$Element$Events$onClick(author$project$Page$WalletSetup$MoveToPick)
+				]),
+			author$project$Atom$Button$accent('Get Started'))
+		]));
+var author$project$Page$WalletSetup$viewPick = A2(
+	mdgriffith$elm_ui$Element$column,
+	_List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$padding(20),
+			mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+		]),
+	_List_fromArray(
+		[
+			A2(
+			mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[mdgriffith$elm_ui$Element$centerX]),
+			mdgriffith$elm_ui$Element$text('Choose wallet')),
+			A2(
+			mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$centerX,
+					mdgriffith$elm_ui$Element$spacing(24)
+				]),
+			_List_fromArray(
+				[
+					author$project$Atom$Button$accent('Firefox add-on'),
+					author$project$Atom$Button$secondary('Mobile app'),
+					author$project$Atom$Button$secondaryAccent('Ledger Nano S')
+				]))
+		]));
+var author$project$Page$WalletSetup$view = function (model) {
+	var viewStep = function () {
+		var _n0 = model.step;
+		if (_n0.$ === 'Info') {
+			return author$project$Page$WalletSetup$viewInfo;
+		} else {
+			return author$project$Page$WalletSetup$viewPick;
+		}
+	}();
+	return _Utils_Tuple2(
+		'wallet setup',
+		A2(
+			mdgriffith$elm_ui$Element$el,
 			_List_fromArray(
 				[
 					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
 					mdgriffith$elm_ui$Element$height(
-					mdgriffith$elm_ui$Element$px(214)),
+					mdgriffith$elm_ui$Element$px(500)),
 					mdgriffith$elm_ui$Element$width(
-					mdgriffith$elm_ui$Element$px(396))
+					mdgriffith$elm_ui$Element$px(540))
 				]),
-			author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
-		_List_fromArray(
-			[
-				A2(
-				mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
-				mdgriffith$elm_ui$Element$text('Setup your oscoin wallet.'))
-			])));
+			viewStep));
+};
 var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
 var author$project$Page$view = function (page) {
 	switch (page.$) {
@@ -17735,7 +17818,13 @@ var author$project$Page$view = function (page) {
 		case 'WaitForKeyPair':
 			return author$project$Page$WaitForKeyPair$view;
 		default:
-			return author$project$Page$WalletSetup$view;
+			var pageModel = page.a;
+			var _n2 = author$project$Page$WalletSetup$view(pageModel);
+			var pageTitle = _n2.a;
+			var pageView = _n2.b;
+			return _Utils_Tuple2(
+				pageTitle,
+				A2(mdgriffith$elm_ui$Element$map, author$project$Msg$PageWalletSetup, pageView));
 	}
 };
 var author$project$Main$viewOverlay = F2(
@@ -18152,4 +18241,4 @@ _Platform_export({'Main':{'init':author$project$Main$main(
 			[
 				elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
 				A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
-			])))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"],"WalletWebExtPresent":["()"]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
+			])))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"PageWalletSetup":["Page.WalletSetup.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"],"WalletWebExtPresent":["()"]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"Page.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));

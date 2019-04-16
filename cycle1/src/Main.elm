@@ -6,7 +6,8 @@ import Element
 import Msg exposing (Msg)
 import Overlay
 import Page exposing (Page, view)
-import Route exposing (Route)
+import Page.WalletSetup
+import Route
 import TopBar
 import Url
 import Url.Builder
@@ -49,7 +50,7 @@ init maybeKeyPair url navKey =
             Page.fromRoute maybeRoute
 
         overlay =
-            overlayFromRoute maybeRoute
+            Page.overlayFromRoute maybeRoute
 
         cmd =
             cmdFromOverlay overlay
@@ -125,7 +126,7 @@ update msg model =
                     Page.fromRoute maybeRoute
 
                 overlay =
-                    overlayFromRoute maybeRoute
+                    Page.overlayFromRoute maybeRoute
 
                 cmd =
                     cmdFromOverlay overlay
@@ -151,6 +152,20 @@ update msg model =
 
         Msg.PageKeyPairSetup _ ->
             ( model, Cmd.none )
+
+        Msg.PageWalletSetup subCmd ->
+            case model.overlay of
+                Just (Page.WalletSetup oldModel) ->
+                    let
+                        ( pageModel, pageCmd ) =
+                            Page.WalletSetup.update subCmd oldModel
+                    in
+                    ( { model | overlay = Just (Page.WalletSetup pageModel) }
+                    , Cmd.map Msg.PageWalletSetup <| pageCmd
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
 
         Msg.TopBarMsg subMsg ->
             let
@@ -309,19 +324,17 @@ cmdFromOverlay maybePage =
             Cmd.none
 
 
-overlayFromRoute : Maybe Route -> Maybe Page
-overlayFromRoute maybeRoute =
-    case maybeRoute of
-        Just (Route.Register maybeOverlay) ->
-            case maybeOverlay of
-                Just Route.WaitForKeyPair ->
-                    Just Page.WaitForKeyPair
 
-                Just Route.WalletSetup ->
-                    Just Page.WalletSetup
-
-                _ ->
-                    Nothing
-
-        _ ->
-            Nothing
+-- overlayFromRoute : Maybe Route -> Maybe Page
+-- overlayFromRoute maybeRoute =
+--     case maybeRoute of
+--         Just (Route.Register maybeOverlay) ->
+--             case maybeOverlay of
+--                 Just Route.WaitForKeyPair ->
+--                     Just Page.WaitForKeyPair
+--                 Just Route.WalletSetup ->
+--                     Just <| Page.WalletSetup Page.WalletSetup.init
+--                 _ ->
+--                     Nothing
+--         _ ->
+--             Nothing
