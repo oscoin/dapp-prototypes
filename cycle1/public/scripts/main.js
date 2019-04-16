@@ -5368,7 +5368,43 @@ var author$project$Main$requireKeyPair = _Platform_outgoingPort(
 	function ($) {
 		return elm$json$Json$Encode$null;
 	});
-var author$project$Page$KeySetup = {$: 'KeySetup'};
+var elm$core$Platform$Cmd$batch = _Platform_batch;
+var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
+var author$project$Main$cmdFromOverlay = function (maybePage) {
+	if ((maybePage.$ === 'Just') && (maybePage.a.$ === 'WaitForKeyPair')) {
+		var _n1 = maybePage.a;
+		return author$project$Main$requireKeyPair(_Utils_Tuple0);
+	} else {
+		return elm$core$Platform$Cmd$none;
+	}
+};
+var author$project$Page$WaitForKeyPair = {$: 'WaitForKeyPair'};
+var author$project$Page$WalletSetup = {$: 'WalletSetup'};
+var author$project$Main$overlayFromRoute = function (maybeRoute) {
+	if ((maybeRoute.$ === 'Just') && (maybeRoute.a.$ === 'Register')) {
+		var maybeOverlay = maybeRoute.a.a;
+		_n1$2:
+		while (true) {
+			if (maybeOverlay.$ === 'Just') {
+				switch (maybeOverlay.a.$) {
+					case 'WaitForKeyPair':
+						var _n2 = maybeOverlay.a;
+						return elm$core$Maybe$Just(author$project$Page$WaitForKeyPair);
+					case 'WalletSetup':
+						var _n3 = maybeOverlay.a;
+						return elm$core$Maybe$Just(author$project$Page$WalletSetup);
+					default:
+						break _n1$2;
+				}
+			} else {
+				break _n1$2;
+			}
+		}
+		return elm$core$Maybe$Nothing;
+	} else {
+		return elm$core$Maybe$Nothing;
+	}
+};
 var author$project$Page$Home = {$: 'Home'};
 var author$project$Page$NotFound = {$: 'NotFound'};
 var author$project$Page$Project = {$: 'Project'};
@@ -5381,67 +5417,42 @@ var author$project$Page$fromRoute = function (maybeRoute) {
 			case 'Home':
 				var _n1 = maybeRoute.a;
 				return author$project$Page$Home;
-			case 'KeySetup':
-				var _n2 = maybeRoute.a;
-				return author$project$Page$KeySetup;
 			case 'Project':
-				var _n3 = maybeRoute.a;
+				var _n2 = maybeRoute.a;
 				return author$project$Page$Project;
-			default:
+			case 'Register':
 				return author$project$Page$Register;
+			case 'WaitForKeyPair':
+				var _n3 = maybeRoute.a;
+				return author$project$Page$WaitForKeyPair;
+			default:
+				var _n4 = maybeRoute.a;
+				return author$project$Page$WalletSetup;
 		}
 	}
 };
-var elm$core$Platform$Cmd$batch = _Platform_batch;
-var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
-var author$project$Main$changePage = F2(
-	function (maybeRoute, model) {
-		var page = author$project$Page$fromRoute(maybeRoute);
-		var overlay = function () {
-			if ((maybeRoute.$ === 'Just') && (maybeRoute.a.$ === 'Register')) {
-				var maybeOverlay = maybeRoute.a.a;
-				if ((maybeOverlay.$ === 'Just') && (maybeOverlay.a.$ === 'KeySetup')) {
-					var _n4 = maybeOverlay.a;
-					return elm$core$Maybe$Just(author$project$Page$KeySetup);
-				} else {
-					return elm$core$Maybe$Nothing;
-				}
-			} else {
-				return elm$core$Maybe$Nothing;
-			}
-		}();
-		var cmd = function () {
-			if ((overlay.$ === 'Just') && (overlay.a.$ === 'KeySetup')) {
-				var _n1 = overlay.a;
-				return author$project$Main$requireKeyPair(_Utils_Tuple0);
-			} else {
-				return elm$core$Platform$Cmd$none;
-			}
-		}();
-		return _Utils_Tuple2(
-			_Utils_update(
-				model,
-				{overlay: overlay, page: page}),
-			cmd);
-	});
 var author$project$Route$Project = {$: 'Project'};
 var author$project$Route$Register = function (a) {
 	return {$: 'Register', a: a};
 };
-var author$project$Route$KeySetup = {$: 'KeySetup'};
+var author$project$Route$WaitForKeyPair = {$: 'WaitForKeyPair'};
+var author$project$Route$WalletSetup = {$: 'WalletSetup'};
 var author$project$Route$routeToPaths = function (route) {
 	switch (route.$) {
 		case 'Home':
 			return _List_Nil;
-		case 'KeySetup':
-			return _List_fromArray(
-				['key-setup']);
 		case 'Project':
 			return _List_fromArray(
 				['project']);
-		default:
+		case 'Register':
 			return _List_fromArray(
 				['register']);
+		case 'WaitForKeyPair':
+			return _List_fromArray(
+				['wait-for-keypair']);
+		default:
+			return _List_fromArray(
+				['wallet-setup']);
 	}
 };
 var elm$core$List$foldrHelper = F4(
@@ -5547,36 +5558,50 @@ var elm$url$Url$Builder$string = F2(
 			elm$url$Url$percentEncode(value));
 	});
 var author$project$Route$toString = function (route) {
-	var _n0 = function () {
+	var queryParams = function () {
 		if (route.$ === 'Register') {
 			var overlay = route.a;
-			if ((overlay.$ === 'Just') && (overlay.a.$ === 'KeySetup')) {
-				var _n3 = overlay.a;
-				return _Utils_Tuple2(
-					author$project$Route$routeToPaths(route),
-					_List_fromArray(
-						[
-							A2(
-							elm$url$Url$Builder$string,
-							'overlay',
-							A2(
-								elm$url$Url$Builder$relative,
-								author$project$Route$routeToPaths(author$project$Route$KeySetup),
-								_List_Nil))
-						]));
-			} else {
-				return _Utils_Tuple2(
-					author$project$Route$routeToPaths(route),
-					_List_Nil);
+			_n1$2:
+			while (true) {
+				if (overlay.$ === 'Just') {
+					switch (overlay.a.$) {
+						case 'WaitForKeyPair':
+							var _n2 = overlay.a;
+							return _List_fromArray(
+								[
+									A2(
+									elm$url$Url$Builder$string,
+									'overlay',
+									A2(
+										elm$url$Url$Builder$relative,
+										author$project$Route$routeToPaths(author$project$Route$WaitForKeyPair),
+										_List_Nil))
+								]);
+						case 'WalletSetup':
+							var _n3 = overlay.a;
+							return _List_fromArray(
+								[
+									A2(
+									elm$url$Url$Builder$string,
+									'overlay',
+									A2(
+										elm$url$Url$Builder$relative,
+										author$project$Route$routeToPaths(author$project$Route$WalletSetup),
+										_List_Nil))
+								]);
+						default:
+							break _n1$2;
+					}
+				} else {
+					break _n1$2;
+				}
 			}
+			return _List_Nil;
 		} else {
-			return _Utils_Tuple2(
-				author$project$Route$routeToPaths(route),
-				_List_Nil);
+			return _List_Nil;
 		}
 	}();
-	var paths = _n0.a;
-	var queryParams = _n0.b;
+	var paths = author$project$Route$routeToPaths(route);
 	return A2(elm$url$Url$Builder$relative, paths, queryParams);
 };
 var elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
@@ -5780,8 +5805,11 @@ var author$project$Route$queryOverlay = A2(
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
-				author$project$Route$toString(author$project$Route$KeySetup),
-				author$project$Route$KeySetup)
+				author$project$Route$toString(author$project$Route$WaitForKeyPair),
+				author$project$Route$WaitForKeyPair),
+				_Utils_Tuple2(
+				author$project$Route$toString(author$project$Route$WalletSetup),
+				author$project$Route$WalletSetup)
 			])));
 var elm$url$Url$Parser$Parser = function (a) {
 	return {$: 'Parser', a: a};
@@ -6432,10 +6460,13 @@ var author$project$Route$fromUrl = function (url) {
 var author$project$TopBar$init = '';
 var author$project$Main$init = F3(
 	function (maybeKeyPair, url, navKey) {
-		return A2(
-			author$project$Main$changePage,
-			author$project$Route$fromUrl(url),
-			{keyPair: maybeKeyPair, navKey: navKey, overlay: elm$core$Maybe$Nothing, page: author$project$Page$NotFound, topBarModel: author$project$TopBar$init, url: url, wallet: elm$core$Maybe$Nothing});
+		var maybeRoute = author$project$Route$fromUrl(url);
+		var overlay = author$project$Main$overlayFromRoute(maybeRoute);
+		var page = author$project$Page$fromRoute(maybeRoute);
+		var cmd = author$project$Main$cmdFromOverlay(overlay);
+		return _Utils_Tuple2(
+			{keyPair: maybeKeyPair, navKey: navKey, overlay: overlay, page: page, topBarModel: author$project$TopBar$init, url: url, wallet: elm$core$Maybe$Nothing},
+			cmd);
 	});
 var elm$json$Json$Decode$string = _Json_decodeString;
 var author$project$Main$keyPairCreated = _Platform_incomingPort('keyPairCreated', elm$json$Json$Decode$string);
@@ -10195,31 +10226,37 @@ var author$project$Main$update = F2(
 				}
 			case 'UrlChanged':
 				var url = _n0.a;
-				return A2(
-					author$project$Main$changePage,
-					author$project$Route$fromUrl(url),
+				var maybeRoute = author$project$Route$fromUrl(url);
+				var overlay = author$project$Main$overlayFromRoute(maybeRoute);
+				var page = author$project$Page$fromRoute(maybeRoute);
+				var cmd = author$project$Main$cmdFromOverlay(overlay);
+				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{url: url}));
+						{overlay: overlay, page: page}),
+					cmd);
 			case 'KeyPairCreated':
 				var id = _n0.a;
-				var _n2 = model.overlay;
-				if ((_n2.$ === 'Just') && (_n2.a.$ === 'KeySetup')) {
-					var _n3 = _n2.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								keyPair: elm$core$Maybe$Just(id)
-							}),
-						A2(
+				var cmd = function () {
+					var _n2 = model.overlay;
+					if ((_n2.$ === 'Just') && (_n2.a.$ === 'WaitForKeyPair')) {
+						var _n3 = _n2.a;
+						return A2(
 							elm$browser$Browser$Navigation$pushUrl,
 							model.navKey,
 							author$project$Route$toString(
-								author$project$Route$Register(elm$core$Maybe$Nothing))));
-				} else {
-					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
-				}
+								author$project$Route$Register(elm$core$Maybe$Nothing)));
+					} else {
+						return elm$core$Platform$Cmd$none;
+					}
+				}();
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							keyPair: elm$core$Maybe$Just(id)
+						}),
+					cmd);
 			case 'KeyPairFetched':
 				var id = _n0.a;
 				return _Utils_Tuple2(
@@ -16801,44 +16838,6 @@ var author$project$Page$KeyPairSetup$view = function (model) {
 					viewStep
 				])));
 };
-var author$project$Style$Color$darkGrey = A3(mdgriffith$elm_ui$Element$rgb255, 84, 100, 116);
-var author$project$Style$Font$fontGTAmericaRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America');
-var author$project$Style$Font$bodyText = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaRegular, mdgriffith$elm_ui$Element$Font$sansSerif])),
-			mdgriffith$elm_ui$Element$Font$size(16)
-		]);
-};
-var mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var mdgriffith$elm_ui$Element$px = mdgriffith$elm_ui$Internal$Model$Px;
-var author$project$Page$KeySetup$view = _Utils_Tuple2(
-	'key setup',
-	A2(
-		mdgriffith$elm_ui$Element$column,
-		_Utils_ap(
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
-					mdgriffith$elm_ui$Element$height(
-					mdgriffith$elm_ui$Element$px(214)),
-					mdgriffith$elm_ui$Element$width(
-					mdgriffith$elm_ui$Element$px(396))
-				]),
-			author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
-		_List_fromArray(
-			[
-				A2(
-				mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
-				mdgriffith$elm_ui$Element$text('Please finish process in oscoin Key Manager.'))
-			])));
 var author$project$Page$NotFound$view = _Utils_Tuple2(
 	'Page Not Found',
 	A2(
@@ -16852,6 +16851,7 @@ var author$project$Style$Color$purple = A3(mdgriffith$elm_ui$Element$rgb255, 120
 var author$project$Atom$Button$primary = function (btnText) {
 	return A4(author$project$Atom$Button$style, author$project$Style$Color$purple, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
 };
+var author$project$Style$Color$darkGrey = A3(mdgriffith$elm_ui$Element$rgb255, 84, 100, 116);
 var author$project$Style$Color$lightGrey = A3(mdgriffith$elm_ui$Element$rgb255, 206, 216, 225);
 var author$project$Atom$Button$secondary = function (btnText) {
 	return A4(author$project$Atom$Button$style, author$project$Style$Color$lightGrey, author$project$Style$Color$darkGrey, author$project$Style$Color$black, btnText);
@@ -16875,6 +16875,10 @@ var author$project$Page$Project$Actions$view = A2(
 			author$project$Atom$Button$secondary('Follow'),
 			author$project$Atom$Button$secondaryAccent('Make dependency')
 		]));
+var mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var mdgriffith$elm_ui$Element$px = mdgriffith$elm_ui$Internal$Model$Px;
 var mdgriffith$elm_ui$Element$Border$widthXY = F2(
 	function (x, y) {
 		return A2(
@@ -16934,6 +16938,17 @@ var author$project$Style$Color$alpha = F2(
 		return A4(mdgriffith$elm_ui$Element$rgba, original.red, original.green, original.blue, transparency);
 	});
 var author$project$Style$Color$blue = A3(mdgriffith$elm_ui$Element$rgb255, 0, 146, 210);
+var author$project$Style$Font$fontGTAmericaRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America');
+var author$project$Style$Font$bodyText = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaRegular, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(16)
+		]);
+};
 var mdgriffith$elm_ui$Internal$Flag$fontWeight = mdgriffith$elm_ui$Internal$Flag$flag(13);
 var mdgriffith$elm_ui$Element$Font$medium = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$fontWeight, mdgriffith$elm_ui$Internal$Style$classes.textMedium);
 var mdgriffith$elm_ui$Element$Font$underline = mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.underline);
@@ -17651,6 +17666,50 @@ var author$project$Page$Register$view = _Utils_Tuple2(
 				author$project$Style$Font$bigHeader(author$project$Style$Color$black),
 				mdgriffith$elm_ui$Element$text('Register your project'))
 			])));
+var author$project$Page$WaitForKeyPair$view = _Utils_Tuple2(
+	'wait for key pair',
+	A2(
+		mdgriffith$elm_ui$Element$column,
+		_Utils_ap(
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
+					mdgriffith$elm_ui$Element$height(
+					mdgriffith$elm_ui$Element$px(214)),
+					mdgriffith$elm_ui$Element$width(
+					mdgriffith$elm_ui$Element$px(396))
+				]),
+			author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
+		_List_fromArray(
+			[
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+				mdgriffith$elm_ui$Element$text('Please finish process in oscoin wallet.'))
+			])));
+var author$project$Page$WalletSetup$view = _Utils_Tuple2(
+	'wallet setup',
+	A2(
+		mdgriffith$elm_ui$Element$column,
+		_Utils_ap(
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
+					mdgriffith$elm_ui$Element$height(
+					mdgriffith$elm_ui$Element$px(214)),
+					mdgriffith$elm_ui$Element$width(
+					mdgriffith$elm_ui$Element$px(396))
+				]),
+			author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
+		_List_fromArray(
+			[
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+				mdgriffith$elm_ui$Element$text('Setup your oscoin wallet.'))
+			])));
 var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
 var author$project$Page$view = function (page) {
 	switch (page.$) {
@@ -17669,12 +17728,14 @@ var author$project$Page$view = function (page) {
 			return _Utils_Tuple2(
 				pageTitle,
 				A2(mdgriffith$elm_ui$Element$map, author$project$Msg$PageKeyPairSetup, pageView));
-		case 'KeySetup':
-			return author$project$Page$KeySetup$view;
 		case 'Project':
 			return author$project$Page$Project$view;
-		default:
+		case 'Register':
 			return author$project$Page$Register$view;
+		case 'WaitForKeyPair':
+			return author$project$Page$WaitForKeyPair$view;
+		default:
+			return author$project$Page$WalletSetup$view;
 	}
 };
 var author$project$Main$viewOverlay = F2(
@@ -17981,14 +18042,29 @@ var mdgriffith$elm_ui$Element$layout = mdgriffith$elm_ui$Element$layoutWith(
 	{options: _List_Nil});
 var author$project$Main$view = function (model) {
 	var registerUrl = function () {
-		var _n3 = model.keyPair;
-		if (_n3.$ === 'Nothing') {
-			return author$project$Route$toString(
-				author$project$Route$Register(
-					elm$core$Maybe$Just(author$project$Route$KeySetup)));
+		var _n3 = _Utils_Tuple2(model.wallet, model.keyPair);
+		if (_n3.a.$ === 'Just') {
+			if (_n3.b.$ === 'Nothing') {
+				var _n6 = _n3.b;
+				return author$project$Route$toString(
+					author$project$Route$Register(
+						elm$core$Maybe$Just(author$project$Route$WaitForKeyPair)));
+			} else {
+				return author$project$Route$toString(
+					author$project$Route$Register(elm$core$Maybe$Nothing));
+			}
 		} else {
-			return author$project$Route$toString(
-				author$project$Route$Register(elm$core$Maybe$Nothing));
+			if (_n3.b.$ === 'Nothing') {
+				var _n4 = _n3.a;
+				var _n5 = _n3.b;
+				return author$project$Route$toString(
+					author$project$Route$Register(
+						elm$core$Maybe$Just(author$project$Route$WalletSetup)));
+			} else {
+				var _n7 = _n3.a;
+				return author$project$Route$toString(
+					author$project$Route$Register(elm$core$Maybe$Nothing));
+			}
 		}
 	}();
 	var _n0 = author$project$Page$view(model.page);

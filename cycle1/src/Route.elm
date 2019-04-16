@@ -16,14 +16,20 @@ import Url.Parser.Query as Query
 
 type Route
     = Home
-    | KeySetup
     | Project
     | Register (Maybe Route)
+    | WaitForKeyPair
+    | WalletSetup
 
 
 queryOverlay : Query.Parser (Maybe Route)
 queryOverlay =
-    Query.enum "overlay" (Dict.fromList [ ( toString KeySetup, KeySetup ) ])
+    Query.enum "overlay"
+        (Dict.fromList
+            [ ( toString WaitForKeyPair, WaitForKeyPair )
+            , ( toString WalletSetup, WalletSetup )
+            ]
+        )
 
 
 parser : Parser (Route -> a) a
@@ -57,20 +63,28 @@ replaceUrl key route =
 toString : Route -> String
 toString route =
     let
-        ( paths, queryParams ) =
+        paths =
+            routeToPaths route
+
+        queryParams =
             case route of
                 Register overlay ->
                     case overlay of
-                        Just KeySetup ->
-                            ( routeToPaths route
-                            , [ Url.Builder.string "overlay" <| relative (routeToPaths KeySetup) [] ]
-                            )
+                        Just WaitForKeyPair ->
+                            [ Url.Builder.string "overlay" <|
+                                relative (routeToPaths WaitForKeyPair) []
+                            ]
+
+                        Just WalletSetup ->
+                            [ Url.Builder.string "overlay" <|
+                                relative (routeToPaths WalletSetup) []
+                            ]
 
                         _ ->
-                            ( routeToPaths route, [] )
+                            []
 
                 _ ->
-                    ( routeToPaths route, [] )
+                    []
     in
     relative paths queryParams
 
@@ -85,11 +99,14 @@ routeToPaths route =
         Home ->
             []
 
-        KeySetup ->
-            [ "key-setup" ]
-
         Project ->
             [ "project" ]
 
         Register _ ->
             [ "register" ]
+
+        WaitForKeyPair ->
+            [ "wait-for-keypair" ]
+
+        WalletSetup ->
+            [ "wallet-setup" ]

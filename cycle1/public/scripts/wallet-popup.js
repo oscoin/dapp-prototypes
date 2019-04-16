@@ -12290,46 +12290,6 @@ var author$project$Page$KeyPairSetup$view = function (model) {
 					viewStep
 				])));
 };
-var author$project$Style$Color$darkGrey = A3(mdgriffith$elm_ui$Element$rgb255, 84, 100, 116);
-var author$project$Style$Font$fontGTAmericaRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America');
-var author$project$Style$Font$bodyText = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaRegular, mdgriffith$elm_ui$Element$Font$sansSerif])),
-			mdgriffith$elm_ui$Element$Font$size(16)
-		]);
-};
-var mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
-var mdgriffith$elm_ui$Element$centerY = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$CenterY);
-var mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var mdgriffith$elm_ui$Element$px = mdgriffith$elm_ui$Internal$Model$Px;
-var author$project$Page$KeySetup$view = _Utils_Tuple2(
-	'key setup',
-	A2(
-		mdgriffith$elm_ui$Element$column,
-		_Utils_ap(
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
-					mdgriffith$elm_ui$Element$height(
-					mdgriffith$elm_ui$Element$px(214)),
-					mdgriffith$elm_ui$Element$width(
-					mdgriffith$elm_ui$Element$px(396))
-				]),
-			author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
-		_List_fromArray(
-			[
-				A2(
-				mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
-				mdgriffith$elm_ui$Element$text('Please finish process in oscoin Key Manager.'))
-			])));
 var author$project$Page$NotFound$view = _Utils_Tuple2(
 	'Page Not Found',
 	A2(
@@ -12343,6 +12303,7 @@ var author$project$Style$Color$purple = A3(mdgriffith$elm_ui$Element$rgb255, 120
 var author$project$Atom$Button$primary = function (btnText) {
 	return A4(author$project$Atom$Button$style, author$project$Style$Color$purple, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
 };
+var author$project$Style$Color$darkGrey = A3(mdgriffith$elm_ui$Element$rgb255, 84, 100, 116);
 var author$project$Style$Color$lightGrey = A3(mdgriffith$elm_ui$Element$rgb255, 206, 216, 225);
 var author$project$Atom$Button$secondary = function (btnText) {
 	return A4(author$project$Atom$Button$style, author$project$Style$Color$lightGrey, author$project$Style$Color$darkGrey, author$project$Style$Color$black, btnText);
@@ -12384,6 +12345,10 @@ var author$project$Page$Project$Actions$view = A2(
 			author$project$Atom$Button$secondary('Follow'),
 			author$project$Atom$Button$secondaryAccent('Make dependency')
 		]));
+var mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var mdgriffith$elm_ui$Element$px = mdgriffith$elm_ui$Internal$Model$Px;
 var mdgriffith$elm_ui$Element$Border$widthXY = F2(
 	function (x, y) {
 		return A2(
@@ -12443,6 +12408,17 @@ var author$project$Style$Color$alpha = F2(
 		return A4(mdgriffith$elm_ui$Element$rgba, original.red, original.green, original.blue, transparency);
 	});
 var author$project$Style$Color$blue = A3(mdgriffith$elm_ui$Element$rgb255, 0, 146, 210);
+var author$project$Style$Font$fontGTAmericaRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America');
+var author$project$Style$Font$bodyText = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaRegular, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(16)
+		]);
+};
 var mdgriffith$elm_ui$Internal$Flag$fontWeight = mdgriffith$elm_ui$Internal$Flag$flag(13);
 var mdgriffith$elm_ui$Element$Font$medium = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$fontWeight, mdgriffith$elm_ui$Internal$Style$classes.textMedium);
 var mdgriffith$elm_ui$Element$Font$underline = mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.underline);
@@ -12578,6 +12554,8 @@ var author$project$Page$Project$Contract$view = A2(
 var author$project$Style$Color$radicleBlue = A3(mdgriffith$elm_ui$Element$rgb255, 85, 85, 255);
 var mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var mdgriffith$elm_ui$Element$alignTop = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$Top);
+var mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var mdgriffith$elm_ui$Element$centerY = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$CenterY);
 var author$project$Page$Project$Header$viewLogo = A2(
 	mdgriffith$elm_ui$Element$el,
 	_List_fromArray(
@@ -13162,6 +13140,50 @@ var author$project$Page$Register$view = _Utils_Tuple2(
 				author$project$Style$Font$bigHeader(author$project$Style$Color$black),
 				mdgriffith$elm_ui$Element$text('Register your project'))
 			])));
+var author$project$Page$WaitForKeyPair$view = _Utils_Tuple2(
+	'wait for key pair',
+	A2(
+		mdgriffith$elm_ui$Element$column,
+		_Utils_ap(
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
+					mdgriffith$elm_ui$Element$height(
+					mdgriffith$elm_ui$Element$px(214)),
+					mdgriffith$elm_ui$Element$width(
+					mdgriffith$elm_ui$Element$px(396))
+				]),
+			author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
+		_List_fromArray(
+			[
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+				mdgriffith$elm_ui$Element$text('Please finish process in oscoin wallet.'))
+			])));
+var author$project$Page$WalletSetup$view = _Utils_Tuple2(
+	'wallet setup',
+	A2(
+		mdgriffith$elm_ui$Element$column,
+		_Utils_ap(
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
+					mdgriffith$elm_ui$Element$height(
+					mdgriffith$elm_ui$Element$px(214)),
+					mdgriffith$elm_ui$Element$width(
+					mdgriffith$elm_ui$Element$px(396))
+				]),
+			author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
+		_List_fromArray(
+			[
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+				mdgriffith$elm_ui$Element$text('Setup your oscoin wallet.'))
+			])));
 var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
 var author$project$Page$view = function (page) {
 	switch (page.$) {
@@ -13180,12 +13202,14 @@ var author$project$Page$view = function (page) {
 			return _Utils_Tuple2(
 				pageTitle,
 				A2(mdgriffith$elm_ui$Element$map, author$project$Msg$PageKeyPairSetup, pageView));
-		case 'KeySetup':
-			return author$project$Page$KeySetup$view;
 		case 'Project':
 			return author$project$Page$Project$view;
-		default:
+		case 'Register':
 			return author$project$Page$Register$view;
+		case 'WaitForKeyPair':
+			return author$project$Page$WaitForKeyPair$view;
+		default:
+			return author$project$Page$WalletSetup$view;
 	}
 };
 var author$project$WalletPopup$viewHeader = A2(

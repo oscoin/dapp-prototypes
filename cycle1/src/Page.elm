@@ -5,10 +5,11 @@ import Msg exposing (Msg)
 import Page.Home
 import Page.KeyPairList
 import Page.KeyPairSetup
-import Page.KeySetup
 import Page.NotFound
 import Page.Project
 import Page.Register
+import Page.WaitForKeyPair
+import Page.WalletSetup
 import Route exposing (Route)
 
 
@@ -16,10 +17,11 @@ type Page
     = Home
     | KeyPairList Page.KeyPairList.Model
     | KeyPairSetup Page.KeyPairSetup.Model
-    | KeySetup
     | NotFound
     | Project
     | Register
+    | WaitForKeyPair
+    | WalletSetup
 
 
 fromRoute : Maybe Route -> Page
@@ -31,14 +33,17 @@ fromRoute maybeRoute =
         Just Route.Home ->
             Home
 
-        Just Route.KeySetup ->
-            KeySetup
-
         Just Route.Project ->
             Project
 
         Just (Route.Register _) ->
             Register
+
+        Just Route.WaitForKeyPair ->
+            WaitForKeyPair
+
+        Just Route.WalletSetup ->
+            WalletSetup
 
 
 view : Page -> ( String, Element Msg )
@@ -62,11 +67,14 @@ view page =
             , Element.map Msg.PageKeyPairSetup <| pageView
             )
 
-        KeySetup ->
-            Page.KeySetup.view
-
         Project ->
             Page.Project.view
 
         Register ->
             Page.Register.view
+
+        WaitForKeyPair ->
+            Page.WaitForKeyPair.view
+
+        WalletSetup ->
+            Page.WalletSetup.view

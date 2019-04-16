@@ -1,4 +1,4 @@
-module Page.KeySetup exposing (view)
+module Page.WaitForKeyPair exposing (view)
 
 import Element exposing (Element)
 import Element.Background as Background
@@ -6,13 +6,9 @@ import Style.Color as Color
 import Style.Font as Font
 
 
-
--- VIEW
-
-
 view : ( String, Element msg )
 view =
-    ( "key setup"
+    ( "wait for key pair"
     , Element.column
         ([ Background.color Color.white
          , Element.height <| Element.px 214
@@ -25,6 +21,6 @@ view =
             , Element.centerY
             ]
           <|
-            Element.text "Please finish process in oscoin Key Manager."
+            Element.text "Please finish process in oscoin wallet."
         ]
     )

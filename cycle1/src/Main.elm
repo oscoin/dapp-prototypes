@@ -41,16 +41,29 @@ type alias Model =
 
 init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init maybeKeyPair url navKey =
-    changePage
-        (Route.fromUrl url)
-        { keyPair = maybeKeyPair
-        , navKey = navKey
-        , overlay = Nothing
-        , page = Page.NotFound
-        , topBarModel = TopBar.init
-        , url = url
-        , wallet = Nothing
-        }
+    let
+        maybeRoute =
+            Route.fromUrl url
+
+        page =
+            Page.fromRoute maybeRoute
+
+        overlay =
+            overlayFromRoute maybeRoute
+
+        cmd =
+            cmdFromOverlay overlay
+    in
+    ( { keyPair = maybeKeyPair
+      , navKey = navKey
+      , overlay = overlay
+      , page = page
+      , topBarModel = TopBar.init
+      , url = url
+      , wallet = Nothing
+      }
+    , cmd
+    )
 
 
 
@@ -90,36 +103,6 @@ subscriptions _ =
 -- UPDATE
 
 
-changePage : Maybe Route -> Model -> ( Model, Cmd Msg )
-changePage maybeRoute model =
-    let
-        page =
-            Page.fromRoute maybeRoute
-
-        overlay =
-            case maybeRoute of
-                Just (Route.Register maybeOverlay) ->
-                    case maybeOverlay of
-                        Just Route.KeySetup ->
-                            Just <| Page.KeySetup
-
-                        _ ->
-                            Nothing
-
-                _ ->
-                    Nothing
-
-        cmd =
-            case overlay of
-                Just Page.KeySetup ->
-                    requireKeyPair ()
-
-                _ ->
-                    Cmd.none
-    in
-    ( { model | overlay = overlay, page = page }, cmd )
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case Debug.log "Main.msg" msg of
@@ -134,19 +117,34 @@ update msg model =
                     ( model, Navigation.load href )
 
         Msg.UrlChanged url ->
-            changePage (Route.fromUrl url) { model | url = url }
+            let
+                maybeRoute =
+                    Route.fromUrl url
+
+                page =
+                    Page.fromRoute maybeRoute
+
+                overlay =
+                    overlayFromRoute maybeRoute
+
+                cmd =
+                    cmdFromOverlay overlay
+            in
+            ( { model | overlay = overlay, page = page }, cmd )
 
         Msg.KeyPairCreated id ->
-            case model.overlay of
-                Just Page.KeySetup ->
-                    ( { model | keyPair = Just id }
-                    , Navigation.pushUrl
-                        model.navKey
-                        (Route.toString (Route.Register Nothing))
-                    )
+            let
+                cmd =
+                    case model.overlay of
+                        Just Page.WaitForKeyPair ->
+                            Navigation.pushUrl
+                                model.navKey
+                                (Route.toString (Route.Register Nothing))
 
-                _ ->
-                    ( model, Cmd.none )
+                        _ ->
+                            Cmd.none
+            in
+            ( { model | keyPair = Just id }, cmd )
 
         Msg.KeyPairFetched id ->
             ( { model | keyPair = Just id }, Cmd.none )
@@ -229,11 +227,22 @@ view model =
                     [ oTitle, pageTitle, "oscoin" ]
 
         registerUrl =
-            case model.keyPair of
-                Nothing ->
-                    Route.toString <| Route.Register <| Just Route.KeySetup
+            case ( model.wallet, model.keyPair ) of
+                -- Neither Wallet nor key pair is present.
+                ( Nothing, Nothing ) ->
+                    Route.toString <| Route.Register <| Just Route.WalletSetup
 
-                Just _ ->
+                -- Wallet is present but no key pair yet.
+                ( Just _, Nothing ) ->
+                    Route.toString <| Route.Register <| Just Route.WaitForKeyPair
+
+                -- Wallet and key pair are available.
+                ( Just _, Just _ ) ->
+                    Route.toString <| Route.Register Nothing
+
+                -- Only the key pair is present, unclear if this state is
+                -- possible, maybe for testing when we store have it in memory.
+                ( Nothing, Just _ ) ->
                     Route.toString <| Route.Register Nothing
     in
     { title = String.join " <> " titleParts
@@ -264,3 +273,35 @@ main =
         , onUrlRequest = Msg.LinkClicked
         , onUrlChange = Msg.UrlChanged
         }
+
+
+
+-- HELPER
+
+
+cmdFromOverlay : Maybe Page -> Cmd msg
+cmdFromOverlay maybePage =
+    case maybePage of
+        Just Page.WaitForKeyPair ->
+            requireKeyPair ()
+
+        _ ->
+            Cmd.none
+
+
+overlayFromRoute : Maybe Route -> Maybe Page
+overlayFromRoute maybeRoute =
+    case maybeRoute of
+        Just (Route.Register maybeOverlay) ->
+            case maybeOverlay of
+                Just Route.WaitForKeyPair ->
+                    Just Page.WaitForKeyPair
+
+                Just Route.WalletSetup ->
+                    Just Page.WalletSetup
+
+                _ ->
+                    Nothing
+
+        _ ->
+            Nothing
