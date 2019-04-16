@@ -4870,23 +4870,21 @@ function _Browser_load(url)
 		}
 	}));
 }
+var author$project$Page$KeyPairList = function (a) {
+	return {$: 'KeyPairList', a: a};
+};
 var author$project$Page$KeyPairSetup = function (a) {
 	return {$: 'KeyPairSetup', a: a};
+};
+var author$project$Page$KeyPairList$init = function (keyPair) {
+	return keyPair;
 };
 var author$project$Page$KeyPairSetup$Initial = {$: 'Initial'};
 var author$project$Page$KeyPairSetup$Model = F2(
 	function (keyPairId, step) {
 		return {keyPairId: keyPairId, step: step};
 	});
-var author$project$Page$KeyPairSetup$Passphrase = {$: 'Passphrase'};
-var author$project$Page$KeyPairSetup$init = function (maybeKeyPair) {
-	if (maybeKeyPair.$ === 'Nothing') {
-		return A2(author$project$Page$KeyPairSetup$Model, '', author$project$Page$KeyPairSetup$Initial);
-	} else {
-		var keyPair = maybeKeyPair.a;
-		return A2(author$project$Page$KeyPairSetup$Model, keyPair, author$project$Page$KeyPairSetup$Passphrase);
-	}
-};
+var author$project$Page$KeyPairSetup$init = A2(author$project$Page$KeyPairSetup$Model, '', author$project$Page$KeyPairSetup$Initial);
 var author$project$WalletPopup$Model = function (page) {
 	return {page: page};
 };
@@ -5367,12 +5365,19 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 	});
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
-var author$project$WalletPopup$init = function (keyPair) {
-	return _Utils_Tuple2(
-		author$project$WalletPopup$Model(
-			author$project$Page$KeyPairSetup(
-				author$project$Page$KeyPairSetup$init(keyPair))),
-		elm$core$Platform$Cmd$none);
+var author$project$WalletPopup$init = function (maybeKeyPair) {
+	var model = function () {
+		if (maybeKeyPair.$ === 'Nothing') {
+			return author$project$WalletPopup$Model(
+				author$project$Page$KeyPairSetup(author$project$Page$KeyPairSetup$init));
+		} else {
+			var keyPair = maybeKeyPair.a;
+			return author$project$WalletPopup$Model(
+				author$project$Page$KeyPairList(
+					author$project$Page$KeyPairList$init(keyPair)));
+		}
+	}();
+	return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 };
 var author$project$Msg$KeyPairCreated = function (a) {
 	return {$: 'KeyPairCreated', a: a};
@@ -5390,6 +5395,7 @@ var author$project$WalletPopup$subscriptions = function (_n0) {
 var author$project$Msg$PageKeyPairSetup = function (a) {
 	return {$: 'PageKeyPairSetup', a: a};
 };
+var author$project$Page$KeyPairSetup$Passphrase = {$: 'Passphrase'};
 var author$project$Page$KeyPairSetup$Setup = {$: 'Setup'};
 var elm$core$Debug$log = _Debug_log;
 var author$project$Page$KeyPairSetup$update = F2(
@@ -10957,11 +10963,20 @@ var author$project$Page$Home$view = _Utils_Tuple2(
 			[
 				mdgriffith$elm_ui$Element$text('home')
 			])));
+var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
+	function (a, b, c, d) {
+		return {$: 'Rgba', a: a, b: b, c: c, d: d};
+	});
+var mdgriffith$elm_ui$Element$rgb255 = F3(
+	function (red, green, blue) {
+		return A4(mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
+	});
+var author$project$Style$Color$black = A3(mdgriffith$elm_ui$Element$rgb255, 40, 51, 61);
 var mdgriffith$elm_ui$Internal$Model$Typeface = function (a) {
 	return {$: 'Typeface', a: a};
 };
 var mdgriffith$elm_ui$Element$Font$typeface = mdgriffith$elm_ui$Internal$Model$Typeface;
-var author$project$Style$Font$fontGTAmericaMedium = mdgriffith$elm_ui$Element$Font$typeface('GT America Medium');
+var author$project$Style$Font$fontGTAmericaBold = mdgriffith$elm_ui$Element$Font$typeface('GT America Bold');
 var mdgriffith$elm_ui$Internal$Flag$fontColor = mdgriffith$elm_ui$Internal$Flag$flag(14);
 var mdgriffith$elm_ui$Internal$Model$Colored = F3(
 	function (a, b, c) {
@@ -11053,16 +11068,21 @@ var mdgriffith$elm_ui$Element$Font$size = function (i) {
 		mdgriffith$elm_ui$Internal$Flag$fontSize,
 		mdgriffith$elm_ui$Internal$Model$FontSize(i));
 };
-var author$project$Style$Font$mediumBodyText = function (textColor) {
+var author$project$Style$Font$mediumHeader = function (textColor) {
 	return _List_fromArray(
 		[
 			mdgriffith$elm_ui$Element$Font$color(textColor),
 			mdgriffith$elm_ui$Element$Font$family(
 			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaMedium, mdgriffith$elm_ui$Element$Font$sansSerif])),
-			mdgriffith$elm_ui$Element$Font$size(16)
+				[author$project$Style$Font$fontGTAmericaBold, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(24)
 		]);
 };
+var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
+	return {$: 'AlignX', a: a};
+};
+var mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var mdgriffith$elm_ui$Element$centerX = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$CenterX);
 var mdgriffith$elm_ui$Element$el = F2(
 	function (attrs, child) {
 		return A4(
@@ -11080,6 +11100,67 @@ var mdgriffith$elm_ui$Element$el = F2(
 				_List_fromArray(
 					[child])));
 	});
+var mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
+	return {$: 'Fill', a: a};
+};
+var mdgriffith$elm_ui$Element$fill = mdgriffith$elm_ui$Internal$Model$Fill(1);
+var mdgriffith$elm_ui$Internal$Flag$spacing = mdgriffith$elm_ui$Internal$Flag$flag(3);
+var mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
+	function (a, b, c) {
+		return {$: 'SpacingStyle', a: a, b: b, c: c};
+	});
+var mdgriffith$elm_ui$Internal$Model$spacingName = F2(
+	function (x, y) {
+		return 'spacing-' + (elm$core$String$fromInt(x) + ('-' + elm$core$String$fromInt(y)));
+	});
+var mdgriffith$elm_ui$Element$spacingXY = F2(
+	function (x, y) {
+		return A2(
+			mdgriffith$elm_ui$Internal$Model$StyleClass,
+			mdgriffith$elm_ui$Internal$Flag$spacing,
+			A3(
+				mdgriffith$elm_ui$Internal$Model$SpacingStyle,
+				A2(mdgriffith$elm_ui$Internal$Model$spacingName, x, y),
+				x,
+				y));
+	});
+var author$project$Page$KeyPairList$view = function (keyPair) {
+	return _Utils_Tuple2(
+		'key pair list',
+		A2(
+			mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					A2(mdgriffith$elm_ui$Element$spacingXY, 0, 42),
+					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+				]),
+			_List_fromArray(
+				[
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_Utils_ap(
+						_List_fromArray(
+							[mdgriffith$elm_ui$Element$centerX]),
+						author$project$Style$Font$mediumHeader(author$project$Style$Color$black)),
+					mdgriffith$elm_ui$Element$text('Key pair list')),
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_List_Nil,
+					mdgriffith$elm_ui$Element$text(keyPair))
+				])));
+};
+var author$project$Style$Font$fontGTAmericaMedium = mdgriffith$elm_ui$Element$Font$typeface('GT America Medium');
+var author$project$Style$Font$mediumBodyText = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaMedium, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(16)
+		]);
+};
 var mdgriffith$elm_ui$Internal$Flag$hover = mdgriffith$elm_ui$Internal$Flag$flag(33);
 var mdgriffith$elm_ui$Internal$Model$Hover = {$: 'Hover'};
 var mdgriffith$elm_ui$Internal$Model$PseudoSelector = F2(
@@ -11096,9 +11177,6 @@ var elm$core$Basics$never = function (_n0) {
 	}
 };
 var elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
-var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
-	return {$: 'AlignX', a: a};
-};
 var mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
 	return {$: 'AlignY', a: a};
 };
@@ -11325,23 +11403,12 @@ var author$project$Atom$Button$style = F4(
 				author$project$Style$Font$mediumBodyText(textColor)),
 			mdgriffith$elm_ui$Element$text(btnText));
 	});
-var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
-	function (a, b, c, d) {
-		return {$: 'Rgba', a: a, b: b, c: c, d: d};
-	});
-var mdgriffith$elm_ui$Element$rgb255 = F3(
-	function (red, green, blue) {
-		return A4(mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
-	});
-var author$project$Style$Color$black = A3(mdgriffith$elm_ui$Element$rgb255, 40, 51, 61);
 var author$project$Style$Color$pink = A3(mdgriffith$elm_ui$Element$rgb255, 224, 116, 203);
 var author$project$Style$Color$white = A3(mdgriffith$elm_ui$Element$rgb255, 255, 255, 255);
 var author$project$Atom$Button$accent = function (btnText) {
 	return A4(author$project$Atom$Button$style, author$project$Style$Color$pink, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
 };
 var author$project$Page$KeyPairSetup$MoveStepSetup = {$: 'MoveStepSetup'};
-var mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
-var mdgriffith$elm_ui$Element$centerX = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$CenterX);
 var elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -11446,24 +11513,11 @@ var mdgriffith$elm_ui$Element$alpha = function (o) {
 			'transparency-' + mdgriffith$elm_ui$Internal$Model$floatClass(transparency),
 			transparency));
 };
-var mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
-	return {$: 'Fill', a: a};
-};
-var mdgriffith$elm_ui$Element$fill = mdgriffith$elm_ui$Internal$Model$Fill(1);
 var mdgriffith$elm_ui$Internal$Model$InFront = {$: 'InFront'};
 var mdgriffith$elm_ui$Element$inFront = function (element) {
 	return A2(mdgriffith$elm_ui$Internal$Model$Nearby, mdgriffith$elm_ui$Internal$Model$InFront, element);
 };
 var mdgriffith$elm_ui$Element$rgba = mdgriffith$elm_ui$Internal$Model$Rgba;
-var mdgriffith$elm_ui$Internal$Flag$spacing = mdgriffith$elm_ui$Internal$Flag$flag(3);
-var mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
-	function (a, b, c) {
-		return {$: 'SpacingStyle', a: a, b: b, c: c};
-	});
-var mdgriffith$elm_ui$Internal$Model$spacingName = F2(
-	function (x, y) {
-		return 'spacing-' + (elm$core$String$fromInt(x) + ('-' + elm$core$String$fromInt(y)));
-	});
 var mdgriffith$elm_ui$Element$spacing = function (x) {
 	return A2(
 		mdgriffith$elm_ui$Internal$Model$StyleClass,
@@ -12202,28 +12256,6 @@ var author$project$Page$KeyPairSetup$viewSetup = function (id) {
 				author$project$Atom$Button$accent('Create'))
 			]));
 };
-var author$project$Style$Font$fontGTAmericaBold = mdgriffith$elm_ui$Element$Font$typeface('GT America Bold');
-var author$project$Style$Font$mediumHeader = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaBold, mdgriffith$elm_ui$Element$Font$sansSerif])),
-			mdgriffith$elm_ui$Element$Font$size(24)
-		]);
-};
-var mdgriffith$elm_ui$Element$spacingXY = F2(
-	function (x, y) {
-		return A2(
-			mdgriffith$elm_ui$Internal$Model$StyleClass,
-			mdgriffith$elm_ui$Internal$Flag$spacing,
-			A3(
-				mdgriffith$elm_ui$Internal$Model$SpacingStyle,
-				A2(mdgriffith$elm_ui$Internal$Model$spacingName, x, y),
-				x,
-				y));
-	});
 var author$project$Page$KeyPairSetup$view = function (model) {
 	var viewStep = function () {
 		var _n0 = model.step;
@@ -13137,6 +13169,9 @@ var author$project$Page$view = function (page) {
 			return author$project$Page$Home$view;
 		case 'NotFound':
 			return author$project$Page$NotFound$view;
+		case 'KeyPairList':
+			var pageModel = page.a;
+			return author$project$Page$KeyPairList$view(pageModel);
 		case 'KeyPairSetup':
 			var pageModel = page.a;
 			var _n1 = author$project$Page$KeyPairSetup$view(pageModel);

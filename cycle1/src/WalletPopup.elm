@@ -4,6 +4,7 @@ import Browser
 import Element
 import Msg exposing (Msg)
 import Page exposing (Page)
+import Page.KeyPairList
 import Page.KeyPairSetup
 import Style.Color as Color
 import Style.Font as Font
@@ -23,8 +24,17 @@ type alias Model =
 
 
 init : Flags -> ( Model, Cmd Msg )
-init keyPair =
-    ( Model <| Page.KeyPairSetup <| Page.KeyPairSetup.init keyPair, Cmd.none )
+init maybeKeyPair =
+    let
+        model =
+            case maybeKeyPair of
+                Nothing ->
+                    Model <| Page.KeyPairSetup Page.KeyPairSetup.init
+
+                Just keyPair ->
+                    Model <| Page.KeyPairList <| Page.KeyPairList.init keyPair
+    in
+    ( model, Cmd.none )
 
 
 

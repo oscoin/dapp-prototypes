@@ -29,15 +29,6 @@ browser.runtime.onMessage.addListener((msg, sender) => {
       width: 420
     }).then(windowInfo => {
       console.log('popup window info', windowInfo)
-
-      // browser.runtime.sendMessage(
-    })
-  }
-
-  if (msg.type === 'keySetupComplete') {
-    browser.tabs.sendMessage(getCurrentTab().id, {
-      direction: 'extension-to-page',
-      type: 'keySetupComplete'
     })
   }
 })
@@ -54,4 +45,11 @@ function getKeyPair() {
 
 function getCurrentTab() {
   return currentTab
+}
+
+function keyPairSetupComplete() {
+    browser.tabs.sendMessage(getCurrentTab().id, {
+      direction: 'extension-to-page',
+      type: 'keySetupComplete'
+    })
 }

@@ -1,8 +1,7 @@
 (function() {
   console.log('oscoin wallet | popup | init')
 
-  // Get current tab from background script for message passing of feedback
-  // after setup completion.
+  // Get background object to call API on it and current key pair if exists.
   let background = browser.extension.getBackgroundPage()
   let keyPair = background.getKeyPair()
 
@@ -24,10 +23,8 @@
   popup.ports.keyPairSetupComplete.subscribe(function() {
     console.log('ports.keyPairSetupComplete')
 
-    browser.runtime.sendMessage({
-      type: 'keySetupComplete'
-    })
-
+    // Signal that key pair setup completed in the popup and the it will close.
+    background.keyPairSetupComplete()
     window.close()
   })
 })();

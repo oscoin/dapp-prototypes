@@ -24,14 +24,9 @@ type alias Model =
     }
 
 
-init : Maybe String -> Model
-init maybeKeyPair =
-    case maybeKeyPair of
-        Nothing ->
-            Model "" Initial
-
-        Just keyPair ->
-            Model keyPair Passphrase
+init : Model
+init =
+    Model "" Initial
 
 
 

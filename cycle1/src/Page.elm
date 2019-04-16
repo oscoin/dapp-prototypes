@@ -3,6 +3,7 @@ module Page exposing (Page(..), fromRoute, view)
 import Element exposing (Element)
 import Msg exposing (Msg)
 import Page.Home
+import Page.KeyPairList
 import Page.KeyPairSetup
 import Page.KeySetup
 import Page.NotFound
@@ -13,6 +14,7 @@ import Route exposing (Route)
 
 type Page
     = Home
+    | KeyPairList Page.KeyPairList.Model
     | KeyPairSetup Page.KeyPairSetup.Model
     | KeySetup
     | NotFound
@@ -47,6 +49,9 @@ view page =
 
         NotFound ->
             Page.NotFound.view
+
+        KeyPairList pageModel ->
+            Page.KeyPairList.view pageModel
 
         KeyPairSetup pageModel ->
             let
