@@ -4,9 +4,9 @@ import Browser
 import Browser.Navigation as Navigation
 import Element
 import Msg exposing (Msg)
-import Overlay
+import Overlay exposing (Overlay(..))
+import Overlay.WalletSetup
 import Page exposing (Page, view)
-import Page.WalletSetup
 import Route
 import TopBar
 import Url
@@ -32,7 +32,7 @@ type alias Flags =
 type alias Model =
     { keyPair : Maybe KeyPair
     , navKey : Navigation.Key
-    , overlay : Maybe Page
+    , overlay : Maybe Overlay
     , page : Page
     , topBarModel : TopBar.Model
     , url : Url.Url
@@ -49,15 +49,15 @@ init maybeKeyPair url navKey =
         page =
             Page.fromRoute maybeRoute
 
-        overlay =
-            Page.overlayFromRoute maybeRoute
+        maybeOverlay =
+            Overlay.fromRoute maybeRoute
 
         cmd =
-            cmdFromOverlay overlay
+            cmdFromOverlay maybeOverlay
     in
     ( { keyPair = maybeKeyPair
       , navKey = navKey
-      , overlay = overlay
+      , overlay = maybeOverlay
       , page = page
       , topBarModel = TopBar.init
       , url = url
@@ -126,7 +126,7 @@ update msg model =
                     Page.fromRoute maybeRoute
 
                 overlay =
-                    Page.overlayFromRoute maybeRoute
+                    Overlay.fromRoute maybeRoute
 
                 cmd =
                     cmdFromOverlay overlay
@@ -137,7 +137,7 @@ update msg model =
             let
                 cmd =
                     case model.overlay of
-                        Just Page.WaitForKeyPair ->
+                        Just Overlay.WaitForKeyPair ->
                             Navigation.pushUrl
                                 model.navKey
                                 (Route.toString (Route.Register Nothing))
@@ -153,15 +153,15 @@ update msg model =
         Msg.PageKeyPairSetup _ ->
             ( model, Cmd.none )
 
-        Msg.PageWalletSetup subCmd ->
+        Msg.OverlayWalletSetup subCmd ->
             case model.overlay of
-                Just (Page.WalletSetup oldModel) ->
+                Just (Overlay.WalletSetup oldModel) ->
                     let
-                        ( pageModel, pageCmd ) =
-                            Page.WalletSetup.update subCmd oldModel
+                        ( overlayModel, overlayCmd ) =
+                            Overlay.WalletSetup.update subCmd oldModel
                     in
-                    ( { model | overlay = Just (Page.WalletSetup pageModel) }
-                    , Cmd.map Msg.PageWalletSetup <| pageCmd
+                    ( { model | overlay = Just (Overlay.WalletSetup overlayModel) }
+                    , Cmd.map Msg.OverlayWalletSetup <| overlayCmd
                     )
 
                 _ ->
@@ -205,18 +205,18 @@ viewKeyPair maybeKeyPair =
 
 
 viewOverlay :
-    Maybe Page
+    Maybe Overlay
     -> Url.Url
     -> ( Maybe String, List (Element.Attribute Msg) )
-viewOverlay maybePage url =
-    case maybePage of
+viewOverlay maybeOverlay url =
+    case maybeOverlay of
         Nothing ->
             ( Nothing, [] )
 
-        Just page ->
+        Just overlay ->
             let
                 ( title, content ) =
-                    Page.view page
+                    Overlay.view overlay
 
                 backUrl =
                     Url.Builder.relative [ url.path ] []
@@ -314,27 +314,11 @@ main =
 -- HELPER
 
 
-cmdFromOverlay : Maybe Page -> Cmd msg
+cmdFromOverlay : Maybe Overlay -> Cmd msg
 cmdFromOverlay maybePage =
     case maybePage of
-        Just Page.WaitForKeyPair ->
+        Just Overlay.WaitForKeyPair ->
             requireKeyPair ()
 
         _ ->
             Cmd.none
-
-
-
--- overlayFromRoute : Maybe Route -> Maybe Page
--- overlayFromRoute maybeRoute =
---     case maybeRoute of
---         Just (Route.Register maybeOverlay) ->
---             case maybeOverlay of
---                 Just Route.WaitForKeyPair ->
---                     Just Page.WaitForKeyPair
---                 Just Route.WalletSetup ->
---                     Just <| Page.WalletSetup Page.WalletSetup.init
---                 _ ->
---                     Nothing
---         _ ->
---             Nothing

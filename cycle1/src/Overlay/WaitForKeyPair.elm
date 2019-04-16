@@ -1,4 +1,4 @@
-module Page.WaitForKeyPair exposing (view)
+module Overlay.WaitForKeyPair exposing (view)
 
 import Element exposing (Element)
 import Element.Background as Background

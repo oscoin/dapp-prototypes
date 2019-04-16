@@ -1,4 +1,4 @@
-module Page.WalletSetup exposing (Model, Msg, init, update, view)
+module Overlay.WalletSetup exposing (Model, Msg, init, update, view)
 
 import Atom.Button as Button
 import Element exposing (Element)

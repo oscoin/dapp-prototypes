@@ -5504,9 +5504,6 @@ var author$project$WalletPopup$update = F2(
 		}
 		return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 	});
-var author$project$Msg$PageWalletSetup = function (a) {
-	return {$: 'PageWalletSetup', a: a};
-};
 var mdgriffith$elm_ui$Internal$Model$Height = function (a) {
 	return {$: 'Height', a: a};
 };
@@ -13143,105 +13140,6 @@ var author$project$Page$Register$view = _Utils_Tuple2(
 				author$project$Style$Font$bigHeader(author$project$Style$Color$black),
 				mdgriffith$elm_ui$Element$text('Register your project'))
 			])));
-var author$project$Page$WaitForKeyPair$view = _Utils_Tuple2(
-	'wait for key pair',
-	A2(
-		mdgriffith$elm_ui$Element$column,
-		_Utils_ap(
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
-					mdgriffith$elm_ui$Element$height(
-					mdgriffith$elm_ui$Element$px(214)),
-					mdgriffith$elm_ui$Element$width(
-					mdgriffith$elm_ui$Element$px(396))
-				]),
-			author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
-		_List_fromArray(
-			[
-				A2(
-				mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
-				mdgriffith$elm_ui$Element$text('Please finish process in oscoin wallet.'))
-			])));
-var author$project$Page$WalletSetup$MoveToPick = {$: 'MoveToPick'};
-var author$project$Page$WalletSetup$viewInfo = A2(
-	mdgriffith$elm_ui$Element$column,
-	_List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$padding(20),
-			mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
-			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-		]),
-	_List_fromArray(
-		[
-			A2(
-			mdgriffith$elm_ui$Element$el,
-			_List_fromArray(
-				[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
-			mdgriffith$elm_ui$Element$text('Setup your oscoin wallet.')),
-			A2(
-			mdgriffith$elm_ui$Element$el,
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$alignRight,
-					mdgriffith$elm_ui$Element$Events$onClick(author$project$Page$WalletSetup$MoveToPick)
-				]),
-			author$project$Atom$Button$accent('Get Started'))
-		]));
-var author$project$Page$WalletSetup$viewPick = A2(
-	mdgriffith$elm_ui$Element$column,
-	_List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$padding(20),
-			mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
-			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-		]),
-	_List_fromArray(
-		[
-			A2(
-			mdgriffith$elm_ui$Element$el,
-			_List_fromArray(
-				[mdgriffith$elm_ui$Element$centerX]),
-			mdgriffith$elm_ui$Element$text('Choose wallet')),
-			A2(
-			mdgriffith$elm_ui$Element$column,
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$centerX,
-					mdgriffith$elm_ui$Element$spacing(24)
-				]),
-			_List_fromArray(
-				[
-					author$project$Atom$Button$accent('Firefox add-on'),
-					author$project$Atom$Button$secondary('Mobile app'),
-					author$project$Atom$Button$secondaryAccent('Ledger Nano S')
-				]))
-		]));
-var author$project$Page$WalletSetup$view = function (model) {
-	var viewStep = function () {
-		var _n0 = model.step;
-		if (_n0.$ === 'Info') {
-			return author$project$Page$WalletSetup$viewInfo;
-		} else {
-			return author$project$Page$WalletSetup$viewPick;
-		}
-	}();
-	return _Utils_Tuple2(
-		'wallet setup',
-		A2(
-			mdgriffith$elm_ui$Element$el,
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
-					mdgriffith$elm_ui$Element$height(
-					mdgriffith$elm_ui$Element$px(500)),
-					mdgriffith$elm_ui$Element$width(
-					mdgriffith$elm_ui$Element$px(540))
-				]),
-			viewStep));
-};
 var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
 var author$project$Page$view = function (page) {
 	switch (page.$) {
@@ -13262,18 +13160,8 @@ var author$project$Page$view = function (page) {
 				A2(mdgriffith$elm_ui$Element$map, author$project$Msg$PageKeyPairSetup, pageView));
 		case 'Project':
 			return author$project$Page$Project$view;
-		case 'Register':
-			return author$project$Page$Register$view;
-		case 'WaitForKeyPair':
-			return author$project$Page$WaitForKeyPair$view;
 		default:
-			var pageModel = page.a;
-			var _n2 = author$project$Page$WalletSetup$view(pageModel);
-			var pageTitle = _n2.a;
-			var pageView = _n2.b;
-			return _Utils_Tuple2(
-				pageTitle,
-				A2(mdgriffith$elm_ui$Element$map, author$project$Msg$PageWalletSetup, pageView));
+			return author$project$Page$Register$view;
 	}
 };
 var author$project$WalletPopup$viewHeader = A2(
@@ -17465,4 +17353,4 @@ _Platform_export({'WalletPopup':{'init':author$project$WalletPopup$main(
 			[
 				elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
 				A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
-			])))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"PageWalletSetup":["Page.WalletSetup.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"],"WalletWebExtPresent":["()"]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"Page.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
+			])))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"],"WalletWebExtPresent":["()"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
