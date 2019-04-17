@@ -4876,6 +4876,8 @@ var author$project$Page$KeyPairList = function (a) {
 var author$project$Page$KeyPairSetup = function (a) {
 	return {$: 'KeyPairSetup', a: a};
 };
+var author$project$Page$NotFound = {$: 'NotFound'};
+var author$project$Page$SignTransaction = {$: 'SignTransaction'};
 var author$project$Page$KeyPairList$init = function (keyPair) {
 	return keyPair;
 };
@@ -5365,19 +5367,43 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 	});
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
-var author$project$WalletPopup$init = function (maybeKeyPair) {
-	var model = function () {
-		if (maybeKeyPair.$ === 'Nothing') {
-			return author$project$WalletPopup$Model(
-				author$project$Page$KeyPairSetup(author$project$Page$KeyPairSetup$init));
-		} else {
-			var keyPair = maybeKeyPair.a;
-			return author$project$WalletPopup$Model(
-				author$project$Page$KeyPairList(
-					author$project$Page$KeyPairList$init(keyPair)));
+var author$project$WalletPopup$init = function (flags) {
+	var page = function () {
+		var _n0 = _Utils_Tuple3(flags.location.hash, flags.maybeKeyPair, flags.maybeTransaction);
+		_n0$3:
+		while (true) {
+			if (_n0.b.$ === 'Nothing') {
+				if ((_n0.a === '#keys') && (_n0.c.$ === 'Nothing')) {
+					var _n1 = _n0.b;
+					var _n2 = _n0.c;
+					return author$project$Page$KeyPairSetup(author$project$Page$KeyPairSetup$init);
+				} else {
+					break _n0$3;
+				}
+			} else {
+				if (_n0.c.$ === 'Nothing') {
+					if (_n0.a === '#keys') {
+						var keyPair = _n0.b.a;
+						var _n3 = _n0.c;
+						return author$project$Page$KeyPairList(
+							author$project$Page$KeyPairList$init(keyPair));
+					} else {
+						break _n0$3;
+					}
+				} else {
+					if (_n0.a === '#sign') {
+						return author$project$Page$SignTransaction;
+					} else {
+						break _n0$3;
+					}
+				}
+			}
 		}
+		return author$project$Page$NotFound;
 	}();
-	return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+	return _Utils_Tuple2(
+		author$project$WalletPopup$Model(page),
+		elm$core$Platform$Cmd$none);
 };
 var author$project$Msg$KeyPairCreated = function (a) {
 	return {$: 'KeyPairCreated', a: a};
@@ -5504,6 +5530,9 @@ var author$project$WalletPopup$update = F2(
 		}
 		return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 	});
+var author$project$Msg$PageRegister = function (a) {
+	return {$: 'PageRegister', a: a};
+};
 var mdgriffith$elm_ui$Internal$Model$Height = function (a) {
 	return {$: 'Height', a: a};
 };
@@ -13124,21 +13153,51 @@ var author$project$Page$Project$view = _Utils_Tuple2(
 			]),
 		_List_fromArray(
 			[author$project$Page$Project$Header$view, author$project$Page$Project$Actions$view, author$project$Page$Project$People$view, author$project$Page$Project$Contract$view])));
-var author$project$Page$Register$view = _Utils_Tuple2(
-	'register',
+var author$project$Page$Register$Register = function (a) {
+	return {$: 'Register', a: a};
+};
+var author$project$Page$Register$view = function (model) {
+	return _Utils_Tuple2(
+		'register',
+		A2(
+			mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$width(
+					mdgriffith$elm_ui$Element$px(1074))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					author$project$Style$Font$bigHeader(author$project$Style$Color$black),
+					mdgriffith$elm_ui$Element$text('Register your project')),
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_List_fromArray(
+						[
+							mdgriffith$elm_ui$Element$Events$onClick(
+							author$project$Page$Register$Register(model.project))
+						]),
+					author$project$Atom$Button$accent('Register'))
+				])));
+};
+var author$project$Page$SignTransaction$view = _Utils_Tuple2(
+	'sign transaction',
 	A2(
 		mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
 			[
-				mdgriffith$elm_ui$Element$width(
-				mdgriffith$elm_ui$Element$px(1074))
+				mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
 			]),
 		_List_fromArray(
 			[
 				A2(
 				mdgriffith$elm_ui$Element$el,
-				author$project$Style$Font$bigHeader(author$project$Style$Color$black),
-				mdgriffith$elm_ui$Element$text('Register your project'))
+				_List_Nil,
+				mdgriffith$elm_ui$Element$text('sign your transaction')),
+				author$project$Atom$Button$accent('Confirm')
 			])));
 var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
 var author$project$Page$view = function (page) {
@@ -13160,8 +13219,16 @@ var author$project$Page$view = function (page) {
 				A2(mdgriffith$elm_ui$Element$map, author$project$Msg$PageKeyPairSetup, pageView));
 		case 'Project':
 			return author$project$Page$Project$view;
+		case 'Register':
+			var pageModel = page.a;
+			var _n2 = author$project$Page$Register$view(pageModel);
+			var pageTitle = _n2.a;
+			var pageView = _n2.b;
+			return _Utils_Tuple2(
+				pageTitle,
+				A2(mdgriffith$elm_ui$Element$map, author$project$Msg$PageRegister, pageView));
 		default:
-			return author$project$Page$Register$view;
+			return author$project$Page$SignTransaction$view;
 	}
 };
 var author$project$WalletPopup$viewHeader = A2(
@@ -17343,14 +17410,51 @@ var elm$url$Url$fromString = function (str) {
 		A2(elm$core$String$dropLeft, 8, str)) : elm$core$Maybe$Nothing);
 };
 var elm$browser$Browser$document = _Browser_document;
+var elm$json$Json$Decode$andThen = _Json_andThen;
 var elm$json$Json$Decode$null = _Json_decodeNull;
 var elm$json$Json$Decode$oneOf = _Json_oneOf;
 var author$project$WalletPopup$main = elm$browser$Browser$document(
 	{init: author$project$WalletPopup$init, subscriptions: author$project$WalletPopup$subscriptions, update: author$project$WalletPopup$update, view: author$project$WalletPopup$view});
 _Platform_export({'WalletPopup':{'init':author$project$WalletPopup$main(
-	elm$json$Json$Decode$oneOf(
-		_List_fromArray(
-			[
-				elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
-				A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
-			])))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"],"WalletWebExtPresent":["()"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
+	A2(
+		elm$json$Json$Decode$andThen,
+		function (maybeTransaction) {
+			return A2(
+				elm$json$Json$Decode$andThen,
+				function (maybeKeyPair) {
+					return A2(
+						elm$json$Json$Decode$andThen,
+						function (location) {
+							return elm$json$Json$Decode$succeed(
+								{location: location, maybeKeyPair: maybeKeyPair, maybeTransaction: maybeTransaction});
+						},
+						A2(
+							elm$json$Json$Decode$field,
+							'location',
+							A2(
+								elm$json$Json$Decode$andThen,
+								function (hash) {
+									return elm$json$Json$Decode$succeed(
+										{hash: hash});
+								},
+								A2(elm$json$Json$Decode$field, 'hash', elm$json$Json$Decode$string))));
+				},
+				A2(
+					elm$json$Json$Decode$field,
+					'maybeKeyPair',
+					elm$json$Json$Decode$oneOf(
+						_List_fromArray(
+							[
+								elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
+								A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
+							]))));
+		},
+		A2(
+			elm$json$Json$Decode$field,
+			'maybeTransaction',
+			elm$json$Json$Decode$oneOf(
+				_List_fromArray(
+					[
+						elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
+						A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
+					])))))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Page.Register.Project":{"args":[],"type":"{}"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"],"WalletWebExtPresent":["()"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"Page.Register.Msg":{"args":[],"tags":{"Register":["Page.Register.Project"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));

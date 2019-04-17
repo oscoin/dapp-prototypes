@@ -5416,7 +5416,14 @@ var author$project$Overlay$fromRoute = function (maybeRoute) {
 var author$project$Page$Home = {$: 'Home'};
 var author$project$Page$NotFound = {$: 'NotFound'};
 var author$project$Page$Project = {$: 'Project'};
-var author$project$Page$Register = {$: 'Register'};
+var author$project$Page$Register = function (a) {
+	return {$: 'Register', a: a};
+};
+var author$project$Page$Register$Model = function (project) {
+	return {project: project};
+};
+var author$project$Page$Register$Project = {};
+var author$project$Page$Register$init = author$project$Page$Register$Model(author$project$Page$Register$Project);
 var author$project$Page$fromRoute = function (maybeRoute) {
 	_n0$3:
 	while (true) {
@@ -5429,7 +5436,7 @@ var author$project$Page$fromRoute = function (maybeRoute) {
 					var _n2 = maybeRoute.a;
 					return author$project$Page$Project;
 				case 'Register':
-					return author$project$Page$Register;
+					return author$project$Page$Register(author$project$Page$Register$init);
 				default:
 					break _n0$3;
 			}
@@ -6503,8 +6510,29 @@ var author$project$Main$subscriptions = function (_n0) {
 			]));
 };
 var author$project$Main$WebExt = {$: 'WebExt'};
+var elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			elm$core$List$foldl,
+			F2(
+				function (_n0, obj) {
+					var k = _n0.a;
+					var v = _n0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var author$project$Main$registerProject = _Platform_outgoingPort(
+	'registerProject',
+	function ($) {
+		return elm$json$Json$Encode$object(_List_Nil);
+	});
 var author$project$Msg$OverlayWalletSetup = function (a) {
 	return {$: 'OverlayWalletSetup', a: a};
+};
+var author$project$Msg$PageRegister = function (a) {
+	return {$: 'PageRegister', a: a};
 };
 var author$project$Msg$TopBarMsg = function (a) {
 	return {$: 'TopBarMsg', a: a};
@@ -6518,6 +6546,15 @@ var author$project$Overlay$WalletSetup$update = F2(
 			_Utils_update(
 				model,
 				{step: author$project$Overlay$WalletSetup$Pick}),
+			elm$core$Platform$Cmd$none);
+	});
+var author$project$Page$Register$update = F2(
+	function (msg, model) {
+		var project = msg.a;
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{project: project}),
 			elm$core$Platform$Cmd$none);
 	});
 var author$project$TopBar$update = F2(
@@ -9339,19 +9376,6 @@ var elm$browser$Debugger$History$encode = function (_n0) {
 			elm$core$List$reverse(recent.messages),
 			snapshots));
 };
-var elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			elm$core$List$foldl,
-			F2(
-				function (_n0, obj) {
-					var k = _n0.a;
-					var v = _n0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
 var elm$browser$Debugger$Metadata$encodeAlias = function (_n0) {
 	var args = _n0.args;
 	var tipe = _n0.tipe;
@@ -10289,14 +10313,41 @@ var author$project$Main$update = F2(
 					elm$core$Platform$Cmd$none);
 			case 'PageKeyPairSetup':
 				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+			case 'PageRegister':
+				var subCmd = _n0.a;
+				var _n4 = model.page;
+				if (_n4.$ === 'Register') {
+					var oldModel = _n4.a;
+					var portCmd = function () {
+						var project = subCmd.a;
+						return author$project$Main$registerProject(project);
+					}();
+					var _n5 = A2(author$project$Page$Register$update, subCmd, oldModel);
+					var pageModel = _n5.a;
+					var pageCmd = _n5.b;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								page: author$project$Page$Register(pageModel)
+							}),
+						elm$core$Platform$Cmd$batch(
+							_List_fromArray(
+								[
+									A2(elm$core$Platform$Cmd$map, author$project$Msg$PageRegister, pageCmd),
+									portCmd
+								])));
+				} else {
+					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				}
 			case 'OverlayWalletSetup':
 				var subCmd = _n0.a;
-				var _n4 = model.overlay;
-				if ((_n4.$ === 'Just') && (_n4.a.$ === 'WalletSetup')) {
-					var oldModel = _n4.a.a;
-					var _n5 = A2(author$project$Overlay$WalletSetup$update, subCmd, oldModel);
-					var overlayModel = _n5.a;
-					var overlayCmd = _n5.b;
+				var _n7 = model.overlay;
+				if ((_n7.$ === 'Just') && (_n7.a.$ === 'WalletSetup')) {
+					var oldModel = _n7.a.a;
+					var _n8 = A2(author$project$Overlay$WalletSetup$update, subCmd, oldModel);
+					var overlayModel = _n8.a;
+					var overlayCmd = _n8.b;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -10310,9 +10361,9 @@ var author$project$Main$update = F2(
 				}
 			case 'TopBarMsg':
 				var subMsg = _n0.a;
-				var _n6 = A2(author$project$TopBar$update, subMsg, model.topBarModel);
-				var topBarModel = _n6.a;
-				var topBarMsg = _n6.b;
+				var _n9 = A2(author$project$TopBar$update, subMsg, model.topBarModel);
+				var topBarModel = _n9.a;
+				var topBarMsg = _n9.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -17843,21 +17894,51 @@ var author$project$Page$Project$view = _Utils_Tuple2(
 			]),
 		_List_fromArray(
 			[author$project$Page$Project$Header$view, author$project$Page$Project$Actions$view, author$project$Page$Project$People$view, author$project$Page$Project$Contract$view])));
-var author$project$Page$Register$view = _Utils_Tuple2(
-	'register',
+var author$project$Page$Register$Register = function (a) {
+	return {$: 'Register', a: a};
+};
+var author$project$Page$Register$view = function (model) {
+	return _Utils_Tuple2(
+		'register',
+		A2(
+			mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$width(
+					mdgriffith$elm_ui$Element$px(1074))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					author$project$Style$Font$bigHeader(author$project$Style$Color$black),
+					mdgriffith$elm_ui$Element$text('Register your project')),
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_List_fromArray(
+						[
+							mdgriffith$elm_ui$Element$Events$onClick(
+							author$project$Page$Register$Register(model.project))
+						]),
+					author$project$Atom$Button$accent('Register'))
+				])));
+};
+var author$project$Page$SignTransaction$view = _Utils_Tuple2(
+	'sign transaction',
 	A2(
 		mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
 			[
-				mdgriffith$elm_ui$Element$width(
-				mdgriffith$elm_ui$Element$px(1074))
+				mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
 			]),
 		_List_fromArray(
 			[
 				A2(
 				mdgriffith$elm_ui$Element$el,
-				author$project$Style$Font$bigHeader(author$project$Style$Color$black),
-				mdgriffith$elm_ui$Element$text('Register your project'))
+				_List_Nil,
+				mdgriffith$elm_ui$Element$text('sign your transaction')),
+				author$project$Atom$Button$accent('Confirm')
 			])));
 var author$project$Page$view = function (page) {
 	switch (page.$) {
@@ -17878,8 +17959,16 @@ var author$project$Page$view = function (page) {
 				A2(mdgriffith$elm_ui$Element$map, author$project$Msg$PageKeyPairSetup, pageView));
 		case 'Project':
 			return author$project$Page$Project$view;
+		case 'Register':
+			var pageModel = page.a;
+			var _n2 = author$project$Page$Register$view(pageModel);
+			var pageTitle = _n2.a;
+			var pageView = _n2.b;
+			return _Utils_Tuple2(
+				pageTitle,
+				A2(mdgriffith$elm_ui$Element$map, author$project$Msg$PageRegister, pageView));
 		default:
-			return author$project$Page$Register$view;
+			return author$project$Page$SignTransaction$view;
 	}
 };
 var author$project$Style$Color$almostWhite = A3(mdgriffith$elm_ui$Element$rgb255, 248, 248, 248);
@@ -18256,4 +18345,4 @@ _Platform_export({'Main':{'init':author$project$Main$main(
 			[
 				elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
 				A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
-			])))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"],"WalletWebExtPresent":["()"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
+			])))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Page.Register.Project":{"args":[],"type":"{}"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"],"WalletWebExtPresent":["()"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"Page.Register.Msg":{"args":[],"tags":{"Register":["Page.Register.Project"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));

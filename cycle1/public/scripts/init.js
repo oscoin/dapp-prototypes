@@ -10,6 +10,18 @@
     type: 'getWallet'
   });
 
+  // Listen to project register messages that we hand off to the wallet for
+  // signing and sending.
+  app.ports.registerProject.subscribe(function (project) {
+    console.log('ports.registerProject', project)
+
+    window.postMessage({
+      direction: 'page-to-wallet',
+      type: 'registerProject',
+      project: project
+    });
+  });
+
   app.ports.requireKeyPair.subscribe(function () {
     console.log('ports.requireKeyPair')
 

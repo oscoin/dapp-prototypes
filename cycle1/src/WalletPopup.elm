@@ -6,6 +6,7 @@ import Msg exposing (Msg)
 import Page exposing (Page)
 import Page.KeyPairList
 import Page.KeyPairSetup
+import Page.SignTransaction
 import Style.Color as Color
 import Style.Font as Font
 
@@ -14,8 +15,16 @@ import Style.Font as Font
 -- MODEL
 
 
+type alias Location =
+    { hash : String
+    }
+
+
 type alias Flags =
-    Maybe String
+    { maybeKeyPair : Maybe String
+    , maybeTransaction : Maybe String
+    , location : Location
+    }
 
 
 type alias Model =
@@ -24,17 +33,23 @@ type alias Model =
 
 
 init : Flags -> ( Model, Cmd Msg )
-init maybeKeyPair =
+init flags =
     let
-        model =
-            case maybeKeyPair of
-                Nothing ->
-                    Model <| Page.KeyPairSetup Page.KeyPairSetup.init
+        page =
+            case ( flags.location.hash, flags.maybeKeyPair, flags.maybeTransaction ) of
+                ( "#keys", Nothing, Nothing ) ->
+                    Page.KeyPairSetup Page.KeyPairSetup.init
 
-                Just keyPair ->
-                    Model <| Page.KeyPairList <| Page.KeyPairList.init keyPair
+                ( "#keys", Just keyPair, Nothing ) ->
+                    Page.KeyPairList <| Page.KeyPairList.init keyPair
+
+                ( "#sign", Just _, Just _ ) ->
+                    Page.SignTransaction
+
+                ( _, _, _ ) ->
+                    Page.NotFound
     in
-    ( model, Cmd.none )
+    ( Model page, Cmd.none )
 
 
 

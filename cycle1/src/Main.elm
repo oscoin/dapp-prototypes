@@ -7,6 +7,7 @@ import Msg exposing (Msg)
 import Overlay exposing (Overlay(..))
 import Overlay.WalletSetup
 import Page exposing (Page, view)
+import Page.Register exposing (Project)
 import Route
 import TopBar
 import Url
@@ -69,6 +70,9 @@ init maybeKeyPair url navKey =
 
 
 -- PORTS - OUTGOING
+
+
+port registerProject : Project -> Cmd msg
 
 
 port requireKeyPair : () -> Cmd msg
@@ -152,6 +156,29 @@ update msg model =
 
         Msg.PageKeyPairSetup _ ->
             ( model, Cmd.none )
+
+        Msg.PageRegister subCmd ->
+            case model.page of
+                Page.Register oldModel ->
+                    let
+                        ( pageModel, pageCmd ) =
+                            Page.Register.update subCmd oldModel
+
+                        portCmd =
+                            case subCmd of
+                                -- Call out to our port to register the project.
+                                Page.Register.Register project ->
+                                    registerProject project
+                    in
+                    ( { model | page = Page.Register pageModel }
+                    , Cmd.batch
+                        [ Cmd.map Msg.PageRegister <| pageCmd
+                        , portCmd
+                        ]
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
 
         Msg.OverlayWalletSetup subCmd ->
             case model.overlay of
