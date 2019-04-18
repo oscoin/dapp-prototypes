@@ -3,12 +3,16 @@ port module Main exposing (main)
 import Browser
 import Browser.Navigation as Navigation
 import Element
-import Msg exposing (Msg)
-import Overlay exposing (Overlay(..))
+import Element.Background as Background
+import Html.Attributes
+import Overlay.WaitForKeyPair
 import Overlay.WalletSetup
-import Page exposing (Page, view)
+import Page.Home
+import Page.NotFound
+import Page.Project
 import Page.Register exposing (Project)
-import Route
+import Route exposing (Route)
+import Style.Color as Color
 import TopBar
 import Url
 import Url.Builder
@@ -30,6 +34,18 @@ type alias Flags =
     Maybe KeyPair
 
 
+type Overlay
+    = WaitForKeyPair
+    | WalletSetup Overlay.WalletSetup.Model
+
+
+type Page
+    = Home
+    | NotFound
+    | Project
+    | Register Page.Register.Model
+
+
 type alias Model =
     { keyPair : Maybe KeyPair
     , navKey : Navigation.Key
@@ -48,10 +64,10 @@ init maybeKeyPair url navKey =
             Route.fromUrl url
 
         page =
-            Page.fromRoute maybeRoute
+            pageFromRoute maybeRoute
 
         maybeOverlay =
-            Overlay.fromRoute maybeRoute
+            overlayFromRoute maybeRoute
 
         cmd =
             cmdFromOverlay maybeOverlay
@@ -98,9 +114,9 @@ port walletWebExtPresent : (() -> msg) -> Sub msg
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ keyPairCreated Msg.KeyPairCreated
-        , keyPairFetched Msg.KeyPairFetched
-        , walletWebExtPresent Msg.WalletWebExtPresent
+        [ keyPairCreated KeyPairCreated
+        , keyPairFetched KeyPairFetched
+        , walletWebExtPresent WalletWebExtPresent
         ]
 
 
@@ -108,10 +124,21 @@ subscriptions _ =
 -- UPDATE
 
 
+type Msg
+    = UrlChanged Url.Url
+    | LinkClicked Browser.UrlRequest
+    | OverlayWalletSetup Overlay.WalletSetup.Msg
+    | PageRegister Page.Register.Msg
+    | TopBarMsg TopBar.Msg
+    | KeyPairCreated String
+    | KeyPairFetched String
+    | WalletWebExtPresent ()
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case Debug.log "Main.msg" msg of
-        Msg.LinkClicked urlRequest ->
+        LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
                     ( model
@@ -121,27 +148,27 @@ update msg model =
                 Browser.External href ->
                     ( model, Navigation.load href )
 
-        Msg.UrlChanged url ->
+        UrlChanged url ->
             let
                 maybeRoute =
                     Route.fromUrl url
 
                 page =
-                    Page.fromRoute maybeRoute
+                    pageFromRoute maybeRoute
 
                 overlay =
-                    Overlay.fromRoute maybeRoute
+                    overlayFromRoute maybeRoute
 
                 cmd =
                     cmdFromOverlay overlay
             in
             ( { model | overlay = overlay, page = page }, cmd )
 
-        Msg.KeyPairCreated id ->
+        KeyPairCreated id ->
             let
                 cmd =
                     case model.overlay of
-                        Just Overlay.WaitForKeyPair ->
+                        Just WaitForKeyPair ->
                             Navigation.pushUrl
                                 model.navKey
                                 (Route.toString (Route.Register Nothing))
@@ -151,15 +178,12 @@ update msg model =
             in
             ( { model | keyPair = Just id }, cmd )
 
-        Msg.KeyPairFetched id ->
+        KeyPairFetched id ->
             ( { model | keyPair = Just id }, Cmd.none )
 
-        Msg.PageKeyPairSetup _ ->
-            ( model, Cmd.none )
-
-        Msg.PageRegister subCmd ->
+        PageRegister subCmd ->
             case model.page of
-                Page.Register oldModel ->
+                Register oldModel ->
                     let
                         ( pageModel, pageCmd ) =
                             Page.Register.update subCmd oldModel
@@ -170,9 +194,9 @@ update msg model =
                                 Page.Register.Register project ->
                                     registerProject project
                     in
-                    ( { model | page = Page.Register pageModel }
+                    ( { model | page = Register pageModel }
                     , Cmd.batch
-                        [ Cmd.map Msg.PageRegister <| pageCmd
+                        [ Cmd.map PageRegister <| pageCmd
                         , portCmd
                         ]
                     )
@@ -180,28 +204,28 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        Msg.OverlayWalletSetup subCmd ->
+        OverlayWalletSetup subCmd ->
             case model.overlay of
-                Just (Overlay.WalletSetup oldModel) ->
+                Just (WalletSetup oldModel) ->
                     let
                         ( overlayModel, overlayCmd ) =
                             Overlay.WalletSetup.update subCmd oldModel
                     in
-                    ( { model | overlay = Just (Overlay.WalletSetup overlayModel) }
-                    , Cmd.map Msg.OverlayWalletSetup <| overlayCmd
+                    ( { model | overlay = Just (WalletSetup overlayModel) }
+                    , Cmd.map OverlayWalletSetup <| overlayCmd
                     )
 
                 _ ->
                     ( model, Cmd.none )
 
-        Msg.TopBarMsg subMsg ->
+        TopBarMsg subMsg ->
             let
                 ( topBarModel, topBarMsg ) =
                     TopBar.update subMsg model.topBarModel
             in
-            ( { model | topBarModel = topBarModel }, Cmd.map Msg.TopBarMsg topBarMsg )
+            ( { model | topBarModel = topBarModel }, Cmd.map TopBarMsg topBarMsg )
 
-        Msg.WalletWebExtPresent _ ->
+        WalletWebExtPresent _ ->
             ( { model | wallet = Just WebExt }, Cmd.none )
 
 
@@ -243,12 +267,45 @@ viewOverlay maybeOverlay url =
         Just overlay ->
             let
                 ( title, content ) =
-                    Overlay.view overlay
+                    case overlay of
+                        WaitForKeyPair ->
+                            Overlay.WaitForKeyPair.view
+
+                        WalletSetup overlayModel ->
+                            let
+                                ( overlayTitle, overlayView ) =
+                                    Overlay.WalletSetup.view overlayModel
+                            in
+                            ( overlayTitle
+                            , Element.map OverlayWalletSetup <| overlayView
+                            )
 
                 backUrl =
                     Url.Builder.relative [ url.path ] []
             in
-            ( Just title, Overlay.attrs content backUrl )
+            ( Just title, overlayAttrs content backUrl )
+
+
+viewPage : Page -> ( String, Element.Element Msg )
+viewPage page =
+    case page of
+        Home ->
+            Page.Home.view
+
+        NotFound ->
+            Page.NotFound.view
+
+        Project ->
+            Page.Project.view
+
+        Register pageModel ->
+            let
+                ( pageTitle, pageView ) =
+                    Page.Register.view pageModel
+            in
+            ( pageTitle
+            , Element.map PageRegister <| pageView
+            )
 
 
 viewWallet : Maybe Wallet -> Element.Element msg
@@ -274,9 +331,9 @@ view : Model -> Browser.Document Msg
 view model =
     let
         ( pageTitle, pageContent ) =
-            Page.view model.page
+            viewPage model.page
 
-        ( overlayTitle, overlayAttrs ) =
+        ( overlayTitle, attrs ) =
             viewOverlay model.overlay model.url
 
         titleParts =
@@ -309,14 +366,14 @@ view model =
     { title = String.join " <> " titleParts
     , body =
         [ Element.layout
-            overlayAttrs
+            attrs
           <|
             Element.column
                 [ Element.spacing 42
                 , Element.height Element.fill
                 , Element.width Element.fill
                 ]
-                [ Element.map Msg.TopBarMsg <| TopBar.view model.topBarModel registerUrl
+                [ Element.map TopBarMsg <| TopBar.view model.topBarModel registerUrl
                 , viewWallet model.wallet
                 , viewKeyPair model.keyPair
                 , Element.el [ Element.centerX ] <| pageContent
@@ -332,8 +389,8 @@ main =
         , view = view
         , update = update
         , subscriptions = subscriptions
-        , onUrlRequest = Msg.LinkClicked
-        , onUrlChange = Msg.UrlChanged
+        , onUrlRequest = LinkClicked
+        , onUrlChange = UrlChanged
         }
 
 
@@ -344,8 +401,79 @@ main =
 cmdFromOverlay : Maybe Overlay -> Cmd msg
 cmdFromOverlay maybePage =
     case maybePage of
-        Just Overlay.WaitForKeyPair ->
+        Just WaitForKeyPair ->
             requireKeyPair ()
 
         _ ->
             Cmd.none
+
+
+overlayAttrs : Element.Element msg -> String -> List (Element.Attribute msg)
+overlayAttrs content backUrl =
+    [ background backUrl
+    , foreground content
+    ]
+
+
+overlayFromRoute : Maybe Route -> Maybe Overlay
+overlayFromRoute maybeRoute =
+    case maybeRoute of
+        Just (Route.Register maybeOverlay) ->
+            case maybeOverlay of
+                Just Route.WaitForKeyPair ->
+                    Just WaitForKeyPair
+
+                Just Route.WalletSetup ->
+                    Just <| WalletSetup Overlay.WalletSetup.init
+
+                _ ->
+                    Nothing
+
+        _ ->
+            Nothing
+
+
+pageFromRoute : Maybe Route -> Page
+pageFromRoute maybeRoute =
+    case maybeRoute of
+        Just Route.Home ->
+            Home
+
+        Just Route.Project ->
+            Project
+
+        Just (Route.Register _) ->
+            Register Page.Register.init
+
+        _ ->
+            NotFound
+
+
+
+-- CONTAINER
+
+
+background : String -> Element.Attribute msg
+background backUrl =
+    Element.inFront <|
+        Element.link
+            [ Background.color Color.black
+            , Element.alpha 0.6
+            , Element.htmlAttribute <| Html.Attributes.style "cursor" "default"
+            , Element.height Element.fill
+            , Element.width Element.fill
+            ]
+            { label = Element.none
+            , url = backUrl
+            }
+
+
+foreground : Element.Element msg -> Element.Attribute msg
+foreground content =
+    Element.inFront <|
+        Element.el
+            [ Element.centerX
+            , Element.centerY
+            ]
+        <|
+            content
