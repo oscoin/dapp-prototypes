@@ -21,8 +21,8 @@ view =
         ]
         [ Header.view
         , Actions.view
-        , People.view
         , Contract.view
+        , People.view
         , Funds.view
         ]
     )
