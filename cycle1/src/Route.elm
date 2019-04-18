@@ -1,10 +1,11 @@
-module Route exposing (Route(..), fromUrl, href, replaceUrl)
+module Route exposing (Route(..), fromUrl, replaceUrl, toString)
 
 import Browser.Navigation as Nav
 import Dict
 import Element
 import Html.Attributes as Attr
 import Url exposing (Url)
+import Url.Builder exposing (relative)
 import Url.Parser as Parser exposing ((<?>), Parser, oneOf, s)
 import Url.Parser.Query as Query
 
@@ -15,21 +16,28 @@ import Url.Parser.Query as Query
 
 type Route
     = Home
-    | Project (Maybe Route)
-    | Register
+    | Project
+    | Register (Maybe Route)
+    | WaitForKeyPair
+    | WalletSetup
 
 
 queryOverlay : Query.Parser (Maybe Route)
 queryOverlay =
-    Query.enum "overlay" (Dict.fromList [ ( "register", Register ) ])
+    Query.enum "overlay"
+        (Dict.fromList
+            [ ( toString WaitForKeyPair, WaitForKeyPair )
+            , ( toString WalletSetup, WalletSetup )
+            ]
+        )
 
 
 parser : Parser (Route -> a) a
 parser =
     oneOf
-        [ Parser.map Project (Parser.top <?> queryOverlay)
-        , Parser.map Project (s "project" <?> queryOverlay)
-        , Parser.map Register (s "register")
+        [ Parser.map Project Parser.top
+        , Parser.map Project (s "project")
+        , Parser.map Register (s "register" <?> queryOverlay)
         ]
 
 
@@ -39,7 +47,7 @@ parser =
 
 href : Route -> Element.Attribute msg
 href targetRoute =
-    Element.htmlAttribute <| Attr.href (routeToString targetRoute)
+    Element.htmlAttribute <| Attr.href (toString targetRoute)
 
 
 fromUrl : Url -> Maybe Route
@@ -49,25 +57,56 @@ fromUrl url =
 
 replaceUrl : Nav.Key -> Route -> Cmd msg
 replaceUrl key route =
-    Nav.replaceUrl key (routeToString route)
+    Nav.replaceUrl key (toString route)
 
 
-
--- HELPERS
-
-
-routeToString : Route -> String
-routeToString page =
+toString : Route -> String
+toString route =
     let
-        pieces =
-            case page of
-                Home ->
+        paths =
+            routeToPaths route
+
+        queryParams =
+            case route of
+                Register overlay ->
+                    case overlay of
+                        Just WaitForKeyPair ->
+                            [ Url.Builder.string "overlay" <|
+                                relative (routeToPaths WaitForKeyPair) []
+                            ]
+
+                        Just WalletSetup ->
+                            [ Url.Builder.string "overlay" <|
+                                relative (routeToPaths WalletSetup) []
+                            ]
+
+                        _ ->
+                            []
+
+                _ ->
                     []
-
-                Project _ ->
-                    [ "project" ]
-
-                Register ->
-                    [ "register" ]
     in
-    String.join "/" pieces
+    relative paths queryParams
+
+
+
+-- HELPER
+
+
+routeToPaths : Route -> List String
+routeToPaths route =
+    case route of
+        Home ->
+            []
+
+        Project ->
+            [ "project" ]
+
+        Register _ ->
+            [ "register" ]
+
+        WaitForKeyPair ->
+            [ "wait-for-keypair" ]
+
+        WalletSetup ->
+            [ "wallet-setup" ]

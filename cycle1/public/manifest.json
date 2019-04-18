@@ -1,0 +1,39 @@
+{
+  "description": "",
+  "manifest_version": 2,
+  "name": "oscoin wallet",
+  "version": "1.0",
+  "homepage_url": "https://oscoin.io",
+  "icons": {
+    "48": "icons/wallet.svg",
+    "96": "icons/wallet.svg"
+  },
+  "permissions": [
+    "activeTab",
+    "*://localhost:8000/*"
+  ],
+  "browser_action": {
+    "default_popup": "wallet-popup.html",
+    "default_title": "oscoin wallet"
+  },
+  "background": {
+    "scripts": [
+      "scripts/wallet-background.js"
+    ],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "file://*/*",
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "scripts/wallet-contentscript.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}

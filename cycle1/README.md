@@ -15,3 +15,19 @@ development, which can be used as such:
 ```
 elm-live src/Main.elm --dir public/ --pushstate -- --debug --output public/scripts/main.js
 ```
+
+To run and test the web extension install
+[web-ext](https://github.com/mozilla/web-ext) and run the following command:
+
+```
+cd public/
+web-ext run --verbose -u localhost:8000 --bc
+```
+
+This should open up an instance of Firefox with the wallet extension installed.
+To have the contents of the popup windows re-build automatically on changes
+run this:
+
+```
+elm-live src/WalletPopup.elm --start-page wallet-popup.html --dir public/ --port 8001 --pushstate -- --debug --output public/scripts/wallet-popup.js
+```

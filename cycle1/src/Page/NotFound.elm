@@ -3,6 +3,10 @@ module Page.NotFound exposing (view)
 import Element exposing (Element)
 
 
+
+-- VIEW
+
+
 view : ( String, Element msg )
 view =
     ( "Page Not Found"
