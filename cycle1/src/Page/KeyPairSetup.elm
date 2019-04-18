@@ -4,6 +4,7 @@ import Atom.Button as Button
 import Element exposing (Element)
 import Element.Events as Events
 import Element.Input as Input
+import KeyPair exposing (KeyPair)
 import Style.Color as Color
 import Style.Font as Font
 
@@ -63,7 +64,7 @@ update msg model =
             ( { model | keyPairId = id }, Cmd.none )
 
 
-updateCreated : Model -> String -> ( Model, Cmd Msg )
+updateCreated : Model -> KeyPair -> ( Model, Cmd Msg )
 updateCreated model _ =
     ( { model | step = Passphrase }, Cmd.none )
 

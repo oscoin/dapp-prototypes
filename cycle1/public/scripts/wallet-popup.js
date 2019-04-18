@@ -2314,6 +2314,43 @@ function _Platform_mergeExportsDebug(moduleName, obj, exports)
 
 
 
+var _Bitwise_and = F2(function(a, b)
+{
+	return a & b;
+});
+
+var _Bitwise_or = F2(function(a, b)
+{
+	return a | b;
+});
+
+var _Bitwise_xor = F2(function(a, b)
+{
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
+
+
+
 
 // HELPERS
 
@@ -3872,43 +3909,6 @@ function _VirtualDom_dekey(keyedNode)
 
 
 
-var _Bitwise_and = F2(function(a, b)
-{
-	return a & b;
-});
-
-var _Bitwise_or = F2(function(a, b)
-{
-	return a | b;
-});
-
-var _Bitwise_xor = F2(function(a, b)
-{
-	return a ^ b;
-});
-
-function _Bitwise_complement(a)
-{
-	return ~a;
-};
-
-var _Bitwise_shiftLeftBy = F2(function(offset, a)
-{
-	return a << offset;
-});
-
-var _Bitwise_shiftRightBy = F2(function(offset, a)
-{
-	return a >> offset;
-});
-
-var _Bitwise_shiftRightZfBy = F2(function(offset, a)
-{
-	return a >>> offset;
-});
-
-
-
 
 // HELPERS
 
@@ -4870,14 +4870,6 @@ function _Browser_load(url)
 		}
 	}));
 }
-var author$project$Page$KeyPairList = function (a) {
-	return {$: 'KeyPairList', a: a};
-};
-var author$project$Page$KeyPairSetup = function (a) {
-	return {$: 'KeyPairSetup', a: a};
-};
-var author$project$Page$NotFound = {$: 'NotFound'};
-var author$project$Page$SignTransaction = {$: 'SignTransaction'};
 var author$project$Page$KeyPairList$init = function (keyPair) {
 	return keyPair;
 };
@@ -4887,9 +4879,14 @@ var author$project$Page$KeyPairSetup$Model = F2(
 		return {keyPairId: keyPairId, step: step};
 	});
 var author$project$Page$KeyPairSetup$init = A2(author$project$Page$KeyPairSetup$Model, '', author$project$Page$KeyPairSetup$Initial);
-var author$project$WalletPopup$Model = function (page) {
-	return {page: page};
+var author$project$WalletPopup$KeyPairList = function (a) {
+	return {$: 'KeyPairList', a: a};
 };
+var author$project$WalletPopup$KeyPairSetup = function (a) {
+	return {$: 'KeyPairSetup', a: a};
+};
+var author$project$WalletPopup$NotFound = {$: 'NotFound'};
+var author$project$WalletPopup$SignTransaction = {$: 'SignTransaction'};
 var elm$core$Basics$apL = F2(
 	function (f, x) {
 		return f(x);
@@ -5368,7 +5365,7 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var author$project$WalletPopup$init = function (flags) {
-	var page = function () {
+	var model = function () {
 		var _n0 = _Utils_Tuple3(flags.location.hash, flags.maybeKeyPair, flags.maybeTransaction);
 		_n0$3:
 		while (true) {
@@ -5376,7 +5373,7 @@ var author$project$WalletPopup$init = function (flags) {
 				if ((_n0.a === '#keys') && (_n0.c.$ === 'Nothing')) {
 					var _n1 = _n0.b;
 					var _n2 = _n0.c;
-					return author$project$Page$KeyPairSetup(author$project$Page$KeyPairSetup$init);
+					return author$project$WalletPopup$KeyPairSetup(author$project$Page$KeyPairSetup$init);
 				} else {
 					break _n0$3;
 				}
@@ -5385,45 +5382,80 @@ var author$project$WalletPopup$init = function (flags) {
 					if (_n0.a === '#keys') {
 						var keyPair = _n0.b.a;
 						var _n3 = _n0.c;
-						return author$project$Page$KeyPairList(
+						return author$project$WalletPopup$KeyPairList(
 							author$project$Page$KeyPairList$init(keyPair));
 					} else {
 						break _n0$3;
 					}
 				} else {
 					if (_n0.a === '#sign') {
-						return author$project$Page$SignTransaction;
+						return author$project$WalletPopup$SignTransaction;
 					} else {
 						break _n0$3;
 					}
 				}
 			}
 		}
-		return author$project$Page$NotFound;
+		return author$project$WalletPopup$NotFound;
 	}();
-	return _Utils_Tuple2(
-		author$project$WalletPopup$Model(page),
-		elm$core$Platform$Cmd$none);
+	return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 };
-var author$project$Msg$KeyPairCreated = function (a) {
+var author$project$KeyPair$KeyPair = function (a) {
+	return {$: 'KeyPair', a: a};
+};
+var elm$core$Basics$identity = function (x) {
+	return x;
+};
+var elm$json$Json$Decode$andThen = _Json_andThen;
+var elm$json$Json$Decode$string = _Json_decodeString;
+var elm$json$Json$Decode$succeed = _Json_succeed;
+var author$project$KeyPair$decoder = A2(
+	elm$json$Json$Decode$andThen,
+	function (str) {
+		if (str === '') {
+			return elm$json$Json$Decode$succeed(elm$core$Maybe$Nothing);
+		} else {
+			var keyPair = str;
+			return elm$json$Json$Decode$succeed(
+				elm$core$Maybe$Just(
+					author$project$KeyPair$KeyPair(keyPair)));
+		}
+	},
+	elm$json$Json$Decode$string);
+var elm$core$Debug$log = _Debug_log;
+var elm$json$Json$Decode$decodeValue = _Json_run;
+var author$project$KeyPair$decode = function (json) {
+	var _n0 = A2(elm$json$Json$Decode$decodeValue, author$project$KeyPair$decoder, json);
+	if (_n0.$ === 'Ok') {
+		var keyPair = _n0.a;
+		return keyPair;
+	} else {
+		var err = _n0.a;
+		var _n1 = A2(elm$core$Debug$log, 'Error decoding key pair', err);
+		return elm$core$Maybe$Nothing;
+	}
+};
+var author$project$WalletPopup$KeyPairCreated = function (a) {
 	return {$: 'KeyPairCreated', a: a};
 };
-var elm$json$Json$Decode$string = _Json_decodeString;
-var author$project$WalletPopup$keyPairCreated = _Platform_incomingPort('keyPairCreated', elm$json$Json$Decode$string);
+var elm$json$Json$Decode$value = _Json_decodeValue;
+var author$project$WalletPopup$keyPairCreated = _Platform_incomingPort('keyPairCreated', elm$json$Json$Decode$value);
+var elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
 var elm$core$Platform$Sub$batch = _Platform_batch;
 var author$project$WalletPopup$subscriptions = function (_n0) {
 	return elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
-				author$project$WalletPopup$keyPairCreated(author$project$Msg$KeyPairCreated)
+				author$project$WalletPopup$keyPairCreated(
+				A2(elm$core$Basics$composeR, author$project$KeyPair$decode, author$project$WalletPopup$KeyPairCreated))
 			]));
-};
-var author$project$Msg$PageKeyPairSetup = function (a) {
-	return {$: 'PageKeyPairSetup', a: a};
 };
 var author$project$Page$KeyPairSetup$Passphrase = {$: 'Passphrase'};
 var author$project$Page$KeyPairSetup$Setup = {$: 'Setup'};
-var elm$core$Debug$log = _Debug_log;
 var author$project$Page$KeyPairSetup$update = F2(
 	function (msg, model) {
 		var _n0 = A2(elm$core$Debug$log, 'KeyPairSetup.Msg', msg);
@@ -5461,6 +5493,9 @@ var author$project$Page$KeyPairSetup$updateCreated = F2(
 				{step: author$project$Page$KeyPairSetup$Passphrase}),
 			elm$core$Platform$Cmd$none);
 	});
+var author$project$WalletPopup$PageKeyPairSetup = function (a) {
+	return {$: 'PageKeyPairSetup', a: a};
+};
 var elm$json$Json$Encode$string = _Json_wrap;
 var author$project$WalletPopup$keyPairCreate = _Platform_outgoingPort('keyPairCreate', elm$json$Json$Encode$string);
 var elm$json$Json$Encode$null = _Json_encodeNull;
@@ -5474,65 +5509,192 @@ var author$project$WalletPopup$update = F2(
 	function (msg, model) {
 		var _n0 = _Utils_Tuple2(
 			A2(elm$core$Debug$log, 'WalletPopup.Msg', msg),
-			A2(elm$core$Debug$log, 'WalletPopup.Page', model.page));
-		_n0$2:
-		while (true) {
+			A2(elm$core$Debug$log, 'WalletPopup.Model', model));
+		if (_n0.a.$ === 'KeyPairCreated') {
 			if (_n0.b.$ === 'KeyPairSetup') {
-				switch (_n0.a.$) {
-					case 'KeyPairCreated':
-						var id = _n0.a.a;
-						var oldModel = _n0.b.a;
-						var _n1 = A2(author$project$Page$KeyPairSetup$updateCreated, oldModel, id);
-						var pageModel = _n1.a;
-						var pageCmd = _n1.b;
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									page: author$project$Page$KeyPairSetup(pageModel)
-								}),
-							A2(elm$core$Platform$Cmd$map, author$project$Msg$PageKeyPairSetup, pageCmd));
-					case 'PageKeyPairSetup':
-						var subCmd = _n0.a.a;
-						var oldModel = _n0.b.a;
-						var portCmd = function () {
-							switch (subCmd.$) {
-								case 'Complete':
-									return author$project$WalletPopup$keyPairSetupComplete(_Utils_Tuple0);
-								case 'Create':
-									var id = subCmd.a;
-									return author$project$WalletPopup$keyPairCreate(id);
-								default:
-									return elm$core$Platform$Cmd$none;
-							}
-						}();
-						var _n2 = A2(author$project$Page$KeyPairSetup$update, subCmd, oldModel);
-						var pageModel = _n2.a;
-						var pageCmd = _n2.b;
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									page: author$project$Page$KeyPairSetup(pageModel)
-								}),
-							elm$core$Platform$Cmd$batch(
-								_List_fromArray(
-									[
-										A2(elm$core$Platform$Cmd$map, author$project$Msg$PageKeyPairSetup, pageCmd),
-										portCmd
-									])));
-					default:
-						break _n0$2;
+				var maybeKeyPair = _n0.a.a;
+				var oldModel = _n0.b.a;
+				if (maybeKeyPair.$ === 'Nothing') {
+					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				} else {
+					var keyPair = maybeKeyPair.a;
+					var _n2 = A2(author$project$Page$KeyPairSetup$updateCreated, oldModel, keyPair);
+					var pageModel = _n2.a;
+					var pageCmd = _n2.b;
+					return _Utils_Tuple2(
+						author$project$WalletPopup$KeyPairSetup(pageModel),
+						A2(elm$core$Platform$Cmd$map, author$project$WalletPopup$PageKeyPairSetup, pageCmd));
 				}
 			} else {
-				break _n0$2;
+				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+			}
+		} else {
+			if (_n0.b.$ === 'KeyPairSetup') {
+				var subCmd = _n0.a.a;
+				var oldModel = _n0.b.a;
+				var portCmd = function () {
+					switch (subCmd.$) {
+						case 'Complete':
+							return author$project$WalletPopup$keyPairSetupComplete(_Utils_Tuple0);
+						case 'Create':
+							var id = subCmd.a;
+							return author$project$WalletPopup$keyPairCreate(id);
+						default:
+							return elm$core$Platform$Cmd$none;
+					}
+				}();
+				var _n3 = A2(author$project$Page$KeyPairSetup$update, subCmd, oldModel);
+				var pageModel = _n3.a;
+				var pageCmd = _n3.b;
+				return _Utils_Tuple2(
+					author$project$WalletPopup$KeyPairSetup(pageModel),
+					elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								A2(elm$core$Platform$Cmd$map, author$project$WalletPopup$PageKeyPairSetup, pageCmd),
+								portCmd
+							])));
+			} else {
+				var subCmd = _n0.a.a;
+				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 			}
 		}
-		return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 	});
-var author$project$Msg$PageRegister = function (a) {
-	return {$: 'PageRegister', a: a};
+var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
+	function (a, b, c, d) {
+		return {$: 'Rgba', a: a, b: b, c: c, d: d};
+	});
+var mdgriffith$elm_ui$Element$rgb255 = F3(
+	function (red, green, blue) {
+		return A4(mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
+	});
+var author$project$Style$Color$black = A3(mdgriffith$elm_ui$Element$rgb255, 40, 51, 61);
+var mdgriffith$elm_ui$Internal$Model$Typeface = function (a) {
+	return {$: 'Typeface', a: a};
 };
+var mdgriffith$elm_ui$Element$Font$typeface = mdgriffith$elm_ui$Internal$Model$Typeface;
+var author$project$Style$Font$fontGTAmericaBold = mdgriffith$elm_ui$Element$Font$typeface('GT America Bold');
+var elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
+var mdgriffith$elm_ui$Internal$Flag$Flag = function (a) {
+	return {$: 'Flag', a: a};
+};
+var mdgriffith$elm_ui$Internal$Flag$Second = function (a) {
+	return {$: 'Second', a: a};
+};
+var mdgriffith$elm_ui$Internal$Flag$flag = function (i) {
+	return (i > 31) ? mdgriffith$elm_ui$Internal$Flag$Second(1 << (i - 32)) : mdgriffith$elm_ui$Internal$Flag$Flag(1 << i);
+};
+var mdgriffith$elm_ui$Internal$Flag$fontColor = mdgriffith$elm_ui$Internal$Flag$flag(14);
+var mdgriffith$elm_ui$Internal$Model$Colored = F3(
+	function (a, b, c) {
+		return {$: 'Colored', a: a, b: b, c: c};
+	});
+var mdgriffith$elm_ui$Internal$Model$StyleClass = F2(
+	function (a, b) {
+		return {$: 'StyleClass', a: a, b: b};
+	});
+var elm$core$Basics$round = _Basics_round;
+var mdgriffith$elm_ui$Internal$Model$floatClass = function (x) {
+	return elm$core$String$fromInt(
+		elm$core$Basics$round(x * 255));
+};
+var mdgriffith$elm_ui$Internal$Model$formatColorClass = function (_n0) {
+	var red = _n0.a;
+	var green = _n0.b;
+	var blue = _n0.c;
+	var alpha = _n0.d;
+	return mdgriffith$elm_ui$Internal$Model$floatClass(red) + ('-' + (mdgriffith$elm_ui$Internal$Model$floatClass(green) + ('-' + (mdgriffith$elm_ui$Internal$Model$floatClass(blue) + ('-' + mdgriffith$elm_ui$Internal$Model$floatClass(alpha))))));
+};
+var mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$fontColor,
+		A3(
+			mdgriffith$elm_ui$Internal$Model$Colored,
+			'fc-' + mdgriffith$elm_ui$Internal$Model$formatColorClass(fontColor),
+			'color',
+			fontColor));
+};
+var mdgriffith$elm_ui$Internal$Flag$fontFamily = mdgriffith$elm_ui$Internal$Flag$flag(5);
+var mdgriffith$elm_ui$Internal$Model$FontFamily = F2(
+	function (a, b) {
+		return {$: 'FontFamily', a: a, b: b};
+	});
+var elm$core$String$toLower = _String_toLower;
+var elm$core$String$words = _String_words;
+var mdgriffith$elm_ui$Internal$Model$renderFontClassName = F2(
+	function (font, current) {
+		return _Utils_ap(
+			current,
+			function () {
+				switch (font.$) {
+					case 'Serif':
+						return 'serif';
+					case 'SansSerif':
+						return 'sans-serif';
+					case 'Monospace':
+						return 'monospace';
+					case 'Typeface':
+						var name = font.a;
+						return A2(
+							elm$core$String$join,
+							'-',
+							elm$core$String$words(
+								elm$core$String$toLower(name)));
+					case 'ImportFont':
+						var name = font.a;
+						var url = font.b;
+						return A2(
+							elm$core$String$join,
+							'-',
+							elm$core$String$words(
+								elm$core$String$toLower(name)));
+					default:
+						var name = font.a.name;
+						return A2(
+							elm$core$String$join,
+							'-',
+							elm$core$String$words(
+								elm$core$String$toLower(name)));
+				}
+			}());
+	});
+var mdgriffith$elm_ui$Element$Font$family = function (families) {
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$fontFamily,
+		A2(
+			mdgriffith$elm_ui$Internal$Model$FontFamily,
+			A3(elm$core$List$foldl, mdgriffith$elm_ui$Internal$Model$renderFontClassName, 'ff-', families),
+			families));
+};
+var mdgriffith$elm_ui$Internal$Model$SansSerif = {$: 'SansSerif'};
+var mdgriffith$elm_ui$Element$Font$sansSerif = mdgriffith$elm_ui$Internal$Model$SansSerif;
+var mdgriffith$elm_ui$Internal$Flag$fontSize = mdgriffith$elm_ui$Internal$Flag$flag(4);
+var mdgriffith$elm_ui$Internal$Model$FontSize = function (a) {
+	return {$: 'FontSize', a: a};
+};
+var mdgriffith$elm_ui$Element$Font$size = function (i) {
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$fontSize,
+		mdgriffith$elm_ui$Internal$Model$FontSize(i));
+};
+var author$project$Style$Font$mediumHeader = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaBold, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(24)
+		]);
+};
+var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
+	return {$: 'AlignX', a: a};
+};
+var mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var mdgriffith$elm_ui$Element$centerX = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$CenterX);
 var mdgriffith$elm_ui$Internal$Model$Height = function (a) {
 	return {$: 'Height', a: a};
 };
@@ -5734,12 +5896,8 @@ var mdgriffith$elm_ui$Internal$Model$asEl = mdgriffith$elm_ui$Internal$Model$AsE
 var mdgriffith$elm_ui$Internal$Model$AsParagraph = {$: 'AsParagraph'};
 var mdgriffith$elm_ui$Internal$Model$asParagraph = mdgriffith$elm_ui$Internal$Model$AsParagraph;
 var elm$core$Basics$not = _Basics_not;
-var elm$core$Basics$identity = function (x) {
-	return x;
-};
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
-var elm$json$Json$Decode$succeed = _Json_succeed;
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
 		case 'Normal':
@@ -5771,16 +5929,6 @@ var elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
 var elm$virtual_dom$VirtualDom$node = function (tag) {
 	return _VirtualDom_node(
 		_VirtualDom_noScript(tag));
-};
-var elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
-var mdgriffith$elm_ui$Internal$Flag$Flag = function (a) {
-	return {$: 'Flag', a: a};
-};
-var mdgriffith$elm_ui$Internal$Flag$Second = function (a) {
-	return {$: 'Second', a: a};
-};
-var mdgriffith$elm_ui$Internal$Flag$flag = function (i) {
-	return (i > 31) ? mdgriffith$elm_ui$Internal$Flag$Second(1 << (i - 32)) : mdgriffith$elm_ui$Internal$Flag$Flag(1 << i);
 };
 var mdgriffith$elm_ui$Internal$Flag$alignBottom = mdgriffith$elm_ui$Internal$Flag$flag(41);
 var mdgriffith$elm_ui$Internal$Flag$alignRight = mdgriffith$elm_ui$Internal$Flag$flag(40);
@@ -6001,11 +6149,6 @@ var mdgriffith$elm_ui$Internal$Model$lengthClassName = function (x) {
 			var len = x.b;
 			return 'max' + (elm$core$String$fromInt(max) + mdgriffith$elm_ui$Internal$Model$lengthClassName(len));
 	}
-};
-var elm$core$Basics$round = _Basics_round;
-var mdgriffith$elm_ui$Internal$Model$floatClass = function (x) {
-	return elm$core$String$fromInt(
-		elm$core$Basics$round(x * 255));
 };
 var mdgriffith$elm_ui$Internal$Model$transformClass = function (transform) {
 	switch (transform.$) {
@@ -10977,141 +11120,6 @@ var mdgriffith$elm_ui$Element$column = F2(
 						attrs))),
 			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
-var mdgriffith$elm_ui$Internal$Model$Text = function (a) {
-	return {$: 'Text', a: a};
-};
-var mdgriffith$elm_ui$Element$text = function (content) {
-	return mdgriffith$elm_ui$Internal$Model$Text(content);
-};
-var author$project$Page$Home$view = _Utils_Tuple2(
-	'home',
-	A2(
-		mdgriffith$elm_ui$Element$column,
-		_List_Nil,
-		_List_fromArray(
-			[
-				mdgriffith$elm_ui$Element$text('home')
-			])));
-var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
-	function (a, b, c, d) {
-		return {$: 'Rgba', a: a, b: b, c: c, d: d};
-	});
-var mdgriffith$elm_ui$Element$rgb255 = F3(
-	function (red, green, blue) {
-		return A4(mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
-	});
-var author$project$Style$Color$black = A3(mdgriffith$elm_ui$Element$rgb255, 40, 51, 61);
-var mdgriffith$elm_ui$Internal$Model$Typeface = function (a) {
-	return {$: 'Typeface', a: a};
-};
-var mdgriffith$elm_ui$Element$Font$typeface = mdgriffith$elm_ui$Internal$Model$Typeface;
-var author$project$Style$Font$fontGTAmericaBold = mdgriffith$elm_ui$Element$Font$typeface('GT America Bold');
-var mdgriffith$elm_ui$Internal$Flag$fontColor = mdgriffith$elm_ui$Internal$Flag$flag(14);
-var mdgriffith$elm_ui$Internal$Model$Colored = F3(
-	function (a, b, c) {
-		return {$: 'Colored', a: a, b: b, c: c};
-	});
-var mdgriffith$elm_ui$Internal$Model$StyleClass = F2(
-	function (a, b) {
-		return {$: 'StyleClass', a: a, b: b};
-	});
-var mdgriffith$elm_ui$Internal$Model$formatColorClass = function (_n0) {
-	var red = _n0.a;
-	var green = _n0.b;
-	var blue = _n0.c;
-	var alpha = _n0.d;
-	return mdgriffith$elm_ui$Internal$Model$floatClass(red) + ('-' + (mdgriffith$elm_ui$Internal$Model$floatClass(green) + ('-' + (mdgriffith$elm_ui$Internal$Model$floatClass(blue) + ('-' + mdgriffith$elm_ui$Internal$Model$floatClass(alpha))))));
-};
-var mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
-	return A2(
-		mdgriffith$elm_ui$Internal$Model$StyleClass,
-		mdgriffith$elm_ui$Internal$Flag$fontColor,
-		A3(
-			mdgriffith$elm_ui$Internal$Model$Colored,
-			'fc-' + mdgriffith$elm_ui$Internal$Model$formatColorClass(fontColor),
-			'color',
-			fontColor));
-};
-var mdgriffith$elm_ui$Internal$Flag$fontFamily = mdgriffith$elm_ui$Internal$Flag$flag(5);
-var mdgriffith$elm_ui$Internal$Model$FontFamily = F2(
-	function (a, b) {
-		return {$: 'FontFamily', a: a, b: b};
-	});
-var elm$core$String$toLower = _String_toLower;
-var elm$core$String$words = _String_words;
-var mdgriffith$elm_ui$Internal$Model$renderFontClassName = F2(
-	function (font, current) {
-		return _Utils_ap(
-			current,
-			function () {
-				switch (font.$) {
-					case 'Serif':
-						return 'serif';
-					case 'SansSerif':
-						return 'sans-serif';
-					case 'Monospace':
-						return 'monospace';
-					case 'Typeface':
-						var name = font.a;
-						return A2(
-							elm$core$String$join,
-							'-',
-							elm$core$String$words(
-								elm$core$String$toLower(name)));
-					case 'ImportFont':
-						var name = font.a;
-						var url = font.b;
-						return A2(
-							elm$core$String$join,
-							'-',
-							elm$core$String$words(
-								elm$core$String$toLower(name)));
-					default:
-						var name = font.a.name;
-						return A2(
-							elm$core$String$join,
-							'-',
-							elm$core$String$words(
-								elm$core$String$toLower(name)));
-				}
-			}());
-	});
-var mdgriffith$elm_ui$Element$Font$family = function (families) {
-	return A2(
-		mdgriffith$elm_ui$Internal$Model$StyleClass,
-		mdgriffith$elm_ui$Internal$Flag$fontFamily,
-		A2(
-			mdgriffith$elm_ui$Internal$Model$FontFamily,
-			A3(elm$core$List$foldl, mdgriffith$elm_ui$Internal$Model$renderFontClassName, 'ff-', families),
-			families));
-};
-var mdgriffith$elm_ui$Internal$Model$SansSerif = {$: 'SansSerif'};
-var mdgriffith$elm_ui$Element$Font$sansSerif = mdgriffith$elm_ui$Internal$Model$SansSerif;
-var mdgriffith$elm_ui$Internal$Flag$fontSize = mdgriffith$elm_ui$Internal$Flag$flag(4);
-var mdgriffith$elm_ui$Internal$Model$FontSize = function (a) {
-	return {$: 'FontSize', a: a};
-};
-var mdgriffith$elm_ui$Element$Font$size = function (i) {
-	return A2(
-		mdgriffith$elm_ui$Internal$Model$StyleClass,
-		mdgriffith$elm_ui$Internal$Flag$fontSize,
-		mdgriffith$elm_ui$Internal$Model$FontSize(i));
-};
-var author$project$Style$Font$mediumHeader = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaBold, mdgriffith$elm_ui$Element$Font$sansSerif])),
-			mdgriffith$elm_ui$Element$Font$size(24)
-		]);
-};
-var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
-	return {$: 'AlignX', a: a};
-};
-var mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
-var mdgriffith$elm_ui$Element$centerX = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$CenterX);
 var mdgriffith$elm_ui$Element$el = F2(
 	function (attrs, child) {
 		return A4(
@@ -11153,6 +11161,12 @@ var mdgriffith$elm_ui$Element$spacingXY = F2(
 				x,
 				y));
 	});
+var mdgriffith$elm_ui$Internal$Model$Text = function (a) {
+	return {$: 'Text', a: a};
+};
+var mdgriffith$elm_ui$Element$text = function (content) {
+	return mdgriffith$elm_ui$Internal$Model$Text(content);
+};
 var author$project$Page$KeyPairList$view = function (keyPair) {
 	return _Utils_Tuple2(
 		'key pair list',
@@ -12328,860 +12342,6 @@ var author$project$Page$NotFound$view = _Utils_Tuple2(
 			[
 				mdgriffith$elm_ui$Element$text('Page Not Found')
 			])));
-var author$project$Style$Color$purple = A3(mdgriffith$elm_ui$Element$rgb255, 120, 52, 232);
-var author$project$Atom$Button$primary = function (btnText) {
-	return A4(author$project$Atom$Button$style, author$project$Style$Color$purple, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
-};
-var author$project$Style$Color$darkGrey = A3(mdgriffith$elm_ui$Element$rgb255, 84, 100, 116);
-var author$project$Style$Color$lightGrey = A3(mdgriffith$elm_ui$Element$rgb255, 206, 216, 225);
-var author$project$Atom$Button$secondary = function (btnText) {
-	return A4(author$project$Atom$Button$style, author$project$Style$Color$lightGrey, author$project$Style$Color$darkGrey, author$project$Style$Color$black, btnText);
-};
-var author$project$Style$Color$green = A3(mdgriffith$elm_ui$Element$rgb255, 0, 217, 110);
-var author$project$Atom$Button$secondaryAccent = function (btnText) {
-	return A4(author$project$Atom$Button$style, author$project$Style$Color$green, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
-};
-var mdgriffith$elm_ui$Element$row = F2(
-	function (attrs, children) {
-		return A4(
-			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asRow,
-			mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				elm$core$List$cons,
-				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
-				A2(
-					elm$core$List$cons,
-					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
-					A2(
-						elm$core$List$cons,
-						mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
-						attrs))),
-			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
-var author$project$Page$Project$Actions$view = A2(
-	mdgriffith$elm_ui$Element$row,
-	_List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$spacing(16),
-			mdgriffith$elm_ui$Element$paddingEach(
-			{bottom: 0, left: 0, right: 0, top: 16}),
-			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-		]),
-	_List_fromArray(
-		[
-			author$project$Atom$Button$primary('Donate'),
-			author$project$Atom$Button$secondary('Follow'),
-			author$project$Atom$Button$secondaryAccent('Make dependency')
-		]));
-var mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var mdgriffith$elm_ui$Element$px = mdgriffith$elm_ui$Internal$Model$Px;
-var mdgriffith$elm_ui$Element$Border$widthXY = F2(
-	function (x, y) {
-		return A2(
-			mdgriffith$elm_ui$Internal$Model$StyleClass,
-			mdgriffith$elm_ui$Internal$Flag$borderWidth,
-			A5(
-				mdgriffith$elm_ui$Internal$Model$BorderWidth,
-				'b-' + (elm$core$String$fromInt(x) + ('-' + elm$core$String$fromInt(y))),
-				y,
-				x,
-				y,
-				x));
-	});
-var mdgriffith$elm_ui$Element$Border$widthEach = function (_n0) {
-	var bottom = _n0.bottom;
-	var top = _n0.top;
-	var left = _n0.left;
-	var right = _n0.right;
-	return (_Utils_eq(top, bottom) && _Utils_eq(left, right)) ? (_Utils_eq(top, right) ? mdgriffith$elm_ui$Element$Border$width(top) : A2(mdgriffith$elm_ui$Element$Border$widthXY, left, top)) : A2(
-		mdgriffith$elm_ui$Internal$Model$StyleClass,
-		mdgriffith$elm_ui$Internal$Flag$borderWidth,
-		A5(
-			mdgriffith$elm_ui$Internal$Model$BorderWidth,
-			'b-' + (elm$core$String$fromInt(top) + ('-' + (elm$core$String$fromInt(right) + ('-' + (elm$core$String$fromInt(bottom) + ('-' + elm$core$String$fromInt(left))))))),
-			top,
-			right,
-			bottom,
-			left));
-};
-var author$project$Atom$Heading$section = function (title) {
-	return A2(
-		mdgriffith$elm_ui$Element$el,
-		_Utils_ap(
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
-					mdgriffith$elm_ui$Element$Border$widthEach(
-					{bottom: 1, left: 0, right: 0, top: 0}),
-					A2(mdgriffith$elm_ui$Element$paddingXY, 24, 17),
-					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
-					mdgriffith$elm_ui$Element$height(
-					mdgriffith$elm_ui$Element$px(60))
-				]),
-			author$project$Style$Font$mediumHeader(author$project$Style$Color$black)),
-		mdgriffith$elm_ui$Element$text(title));
-};
-var mdgriffith$elm_ui$Element$toRgb = function (_n0) {
-	var r = _n0.a;
-	var g = _n0.b;
-	var b = _n0.c;
-	var a = _n0.d;
-	return {alpha: a, blue: b, green: g, red: r};
-};
-var author$project$Style$Color$alpha = F2(
-	function (color, transparency) {
-		var original = mdgriffith$elm_ui$Element$toRgb(color);
-		return A4(mdgriffith$elm_ui$Element$rgba, original.red, original.green, original.blue, transparency);
-	});
-var author$project$Style$Color$blue = A3(mdgriffith$elm_ui$Element$rgb255, 0, 146, 210);
-var author$project$Style$Font$fontGTAmericaRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America');
-var author$project$Style$Font$bodyText = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaRegular, mdgriffith$elm_ui$Element$Font$sansSerif])),
-			mdgriffith$elm_ui$Element$Font$size(16)
-		]);
-};
-var mdgriffith$elm_ui$Internal$Flag$fontWeight = mdgriffith$elm_ui$Internal$Flag$flag(13);
-var mdgriffith$elm_ui$Element$Font$medium = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$fontWeight, mdgriffith$elm_ui$Internal$Style$classes.textMedium);
-var mdgriffith$elm_ui$Element$Font$underline = mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.underline);
-var author$project$Style$Font$linkText = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaMedium, mdgriffith$elm_ui$Element$Font$sansSerif])),
-			mdgriffith$elm_ui$Element$Font$size(16),
-			mdgriffith$elm_ui$Element$Font$medium,
-			mdgriffith$elm_ui$Element$Font$underline
-		]);
-};
-var mdgriffith$elm_ui$Element$padding = function (x) {
-	return A2(
-		mdgriffith$elm_ui$Internal$Model$StyleClass,
-		mdgriffith$elm_ui$Internal$Flag$padding,
-		A5(
-			mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-			'p-' + elm$core$String$fromInt(x),
-			x,
-			x,
-			x,
-			x));
-};
-var mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
-var mdgriffith$elm_ui$Element$paragraph = F2(
-	function (attrs, children) {
-		return A4(
-			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asParagraph,
-			mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				elm$core$List$cons,
-				mdgriffith$elm_ui$Internal$Model$Describe(mdgriffith$elm_ui$Internal$Model$Paragraph),
-				A2(
-					elm$core$List$cons,
-					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
-					A2(
-						elm$core$List$cons,
-						mdgriffith$elm_ui$Element$spacing(5),
-						attrs))),
-			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
-var author$project$Page$Project$Contract$viewContract = F2(
-	function (title, contract) {
-		return A2(
-			mdgriffith$elm_ui$Element$column,
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$spacing(18),
-					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-				]),
-			_List_fromArray(
-				[
-					A2(
-					mdgriffith$elm_ui$Element$el,
-					_Utils_ap(
-						_List_fromArray(
-							[
-								A2(mdgriffith$elm_ui$Element$paddingXY, 24, 0)
-							]),
-						author$project$Style$Font$mediumBodyText(author$project$Style$Color$black)),
-					mdgriffith$elm_ui$Element$text(title)),
-					A2(
-					mdgriffith$elm_ui$Element$column,
-					_List_fromArray(
-						[
-							mdgriffith$elm_ui$Element$Background$color(
-							A2(author$project$Style$Color$alpha, author$project$Style$Color$blue, 0.1)),
-							mdgriffith$elm_ui$Element$padding(24),
-							mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$purple),
-							mdgriffith$elm_ui$Element$Border$rounded(2),
-							mdgriffith$elm_ui$Element$Border$width(1),
-							mdgriffith$elm_ui$Element$spacing(24)
-						]),
-					_List_fromArray(
-						[
-							A2(
-							mdgriffith$elm_ui$Element$el,
-							author$project$Style$Font$mediumBodyText(author$project$Style$Color$purple),
-							mdgriffith$elm_ui$Element$text(contract)),
-							A2(
-							mdgriffith$elm_ui$Element$paragraph,
-							_Utils_ap(
-								_List_fromArray(
-									[
-										mdgriffith$elm_ui$Element$spacing(8)
-									]),
-								author$project$Style$Font$bodyText(author$project$Style$Color$purple)),
-							_List_fromArray(
-								[
-									mdgriffith$elm_ui$Element$text('Some more text about this all, explaining what it’s about and how it should be interpreted. I mean I’m just writing sentences to have enough copy.')
-								])),
-							A2(
-							mdgriffith$elm_ui$Element$el,
-							author$project$Style$Font$linkText(author$project$Style$Color$purple),
-							mdgriffith$elm_ui$Element$text('Read more'))
-						]))
-				]));
-	});
-var mdgriffith$elm_ui$Element$fillPortion = mdgriffith$elm_ui$Internal$Model$Fill;
-var author$project$Page$Project$Contract$view = A2(
-	mdgriffith$elm_ui$Element$column,
-	_List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$spacing(24),
-			mdgriffith$elm_ui$Element$paddingEach(
-			{bottom: 0, left: 0, right: 0, top: 64}),
-			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-		]),
-	_List_fromArray(
-		[
-			author$project$Atom$Heading$section('Project contracts'),
-			A2(
-			mdgriffith$elm_ui$Element$row,
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$spacing(24),
-					mdgriffith$elm_ui$Element$width(
-					mdgriffith$elm_ui$Element$fillPortion(3)),
-					mdgriffith$elm_ui$Element$padding(0)
-				]),
-			_List_fromArray(
-				[
-					A2(author$project$Page$Project$Contract$viewContract, 'Block reward distribution', 'Equal Distribution contract'),
-					A2(author$project$Page$Project$Contract$viewContract, 'Donation distribution', 'Donation Treasury contract'),
-					A2(author$project$Page$Project$Contract$viewContract, 'Roles & responsibility', 'Maintainer Single Signer contract')
-				]))
-		]));
-var author$project$Style$Color$radicleBlue = A3(mdgriffith$elm_ui$Element$rgb255, 85, 85, 255);
-var mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
-var mdgriffith$elm_ui$Element$alignTop = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$Top);
-var mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
-var mdgriffith$elm_ui$Element$centerY = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$CenterY);
-var author$project$Page$Project$Header$viewLogo = A2(
-	mdgriffith$elm_ui$Element$el,
-	_List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$radicleBlue),
-			mdgriffith$elm_ui$Element$height(
-			mdgriffith$elm_ui$Element$px(72)),
-			mdgriffith$elm_ui$Element$width(
-			mdgriffith$elm_ui$Element$px(72)),
-			mdgriffith$elm_ui$Element$alignTop
-		]),
-	A2(
-		mdgriffith$elm_ui$Element$el,
-		_List_fromArray(
-			[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
-		mdgriffith$elm_ui$Element$text('rad')));
-var author$project$Style$Font$bigHeader = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaBold, mdgriffith$elm_ui$Element$Font$sansSerif])),
-			mdgriffith$elm_ui$Element$Font$size(36)
-		]);
-};
-var mdgriffith$elm_ui$Internal$Model$Max = F2(
-	function (a, b) {
-		return {$: 'Max', a: a, b: b};
-	});
-var mdgriffith$elm_ui$Element$maximum = F2(
-	function (i, l) {
-		return A2(mdgriffith$elm_ui$Internal$Model$Max, i, l);
-	});
-var author$project$Page$Project$Header$viewMeta = A2(
-	mdgriffith$elm_ui$Element$column,
-	_List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$spacing(8),
-			mdgriffith$elm_ui$Element$width(
-			A2(mdgriffith$elm_ui$Element$maximum, 420, mdgriffith$elm_ui$Element$fill)),
-			mdgriffith$elm_ui$Element$alignTop
-		]),
-	_List_fromArray(
-		[
-			A2(
-			mdgriffith$elm_ui$Element$el,
-			author$project$Style$Font$bigHeader(author$project$Style$Color$black),
-			mdgriffith$elm_ui$Element$text('Radicle')),
-			A2(
-			mdgriffith$elm_ui$Element$paragraph,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						mdgriffith$elm_ui$Element$spacing(8),
-						mdgriffith$elm_ui$Element$paddingEach(
-						{bottom: 0, left: 0, right: 0, top: 6})
-					]),
-				author$project$Style$Font$bodyText(author$project$Style$Color$black)),
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$text('A peer-to-peer stack for code collaboration and some more text here to show how it is on 2 lines')
-				]))
-		]));
-var author$project$Style$Color$grey = A3(mdgriffith$elm_ui$Element$rgb255, 144, 160, 174);
-var author$project$Style$Font$fontGTAmericaMonoBold = mdgriffith$elm_ui$Element$Font$typeface('GT America Mono Bold');
-var mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
-var mdgriffith$elm_ui$Element$Font$monospace = mdgriffith$elm_ui$Internal$Model$Monospace;
-var author$project$Style$Font$bigHeaderMono = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaMonoBold, mdgriffith$elm_ui$Element$Font$monospace])),
-			mdgriffith$elm_ui$Element$Font$size(36)
-		]);
-};
-var author$project$Style$Font$fontGTAmericaMonoRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America Mono');
-var author$project$Style$Font$smallTextMono = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaMonoRegular, mdgriffith$elm_ui$Element$Font$monospace])),
-			mdgriffith$elm_ui$Element$Font$size(14)
-		]);
-};
-var mdgriffith$elm_ui$Internal$Model$Min = F2(
-	function (a, b) {
-		return {$: 'Min', a: a, b: b};
-	});
-var mdgriffith$elm_ui$Element$minimum = F2(
-	function (i, l) {
-		return A2(mdgriffith$elm_ui$Internal$Model$Min, i, l);
-	});
-var mdgriffith$elm_ui$Internal$Model$AsTextColumn = {$: 'AsTextColumn'};
-var mdgriffith$elm_ui$Internal$Model$asTextColumn = mdgriffith$elm_ui$Internal$Model$AsTextColumn;
-var mdgriffith$elm_ui$Element$textColumn = F2(
-	function (attrs, children) {
-		return A4(
-			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asTextColumn,
-			mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				elm$core$List$cons,
-				mdgriffith$elm_ui$Element$width(
-					A2(
-						mdgriffith$elm_ui$Element$maximum,
-						750,
-						A2(mdgriffith$elm_ui$Element$minimum, 500, mdgriffith$elm_ui$Element$fill))),
-				attrs),
-			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
-var author$project$Page$Project$Header$statsColumn = F3(
-	function (stat, unit, info) {
-		return A2(
-			mdgriffith$elm_ui$Element$textColumn,
-			_List_fromArray(
-				[
-					A2(mdgriffith$elm_ui$Element$paddingXY, 25, 13),
-					mdgriffith$elm_ui$Element$spacing(4),
-					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
-					mdgriffith$elm_ui$Element$width(
-					mdgriffith$elm_ui$Element$fillPortion(1))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					mdgriffith$elm_ui$Element$paragraph,
-					author$project$Style$Font$bigHeaderMono(author$project$Style$Color$black),
-					_List_fromArray(
-						[
-							mdgriffith$elm_ui$Element$text(stat)
-						])),
-					A2(
-					mdgriffith$elm_ui$Element$paragraph,
-					author$project$Style$Font$mediumBodyText(author$project$Style$Color$black),
-					_List_fromArray(
-						[
-							mdgriffith$elm_ui$Element$text(unit)
-						])),
-					A2(
-					mdgriffith$elm_ui$Element$paragraph,
-					_Utils_ap(
-						_List_fromArray(
-							[
-								mdgriffith$elm_ui$Element$paddingEach(
-								{bottom: 0, left: 0, right: 0, top: 4})
-							]),
-						author$project$Style$Font$smallTextMono(author$project$Style$Color$grey)),
-					_List_fromArray(
-						[
-							mdgriffith$elm_ui$Element$text(info)
-						]))
-				]));
-	});
-var mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
-var mdgriffith$elm_ui$Element$alignRight = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$Right);
-var author$project$Page$Project$Header$viewStats = A2(
-	mdgriffith$elm_ui$Element$row,
-	_List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
-			mdgriffith$elm_ui$Element$Border$rounded(2),
-			mdgriffith$elm_ui$Element$Border$width(1),
-			mdgriffith$elm_ui$Element$alignRight,
-			mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
-			mdgriffith$elm_ui$Element$width(
-			mdgriffith$elm_ui$Element$px(364))
-		]),
-	_List_fromArray(
-		[
-			A3(author$project$Page$Project$Header$statsColumn, '1043', 'dependents', '192 immediate'),
-			A3(author$project$Page$Project$Header$statsColumn, '0.84', 'osrank', '85th percentile')
-		]));
-var author$project$Page$Project$Header$view = A2(
-	mdgriffith$elm_ui$Element$row,
-	_List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$spacing(24),
-			mdgriffith$elm_ui$Element$height(
-			mdgriffith$elm_ui$Element$px(112)),
-			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-		]),
-	_List_fromArray(
-		[author$project$Page$Project$Header$viewLogo, author$project$Page$Project$Header$viewMeta, author$project$Page$Project$Header$viewStats]));
-var mdgriffith$elm_ui$Internal$Flag$overflow = mdgriffith$elm_ui$Internal$Flag$flag(20);
-var mdgriffith$elm_ui$Element$clip = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$overflow, mdgriffith$elm_ui$Internal$Style$classes.clip);
-var elm$html$Html$Attributes$alt = elm$html$Html$Attributes$stringProperty('alt');
-var elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
-};
-var mdgriffith$elm_ui$Element$image = F2(
-	function (attrs, _n0) {
-		var src = _n0.src;
-		var description = _n0.description;
-		var imageAttributes = A2(
-			elm$core$List$filter,
-			function (a) {
-				switch (a.$) {
-					case 'Width':
-						return true;
-					case 'Height':
-						return true;
-					default:
-						return false;
-				}
-			},
-			attrs);
-		return A4(
-			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asEl,
-			mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				elm$core$List$cons,
-				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.imageContainer),
-				attrs),
-			mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[
-						A4(
-						mdgriffith$elm_ui$Internal$Model$element,
-						mdgriffith$elm_ui$Internal$Model$asEl,
-						mdgriffith$elm_ui$Internal$Model$NodeName('img'),
-						_Utils_ap(
-							_List_fromArray(
-								[
-									mdgriffith$elm_ui$Internal$Model$Attr(
-									elm$html$Html$Attributes$src(src)),
-									mdgriffith$elm_ui$Internal$Model$Attr(
-									elm$html$Html$Attributes$alt(description))
-								]),
-							imageAttributes),
-						mdgriffith$elm_ui$Internal$Model$Unkeyed(_List_Nil))
-					])));
-	});
-var author$project$Page$Project$People$viewTopPeopleSingle = function (name) {
-	return A2(
-		mdgriffith$elm_ui$Element$row,
-		_List_fromArray(
-			[
-				mdgriffith$elm_ui$Element$spacing(12),
-				mdgriffith$elm_ui$Element$width(
-				mdgriffith$elm_ui$Element$fillPortion(1))
-			]),
-		_List_fromArray(
-			[
-				A2(
-				mdgriffith$elm_ui$Element$image,
-				_List_fromArray(
-					[
-						mdgriffith$elm_ui$Element$height(
-						mdgriffith$elm_ui$Element$px(48)),
-						mdgriffith$elm_ui$Element$width(
-						mdgriffith$elm_ui$Element$px(48)),
-						mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
-						mdgriffith$elm_ui$Element$Border$rounded(24),
-						mdgriffith$elm_ui$Element$Border$width(1),
-						mdgriffith$elm_ui$Element$clip
-					]),
-				{description: 'avatar', src: 'https://res.cloudinary.com/juliendonck/image/upload/v1536080565/avatars/6163.png'}),
-				A2(
-				mdgriffith$elm_ui$Element$column,
-				_List_fromArray(
-					[
-						mdgriffith$elm_ui$Element$spacing(4)
-					]),
-				_List_fromArray(
-					[
-						A2(
-						mdgriffith$elm_ui$Element$el,
-						author$project$Style$Font$mediumBodyText(author$project$Style$Color$black),
-						mdgriffith$elm_ui$Element$text(name)),
-						A2(
-						mdgriffith$elm_ui$Element$el,
-						author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey),
-						mdgriffith$elm_ui$Element$text('Core maintainer'))
-					]))
-			]));
-};
-var author$project$Style$Font$boldBodyTextMono = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaMonoBold, mdgriffith$elm_ui$Element$Font$monospace])),
-			mdgriffith$elm_ui$Element$Font$size(16)
-		]);
-};
-var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
-var mdgriffith$elm_ui$Internal$Model$Padding = F5(
-	function (a, b, c, d, e) {
-		return {$: 'Padding', a: a, b: b, c: c, d: d, e: e};
-	});
-var mdgriffith$elm_ui$Internal$Model$Spaced = F3(
-	function (a, b, c) {
-		return {$: 'Spaced', a: a, b: b, c: c};
-	});
-var mdgriffith$elm_ui$Internal$Model$extractSpacingAndPadding = function (attrs) {
-	return A3(
-		elm$core$List$foldr,
-		F2(
-			function (attr, _n0) {
-				var pad = _n0.a;
-				var spacing = _n0.b;
-				return _Utils_Tuple2(
-					function () {
-						if (pad.$ === 'Just') {
-							var x = pad.a;
-							return pad;
-						} else {
-							if ((attr.$ === 'StyleClass') && (attr.b.$ === 'PaddingStyle')) {
-								var _n3 = attr.b;
-								var name = _n3.a;
-								var t = _n3.b;
-								var r = _n3.c;
-								var b = _n3.d;
-								var l = _n3.e;
-								return elm$core$Maybe$Just(
-									A5(mdgriffith$elm_ui$Internal$Model$Padding, name, t, r, b, l));
-							} else {
-								return elm$core$Maybe$Nothing;
-							}
-						}
-					}(),
-					function () {
-						if (spacing.$ === 'Just') {
-							var x = spacing.a;
-							return spacing;
-						} else {
-							if ((attr.$ === 'StyleClass') && (attr.b.$ === 'SpacingStyle')) {
-								var _n6 = attr.b;
-								var name = _n6.a;
-								var x = _n6.b;
-								var y = _n6.c;
-								return elm$core$Maybe$Just(
-									A3(mdgriffith$elm_ui$Internal$Model$Spaced, name, x, y));
-							} else {
-								return elm$core$Maybe$Nothing;
-							}
-						}
-					}());
-			}),
-		_Utils_Tuple2(elm$core$Maybe$Nothing, elm$core$Maybe$Nothing),
-		attrs);
-};
-var mdgriffith$elm_ui$Element$wrappedRow = F2(
-	function (attrs, children) {
-		var _n0 = mdgriffith$elm_ui$Internal$Model$extractSpacingAndPadding(attrs);
-		var padded = _n0.a;
-		var spaced = _n0.b;
-		if (spaced.$ === 'Nothing') {
-			return A4(
-				mdgriffith$elm_ui$Internal$Model$element,
-				mdgriffith$elm_ui$Internal$Model$asRow,
-				mdgriffith$elm_ui$Internal$Model$div,
-				A2(
-					elm$core$List$cons,
-					mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + (mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + mdgriffith$elm_ui$Internal$Style$classes.wrapped)))),
-					A2(
-						elm$core$List$cons,
-						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
-						A2(
-							elm$core$List$cons,
-							mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
-							attrs))),
-				mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-		} else {
-			var _n2 = spaced.a;
-			var spaceName = _n2.a;
-			var x = _n2.b;
-			var y = _n2.c;
-			var newPadding = function () {
-				if (padded.$ === 'Just') {
-					var _n5 = padded.a;
-					var name = _n5.a;
-					var t = _n5.b;
-					var r = _n5.c;
-					var b = _n5.d;
-					var l = _n5.e;
-					return ((_Utils_cmp(r, (x / 2) | 0) > -1) && (_Utils_cmp(b, (y / 2) | 0) > -1)) ? elm$core$Maybe$Just(
-						mdgriffith$elm_ui$Element$paddingEach(
-							{bottom: b - ((y / 2) | 0), left: l - ((x / 2) | 0), right: r - ((x / 2) | 0), top: t - ((y / 2) | 0)})) : elm$core$Maybe$Nothing;
-				} else {
-					return elm$core$Maybe$Nothing;
-				}
-			}();
-			if (newPadding.$ === 'Just') {
-				var pad = newPadding.a;
-				return A4(
-					mdgriffith$elm_ui$Internal$Model$element,
-					mdgriffith$elm_ui$Internal$Model$asRow,
-					mdgriffith$elm_ui$Internal$Model$div,
-					A2(
-						elm$core$List$cons,
-						mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + (mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + mdgriffith$elm_ui$Internal$Style$classes.wrapped)))),
-						A2(
-							elm$core$List$cons,
-							mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
-							A2(
-								elm$core$List$cons,
-								mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
-								_Utils_ap(
-									attrs,
-									_List_fromArray(
-										[pad]))))),
-					mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-			} else {
-				var halfY = -(y / 2);
-				var halfX = -(x / 2);
-				return A4(
-					mdgriffith$elm_ui$Internal$Model$element,
-					mdgriffith$elm_ui$Internal$Model$asEl,
-					mdgriffith$elm_ui$Internal$Model$div,
-					attrs,
-					mdgriffith$elm_ui$Internal$Model$Unkeyed(
-						_List_fromArray(
-							[
-								A4(
-								mdgriffith$elm_ui$Internal$Model$element,
-								mdgriffith$elm_ui$Internal$Model$asRow,
-								mdgriffith$elm_ui$Internal$Model$div,
-								A2(
-									elm$core$List$cons,
-									mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + (mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + mdgriffith$elm_ui$Internal$Style$classes.wrapped)))),
-									A2(
-										elm$core$List$cons,
-										mdgriffith$elm_ui$Internal$Model$Attr(
-											A2(
-												elm$html$Html$Attributes$style,
-												'margin',
-												elm$core$String$fromFloat(halfY) + ('px' + (' ' + (elm$core$String$fromFloat(halfX) + 'px'))))),
-										A2(
-											elm$core$List$cons,
-											mdgriffith$elm_ui$Internal$Model$Attr(
-												A2(
-													elm$html$Html$Attributes$style,
-													'width',
-													'calc(100% + ' + (elm$core$String$fromInt(x) + 'px)'))),
-											A2(
-												elm$core$List$cons,
-												mdgriffith$elm_ui$Internal$Model$Attr(
-													A2(
-														elm$html$Html$Attributes$style,
-														'height',
-														'calc(100% + ' + (elm$core$String$fromInt(y) + 'px)'))),
-												A2(
-													elm$core$List$cons,
-													A2(
-														mdgriffith$elm_ui$Internal$Model$StyleClass,
-														mdgriffith$elm_ui$Internal$Flag$spacing,
-														A3(mdgriffith$elm_ui$Internal$Model$SpacingStyle, spaceName, x, y)),
-													_List_Nil))))),
-								mdgriffith$elm_ui$Internal$Model$Unkeyed(children))
-							])));
-			}
-		}
-	});
-var author$project$Page$Project$People$viewTopPeople = F2(
-	function (title, count) {
-		return A2(
-			mdgriffith$elm_ui$Element$column,
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
-					mdgriffith$elm_ui$Element$Border$rounded(2),
-					mdgriffith$elm_ui$Element$Border$width(1),
-					mdgriffith$elm_ui$Element$height(
-					mdgriffith$elm_ui$Element$px(270)),
-					mdgriffith$elm_ui$Element$width(
-					mdgriffith$elm_ui$Element$fillPortion(1))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					mdgriffith$elm_ui$Element$row,
-					_List_fromArray(
-						[
-							mdgriffith$elm_ui$Element$spacing(16),
-							mdgriffith$elm_ui$Element$paddingEach(
-							{bottom: 8, left: 24, right: 24, top: 24})
-						]),
-					_List_fromArray(
-						[
-							A2(
-							mdgriffith$elm_ui$Element$el,
-							author$project$Style$Font$mediumHeader(author$project$Style$Color$black),
-							mdgriffith$elm_ui$Element$text(title)),
-							A2(
-							mdgriffith$elm_ui$Element$el,
-							_Utils_ap(
-								_List_fromArray(
-									[
-										mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$purple),
-										mdgriffith$elm_ui$Element$paddingEach(
-										{bottom: 5, left: 8, right: 8, top: 4}),
-										mdgriffith$elm_ui$Element$Border$rounded(2)
-									]),
-								author$project$Style$Font$boldBodyTextMono(author$project$Style$Color$white)),
-							mdgriffith$elm_ui$Element$text(count))
-						])),
-					A2(
-					mdgriffith$elm_ui$Element$wrappedRow,
-					_List_fromArray(
-						[
-							mdgriffith$elm_ui$Element$spacing(24),
-							mdgriffith$elm_ui$Element$padding(24),
-							mdgriffith$elm_ui$Element$width(
-							mdgriffith$elm_ui$Element$fillPortion(1))
-						]),
-					_List_fromArray(
-						[
-							author$project$Page$Project$People$viewTopPeopleSingle('Jane Doe'),
-							author$project$Page$Project$People$viewTopPeopleSingle('Jimmy Bong'),
-							author$project$Page$Project$People$viewTopPeopleSingle('Lorie Mike'),
-							author$project$Page$Project$People$viewTopPeopleSingle('Harrold Downy')
-						])),
-					A2(
-					mdgriffith$elm_ui$Element$el,
-					_List_fromArray(
-						[
-							mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
-							mdgriffith$elm_ui$Element$Border$widthEach(
-							{bottom: 0, left: 0, right: 0, top: 1}),
-							mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
-							mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-						]),
-					A2(
-						mdgriffith$elm_ui$Element$el,
-						_Utils_ap(
-							_List_fromArray(
-								[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
-							author$project$Style$Font$linkText(author$project$Style$Color$darkGrey)),
-						mdgriffith$elm_ui$Element$text('View all')))
-				]));
-	});
-var author$project$Page$Project$People$view = A2(
-	mdgriffith$elm_ui$Element$row,
-	_List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$spacing(24),
-			mdgriffith$elm_ui$Element$paddingEach(
-			{bottom: 0, left: 0, right: 0, top: 64}),
-			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-		]),
-	_List_fromArray(
-		[
-			A2(author$project$Page$Project$People$viewTopPeople, 'Maintainers', '5'),
-			A2(author$project$Page$Project$People$viewTopPeople, 'Top contributors', '30')
-		]));
-var author$project$Page$Project$view = _Utils_Tuple2(
-	'project',
-	A2(
-		mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				mdgriffith$elm_ui$Element$width(
-				mdgriffith$elm_ui$Element$px(1074))
-			]),
-		_List_fromArray(
-			[author$project$Page$Project$Header$view, author$project$Page$Project$Actions$view, author$project$Page$Project$People$view, author$project$Page$Project$Contract$view])));
-var author$project$Page$Register$Register = function (a) {
-	return {$: 'Register', a: a};
-};
-var author$project$Page$Register$view = function (model) {
-	return _Utils_Tuple2(
-		'register',
-		A2(
-			mdgriffith$elm_ui$Element$column,
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$width(
-					mdgriffith$elm_ui$Element$px(1074))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					mdgriffith$elm_ui$Element$el,
-					author$project$Style$Font$bigHeader(author$project$Style$Color$black),
-					mdgriffith$elm_ui$Element$text('Register your project')),
-					A2(
-					mdgriffith$elm_ui$Element$el,
-					_List_fromArray(
-						[
-							mdgriffith$elm_ui$Element$Events$onClick(
-							author$project$Page$Register$Register(model.project))
-						]),
-					author$project$Atom$Button$accent('Register'))
-				])));
-};
 var author$project$Page$SignTransaction$view = _Utils_Tuple2(
 	'sign transaction',
 	A2(
@@ -13199,37 +12359,15 @@ var author$project$Page$SignTransaction$view = _Utils_Tuple2(
 				mdgriffith$elm_ui$Element$text('sign your transaction')),
 				author$project$Atom$Button$accent('Confirm')
 			])));
-var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
-var author$project$Page$view = function (page) {
-	switch (page.$) {
-		case 'Home':
-			return author$project$Page$Home$view;
-		case 'NotFound':
-			return author$project$Page$NotFound$view;
-		case 'KeyPairList':
-			var pageModel = page.a;
-			return author$project$Page$KeyPairList$view(pageModel);
-		case 'KeyPairSetup':
-			var pageModel = page.a;
-			var _n1 = author$project$Page$KeyPairSetup$view(pageModel);
-			var pageTitle = _n1.a;
-			var pageView = _n1.b;
-			return _Utils_Tuple2(
-				pageTitle,
-				A2(mdgriffith$elm_ui$Element$map, author$project$Msg$PageKeyPairSetup, pageView));
-		case 'Project':
-			return author$project$Page$Project$view;
-		case 'Register':
-			var pageModel = page.a;
-			var _n2 = author$project$Page$Register$view(pageModel);
-			var pageTitle = _n2.a;
-			var pageView = _n2.b;
-			return _Utils_Tuple2(
-				pageTitle,
-				A2(mdgriffith$elm_ui$Element$map, author$project$Msg$PageRegister, pageView));
-		default:
-			return author$project$Page$SignTransaction$view;
-	}
+var author$project$Style$Font$bigHeader = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaBold, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(36)
+		]);
 };
 var author$project$WalletPopup$viewHeader = A2(
 	mdgriffith$elm_ui$Element$el,
@@ -13442,10 +12580,37 @@ var mdgriffith$elm_ui$Element$layoutWith = F3(
 	});
 var mdgriffith$elm_ui$Element$layout = mdgriffith$elm_ui$Element$layoutWith(
 	{options: _List_Nil});
+var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
+var mdgriffith$elm_ui$Internal$Model$Min = F2(
+	function (a, b) {
+		return {$: 'Min', a: a, b: b};
+	});
+var mdgriffith$elm_ui$Element$minimum = F2(
+	function (i, l) {
+		return A2(mdgriffith$elm_ui$Internal$Model$Min, i, l);
+	});
 var author$project$WalletPopup$view = function (model) {
-	var _n0 = author$project$Page$view(model.page);
-	var pageTitle = _n0.a;
-	var pageContent = _n0.b;
+	var _n0 = function () {
+		switch (model.$) {
+			case 'KeyPairList':
+				var pageModel = model.a;
+				return author$project$Page$KeyPairList$view(pageModel);
+			case 'KeyPairSetup':
+				var pageModel = model.a;
+				var _n2 = author$project$Page$KeyPairSetup$view(pageModel);
+				var pageTitle = _n2.a;
+				var pageView = _n2.b;
+				return _Utils_Tuple2(
+					pageTitle,
+					A2(mdgriffith$elm_ui$Element$map, author$project$WalletPopup$PageKeyPairSetup, pageView));
+			case 'SignTransaction':
+				return author$project$Page$SignTransaction$view;
+			default:
+				return author$project$Page$NotFound$view;
+		}
+	}();
+	var title = _n0.a;
+	var content = _n0.b;
 	return {
 		body: _List_fromArray(
 			[
@@ -13469,14 +12634,14 @@ var author$project$WalletPopup$view = function (model) {
 							mdgriffith$elm_ui$Element$el,
 							_List_fromArray(
 								[mdgriffith$elm_ui$Element$centerX]),
-							pageContent)
+							content)
 						])))
 			]),
 		title: A2(
 			elm$core$String$join,
 			' <> ',
 			_List_fromArray(
-				[pageTitle, 'oscoin wallet']))
+				[title, 'oscoin wallet']))
 	};
 };
 var elm$browser$Browser$External = function (a) {
@@ -13754,6 +12919,8 @@ var elm$browser$Debugger$Overlay$viewBadMetadata = function (_n0) {
 var elm$browser$Debugger$Overlay$Cancel = {$: 'Cancel'};
 var elm$browser$Debugger$Overlay$Proceed = {$: 'Proceed'};
 var elm$html$Html$button = _VirtualDom_node('button');
+var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
 var elm$browser$Debugger$Overlay$viewButtons = function (buttons) {
 	var btn = F2(
 		function (msg, string) {
@@ -15582,7 +14749,6 @@ var elm$browser$Debugger$Metadata$isPortable = function (_n0) {
 			A2(elm$browser$Debugger$Metadata$Error, types.message, problems));
 	}
 };
-var elm$json$Json$Decode$decodeValue = _Json_run;
 var elm$browser$Debugger$Metadata$decode = function (value) {
 	var _n0 = A2(elm$json$Json$Decode$decodeValue, elm$browser$Debugger$Metadata$decoder, value);
 	if (_n0.$ === 'Err') {
@@ -16700,7 +15866,6 @@ var elm$browser$Debugger$Main$download = F2(
 			A2(_Debugger_download, historyLength, json));
 	});
 var elm$browser$Debugger$History$jsToElm = _Debugger_unsafeCoerce;
-var elm$json$Json$Decode$value = _Json_decodeValue;
 var elm$browser$Debugger$History$decoder = F2(
 	function (initialModel, update) {
 		var addMessage = F2(
@@ -17410,7 +16575,6 @@ var elm$url$Url$fromString = function (str) {
 		A2(elm$core$String$dropLeft, 8, str)) : elm$core$Maybe$Nothing);
 };
 var elm$browser$Browser$document = _Browser_document;
-var elm$json$Json$Decode$andThen = _Json_andThen;
 var elm$json$Json$Decode$null = _Json_decodeNull;
 var elm$json$Json$Decode$oneOf = _Json_oneOf;
 var author$project$WalletPopup$main = elm$browser$Browser$document(
@@ -17457,4 +16621,4 @@ _Platform_export({'WalletPopup':{'init':author$project$WalletPopup$main(
 					[
 						elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
 						A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
-					])))))({"versions":{"elm":"0.19.0"},"types":{"message":"Msg.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Page.Register.Project":{"args":[],"type":"{}"}},"unions":{"Msg.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"],"WalletWebExtPresent":["()"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"Page.Register.Msg":{"args":[],"tags":{"Register":["Page.Register.Project"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
+					])))))({"versions":{"elm":"0.19.0"},"types":{"message":"WalletPopup.Msg","aliases":{},"unions":{"WalletPopup.Msg":{"args":[],"tags":{"KeyPairCreated":["Maybe.Maybe KeyPair.KeyPair"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"]}},"KeyPair.KeyPair":{"args":[],"tags":{"KeyPair":["String.String"]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));

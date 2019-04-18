@@ -2,10 +2,12 @@ port module WalletPopup exposing (main)
 
 import Browser
 import Element
+import Json.Decode as Decode
+import KeyPair exposing (KeyPair)
 import Msg exposing (Msg)
-import Page exposing (Page)
 import Page.KeyPairList
 import Page.KeyPairSetup
+import Page.NotFound
 import Page.SignTransaction
 import Style.Color as Color
 import Style.Font as Font
@@ -27,29 +29,31 @@ type alias Flags =
     }
 
 
-type alias Model =
-    { page : Page
-    }
+type Model
+    = KeyPairList Page.KeyPairList.Model
+    | KeyPairSetup Page.KeyPairSetup.Model
+    | SignTransaction
+    | NotFound
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
-        page =
+        model =
             case ( flags.location.hash, flags.maybeKeyPair, flags.maybeTransaction ) of
                 ( "#keys", Nothing, Nothing ) ->
-                    Page.KeyPairSetup Page.KeyPairSetup.init
+                    KeyPairSetup Page.KeyPairSetup.init
 
                 ( "#keys", Just keyPair, Nothing ) ->
-                    Page.KeyPairList <| Page.KeyPairList.init keyPair
+                    KeyPairList <| Page.KeyPairList.init keyPair
 
                 ( "#sign", Just _, Just _ ) ->
-                    Page.SignTransaction
+                    SignTransaction
 
                 ( _, _, _ ) ->
-                    Page.NotFound
+                    NotFound
     in
-    ( Model page, Cmd.none )
+    ( model, Cmd.none )
 
 
 
@@ -66,7 +70,7 @@ port keyPairSetupComplete : () -> Cmd msg
 -- PORTS - INBOUND
 
 
-port keyPairCreated : (String -> msg) -> Sub msg
+port keyPairCreated : (Decode.Value -> msg) -> Sub msg
 
 
 
@@ -76,7 +80,7 @@ port keyPairCreated : (String -> msg) -> Sub msg
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ keyPairCreated Msg.KeyPairCreated
+        [ keyPairCreated (KeyPair.decode >> KeyPairCreated)
         ]
 
 
@@ -84,20 +88,35 @@ subscriptions _ =
 -- UPDATE
 
 
+type Msg
+    = KeyPairCreated (Maybe KeyPair)
+    | PageKeyPairSetup Page.KeyPairSetup.Msg
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case ( Debug.log "WalletPopup.Msg" msg, Debug.log "WalletPopup.Page" model.page ) of
-        -- Relay created key pair event to the page.
-        ( Msg.KeyPairCreated id, Page.KeyPairSetup oldModel ) ->
-            let
-                ( pageModel, pageCmd ) =
-                    Page.KeyPairSetup.updateCreated oldModel id
-            in
-            ( { model | page = Page.KeyPairSetup pageModel }
-            , Cmd.map Msg.PageKeyPairSetup <| pageCmd
-            )
+    case ( Debug.log "WalletPopup.Msg" msg, Debug.log "WalletPopup.Model" model ) of
+        -- Relay created key pair event to the KeyPairSetup page.
+        ( KeyPairCreated maybeKeyPair, KeyPairSetup oldModel ) ->
+            case maybeKeyPair of
+                Nothing ->
+                    ( model, Cmd.none )
 
-        ( Msg.PageKeyPairSetup subCmd, Page.KeyPairSetup oldModel ) ->
+                Just keyPair ->
+                    let
+                        ( pageModel, pageCmd ) =
+                            Page.KeyPairSetup.updateCreated oldModel keyPair
+                    in
+                    ( KeyPairSetup pageModel
+                    , Cmd.map PageKeyPairSetup <| pageCmd
+                    )
+
+        -- Ignore key apir create events for all other pages.
+        ( KeyPairCreated _, _ ) ->
+            ( model, Cmd.none )
+
+        -- Relay sub page messages to the KeyPairSetup page.
+        ( PageKeyPairSetup subCmd, KeyPairSetup oldModel ) ->
             let
                 ( pageModel, pageCmd ) =
                     Page.KeyPairSetup.update subCmd oldModel
@@ -116,14 +135,15 @@ update msg model =
                         _ ->
                             Cmd.none
             in
-            ( { model | page = Page.KeyPairSetup pageModel }
+            ( KeyPairSetup pageModel
             , Cmd.batch
-                [ Cmd.map Msg.PageKeyPairSetup <| pageCmd
+                [ Cmd.map PageKeyPairSetup <| pageCmd
                 , portCmd
                 ]
             )
 
-        _ ->
+        -- Ignore page specific messages if it's not our current page.
+        ( PageKeyPairSetup subCmd, _ ) ->
             ( model, Cmd.none )
 
 
@@ -144,10 +164,27 @@ viewHeader =
 view : Model -> Browser.Document Msg
 view model =
     let
-        ( pageTitle, pageContent ) =
-            Page.view model.page
+        ( title, content ) =
+            case model of
+                KeyPairList pageModel ->
+                    Page.KeyPairList.view pageModel
+
+                KeyPairSetup pageModel ->
+                    let
+                        ( pageTitle, pageView ) =
+                            Page.KeyPairSetup.view pageModel
+                    in
+                    ( pageTitle
+                    , Element.map PageKeyPairSetup <| pageView
+                    )
+
+                SignTransaction ->
+                    Page.SignTransaction.view
+
+                NotFound ->
+                    Page.NotFound.view
     in
-    { title = String.join " <> " [ pageTitle, "oscoin wallet" ]
+    { title = String.join " <> " [ title, "oscoin wallet" ]
     , body =
         [ Element.layout [] <|
             Element.column
@@ -161,7 +198,7 @@ view model =
                 , Element.el
                     [ Element.centerX ]
                   <|
-                    pageContent
+                    content
                 ]
         ]
     }
