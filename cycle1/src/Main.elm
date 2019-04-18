@@ -5,6 +5,8 @@ import Browser.Navigation as Navigation
 import Element
 import Element.Background as Background
 import Html.Attributes
+import Json.Decode as Decode
+import KeyPair exposing (KeyPair)
 import Overlay.WaitForKeyPair
 import Overlay.WalletSetup
 import Page.Home
@@ -22,16 +24,12 @@ import Url.Builder
 -- MODEL
 
 
-type alias KeyPair =
-    String
-
-
 type Wallet
     = WebExt
 
 
 type alias Flags =
-    Maybe KeyPair
+    Decode.Value
 
 
 type Overlay
@@ -58,7 +56,7 @@ type alias Model =
 
 
 init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
-init maybeKeyPair url navKey =
+init flags url navKey =
     let
         maybeRoute =
             Route.fromUrl url
@@ -72,7 +70,7 @@ init maybeKeyPair url navKey =
         cmd =
             cmdFromOverlay maybeOverlay
     in
-    ( { keyPair = maybeKeyPair
+    ( { keyPair = KeyPair.decode flags
       , navKey = navKey
       , overlay = maybeOverlay
       , page = page
@@ -98,10 +96,10 @@ port requireKeyPair : () -> Cmd msg
 -- PORTS - INCOMING
 
 
-port keyPairCreated : (String -> msg) -> Sub msg
+port keyPairCreated : (Decode.Value -> msg) -> Sub msg
 
 
-port keyPairFetched : (String -> msg) -> Sub msg
+port keyPairFetched : (Decode.Value -> msg) -> Sub msg
 
 
 port walletWebExtPresent : (() -> msg) -> Sub msg
@@ -114,8 +112,8 @@ port walletWebExtPresent : (() -> msg) -> Sub msg
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ keyPairCreated KeyPairCreated
-        , keyPairFetched KeyPairFetched
+        [ keyPairCreated (KeyPair.decode >> KeyPairCreated)
+        , keyPairFetched (KeyPair.decode >> KeyPairFetched)
         , walletWebExtPresent WalletWebExtPresent
         ]
 
@@ -130,8 +128,8 @@ type Msg
     | OverlayWalletSetup Overlay.WalletSetup.Msg
     | PageRegister Page.Register.Msg
     | TopBarMsg TopBar.Msg
-    | KeyPairCreated String
-    | KeyPairFetched String
+    | KeyPairCreated (Maybe KeyPair)
+    | KeyPairFetched (Maybe KeyPair)
     | WalletWebExtPresent ()
 
 
@@ -164,22 +162,27 @@ update msg model =
             in
             ( { model | overlay = overlay, page = page }, cmd )
 
-        KeyPairCreated id ->
-            let
-                cmd =
-                    case model.overlay of
-                        Just WaitForKeyPair ->
-                            Navigation.pushUrl
-                                model.navKey
-                                (Route.toString (Route.Register Nothing))
+        KeyPairCreated maybeKeyPair ->
+            case maybeKeyPair of
+                Nothing ->
+                    ( model, Cmd.none )
 
-                        _ ->
-                            Cmd.none
-            in
-            ( { model | keyPair = Just id }, cmd )
+                Just keyPair ->
+                    let
+                        cmd =
+                            case model.overlay of
+                                Just WaitForKeyPair ->
+                                    Navigation.pushUrl
+                                        model.navKey
+                                        (Route.toString (Route.Register Nothing))
 
-        KeyPairFetched id ->
-            ( { model | keyPair = Just id }, Cmd.none )
+                                _ ->
+                                    Cmd.none
+                    in
+                    ( { model | keyPair = Just keyPair }, cmd )
+
+        KeyPairFetched maybeKeyPair ->
+            ( { model | keyPair = maybeKeyPair }, Cmd.none )
 
         PageRegister subCmd ->
             case model.page of
@@ -250,7 +253,7 @@ viewKeyPair maybeKeyPair =
                   <|
                     Element.text
                         ("Your current key pair: "
-                            ++ keyPair
+                            ++ KeyPair.toString keyPair
                         )
                 ]
 

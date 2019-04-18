@@ -1,10 +1,17 @@
-module KeyPair exposing (KeyPair, decode)
+module KeyPair exposing (KeyPair, decode, toString)
 
 import Json.Decode as Decode
 
 
 type KeyPair
     = KeyPair String
+
+
+toString : KeyPair -> String
+toString keyPair =
+    case keyPair of
+        KeyPair key ->
+            key
 
 
 

@@ -4893,6 +4893,24 @@ var author$project$Main$LinkClicked = function (a) {
 var author$project$Main$UrlChanged = function (a) {
 	return {$: 'UrlChanged', a: a};
 };
+var author$project$KeyPair$KeyPair = function (a) {
+	return {$: 'KeyPair', a: a};
+};
+var elm$core$Basics$apL = F2(
+	function (f, x) {
+		return f(x);
+	});
+var elm$core$Basics$apR = F2(
+	function (x, f) {
+		return f(x);
+	});
+var elm$core$Basics$identity = function (x) {
+	return x;
+};
+var elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
+var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Array$branchFactor = 32;
 var elm$core$Array$Array_elm_builtin = F4(
 	function (a, b, c, d) {
@@ -5040,10 +5058,6 @@ var elm$core$Array$compressNodes = F2(
 			}
 		}
 	});
-var elm$core$Basics$apR = F2(
-	function (x, f) {
-		return f(x);
-	});
 var elm$core$Basics$eq = _Utils_equal;
 var elm$core$Tuple$first = function (_n0) {
 	var x = _n0.a;
@@ -5066,10 +5080,6 @@ var elm$core$Array$treeFromBuilder = F2(
 		}
 	});
 var elm$core$Basics$add = _Basics_add;
-var elm$core$Basics$apL = F2(
-	function (f, x) {
-		return f(x);
-	});
 var elm$core$Basics$floor = _Basics_floor;
 var elm$core$Basics$gt = _Utils_gt;
 var elm$core$Basics$max = F2(
@@ -5145,10 +5155,6 @@ var elm$core$Array$initialize = F2(
 			return A5(elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
-var elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
-};
-var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
@@ -5368,6 +5374,35 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 			}
 		}
 	});
+var elm$json$Json$Decode$andThen = _Json_andThen;
+var elm$json$Json$Decode$string = _Json_decodeString;
+var elm$json$Json$Decode$succeed = _Json_succeed;
+var author$project$KeyPair$decoder = A2(
+	elm$json$Json$Decode$andThen,
+	function (str) {
+		if (str === '') {
+			return elm$json$Json$Decode$succeed(elm$core$Maybe$Nothing);
+		} else {
+			var keyPair = str;
+			return elm$json$Json$Decode$succeed(
+				elm$core$Maybe$Just(
+					author$project$KeyPair$KeyPair(keyPair)));
+		}
+	},
+	elm$json$Json$Decode$string);
+var elm$core$Debug$log = _Debug_log;
+var elm$json$Json$Decode$decodeValue = _Json_run;
+var author$project$KeyPair$decode = function (json) {
+	var _n0 = A2(elm$json$Json$Decode$decodeValue, author$project$KeyPair$decoder, json);
+	if (_n0.$ === 'Ok') {
+		var keyPair = _n0.a;
+		return keyPair;
+	} else {
+		var err = _n0.a;
+		var _n1 = A2(elm$core$Debug$log, 'Error decoding key pair', err);
+		return elm$core$Maybe$Nothing;
+	}
+};
 var elm$json$Json$Encode$null = _Json_encodeNull;
 var author$project$Main$requireKeyPair = _Platform_outgoingPort(
 	'requireKeyPair',
@@ -5779,9 +5814,6 @@ var elm$core$Dict$get = F2(
 			}
 		}
 	});
-var elm$core$Basics$identity = function (x) {
-	return x;
-};
 var elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
 		if (maybe.$ === 'Just') {
@@ -6480,13 +6512,21 @@ var author$project$Route$fromUrl = function (url) {
 };
 var author$project$TopBar$init = '';
 var author$project$Main$init = F3(
-	function (maybeKeyPair, url, navKey) {
+	function (flags, url, navKey) {
 		var maybeRoute = author$project$Route$fromUrl(url);
 		var page = author$project$Main$pageFromRoute(maybeRoute);
 		var maybeOverlay = author$project$Main$overlayFromRoute(maybeRoute);
 		var cmd = author$project$Main$cmdFromOverlay(maybeOverlay);
 		return _Utils_Tuple2(
-			{keyPair: maybeKeyPair, navKey: navKey, overlay: maybeOverlay, page: page, topBarModel: author$project$TopBar$init, url: url, wallet: elm$core$Maybe$Nothing},
+			{
+				keyPair: author$project$KeyPair$decode(flags),
+				navKey: navKey,
+				overlay: maybeOverlay,
+				page: page,
+				topBarModel: author$project$TopBar$init,
+				url: url,
+				wallet: elm$core$Maybe$Nothing
+			},
 			cmd);
 	});
 var author$project$Main$KeyPairCreated = function (a) {
@@ -6498,20 +6538,27 @@ var author$project$Main$KeyPairFetched = function (a) {
 var author$project$Main$WalletWebExtPresent = function (a) {
 	return {$: 'WalletWebExtPresent', a: a};
 };
-var elm$json$Json$Decode$string = _Json_decodeString;
-var author$project$Main$keyPairCreated = _Platform_incomingPort('keyPairCreated', elm$json$Json$Decode$string);
-var author$project$Main$keyPairFetched = _Platform_incomingPort('keyPairFetched', elm$json$Json$Decode$string);
+var elm$json$Json$Decode$value = _Json_decodeValue;
+var author$project$Main$keyPairCreated = _Platform_incomingPort('keyPairCreated', elm$json$Json$Decode$value);
+var author$project$Main$keyPairFetched = _Platform_incomingPort('keyPairFetched', elm$json$Json$Decode$value);
 var elm$json$Json$Decode$null = _Json_decodeNull;
 var author$project$Main$walletWebExtPresent = _Platform_incomingPort(
 	'walletWebExtPresent',
 	elm$json$Json$Decode$null(_Utils_Tuple0));
+var elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
 var elm$core$Platform$Sub$batch = _Platform_batch;
 var author$project$Main$subscriptions = function (_n0) {
 	return elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
-				author$project$Main$keyPairCreated(author$project$Main$KeyPairCreated),
-				author$project$Main$keyPairFetched(author$project$Main$KeyPairFetched),
+				author$project$Main$keyPairCreated(
+				A2(elm$core$Basics$composeR, author$project$KeyPair$decode, author$project$Main$KeyPairCreated)),
+				author$project$Main$keyPairFetched(
+				A2(elm$core$Basics$composeR, author$project$KeyPair$decode, author$project$Main$KeyPairFetched)),
 				author$project$Main$walletWebExtPresent(author$project$Main$WalletWebExtPresent)
 			]));
 };
@@ -6544,7 +6591,6 @@ var author$project$Main$registerProject = _Platform_outgoingPort(
 		return elm$json$Json$Encode$object(_List_Nil);
 	});
 var author$project$Overlay$WalletSetup$Pick = {$: 'Pick'};
-var elm$core$Debug$log = _Debug_log;
 var author$project$Overlay$WalletSetup$update = F2(
 	function (msg, model) {
 		var _n0 = A2(elm$core$Debug$log, 'WalletSetup.Msg', msg);
@@ -6724,7 +6770,6 @@ var elm$browser$Debugger$Overlay$Choose = F2(
 var elm$browser$Debugger$Overlay$goodNews1 = '\nThe good news is that having values like this in your message type is not\nso great in the long run. You are better off using simpler data, like\n';
 var elm$browser$Debugger$Overlay$goodNews2 = '\nfunction can pattern match on that data and call whatever functions, JSON\ndecoders, etc. you need. This makes the code much more explicit and easy to\nfollow for other readers (or you in a few months!)\n';
 var elm$json$Json$Decode$map2 = _Json_map2;
-var elm$json$Json$Decode$succeed = _Json_succeed;
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
 		case 'Normal':
@@ -8751,7 +8796,6 @@ var elm$browser$Debugger$Metadata$isPortable = function (_n0) {
 			A2(elm$browser$Debugger$Metadata$Error, types.message, problems));
 	}
 };
-var elm$json$Json$Decode$decodeValue = _Json_run;
 var elm$browser$Debugger$Metadata$decode = function (value) {
 	var _n0 = A2(elm$json$Json$Decode$decodeValue, elm$browser$Debugger$Metadata$decoder, value);
 	if (_n0.$ === 'Err') {
@@ -9488,7 +9532,6 @@ var elm$browser$Debugger$Main$download = F2(
 			A2(_Debugger_download, historyLength, json));
 	});
 var elm$browser$Debugger$History$jsToElm = _Debugger_unsafeCoerce;
-var elm$json$Json$Decode$value = _Json_decodeValue;
 var elm$browser$Debugger$History$decoder = F2(
 	function (initialModel, update) {
 		var addMessage = F2(
@@ -10287,48 +10330,51 @@ var author$project$Main$update = F2(
 						{overlay: overlay, page: page}),
 					cmd);
 			case 'KeyPairCreated':
-				var id = _n0.a;
-				var cmd = function () {
-					var _n2 = model.overlay;
-					if ((_n2.$ === 'Just') && (_n2.a.$ === 'WaitForKeyPair')) {
-						var _n3 = _n2.a;
-						return A2(
-							elm$browser$Browser$Navigation$pushUrl,
-							model.navKey,
-							author$project$Route$toString(
-								author$project$Route$Register(elm$core$Maybe$Nothing)));
-					} else {
-						return elm$core$Platform$Cmd$none;
-					}
-				}();
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							keyPair: elm$core$Maybe$Just(id)
-						}),
-					cmd);
+				var maybeKeyPair = _n0.a;
+				if (maybeKeyPair.$ === 'Nothing') {
+					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				} else {
+					var keyPair = maybeKeyPair.a;
+					var cmd = function () {
+						var _n3 = model.overlay;
+						if ((_n3.$ === 'Just') && (_n3.a.$ === 'WaitForKeyPair')) {
+							var _n4 = _n3.a;
+							return A2(
+								elm$browser$Browser$Navigation$pushUrl,
+								model.navKey,
+								author$project$Route$toString(
+									author$project$Route$Register(elm$core$Maybe$Nothing)));
+						} else {
+							return elm$core$Platform$Cmd$none;
+						}
+					}();
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								keyPair: elm$core$Maybe$Just(keyPair)
+							}),
+						cmd);
+				}
 			case 'KeyPairFetched':
-				var id = _n0.a;
+				var maybeKeyPair = _n0.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{
-							keyPair: elm$core$Maybe$Just(id)
-						}),
+						{keyPair: maybeKeyPair}),
 					elm$core$Platform$Cmd$none);
 			case 'PageRegister':
 				var subCmd = _n0.a;
-				var _n4 = model.page;
-				if (_n4.$ === 'Register') {
-					var oldModel = _n4.a;
+				var _n5 = model.page;
+				if (_n5.$ === 'Register') {
+					var oldModel = _n5.a;
 					var portCmd = function () {
 						var project = subCmd.a;
 						return author$project$Main$registerProject(project);
 					}();
-					var _n5 = A2(author$project$Page$Register$update, subCmd, oldModel);
-					var pageModel = _n5.a;
-					var pageCmd = _n5.b;
+					var _n6 = A2(author$project$Page$Register$update, subCmd, oldModel);
+					var pageModel = _n6.a;
+					var pageCmd = _n6.b;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -10346,12 +10392,12 @@ var author$project$Main$update = F2(
 				}
 			case 'OverlayWalletSetup':
 				var subCmd = _n0.a;
-				var _n7 = model.overlay;
-				if ((_n7.$ === 'Just') && (_n7.a.$ === 'WalletSetup')) {
-					var oldModel = _n7.a.a;
-					var _n8 = A2(author$project$Overlay$WalletSetup$update, subCmd, oldModel);
-					var overlayModel = _n8.a;
-					var overlayCmd = _n8.b;
+				var _n8 = model.overlay;
+				if ((_n8.$ === 'Just') && (_n8.a.$ === 'WalletSetup')) {
+					var oldModel = _n8.a.a;
+					var _n9 = A2(author$project$Overlay$WalletSetup$update, subCmd, oldModel);
+					var overlayModel = _n9.a;
+					var overlayCmd = _n9.b;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -10365,9 +10411,9 @@ var author$project$Main$update = F2(
 				}
 			case 'TopBarMsg':
 				var subMsg = _n0.a;
-				var _n9 = A2(author$project$TopBar$update, subMsg, model.topBarModel);
-				var topBarModel = _n9.a;
-				var topBarMsg = _n9.b;
+				var _n10 = A2(author$project$TopBar$update, subMsg, model.topBarModel);
+				var topBarModel = _n10.a;
+				var topBarMsg = _n10.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -10383,6 +10429,10 @@ var author$project$Main$update = F2(
 					elm$core$Platform$Cmd$none);
 		}
 	});
+var author$project$KeyPair$toString = function (keyPair) {
+	var key = keyPair.a;
+	return key;
+};
 var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
 	return {$: 'AlignX', a: a};
 };
@@ -15576,7 +15626,8 @@ var author$project$Main$viewKeyPair = function (maybeKeyPair) {
 					mdgriffith$elm_ui$Element$el,
 					_List_fromArray(
 						[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
-					mdgriffith$elm_ui$Element$text('Your current key pair: ' + keyPair))
+					mdgriffith$elm_ui$Element$text(
+						'Your current key pair: ' + author$project$KeyPair$toString(keyPair)))
 				]));
 	}
 };
@@ -18170,13 +18221,6 @@ var author$project$Main$view = function (model) {
 	};
 };
 var elm$browser$Browser$application = _Browser_application;
-var elm$json$Json$Decode$oneOf = _Json_oneOf;
 var author$project$Main$main = elm$browser$Browser$application(
 	{init: author$project$Main$init, onUrlChange: author$project$Main$UrlChanged, onUrlRequest: author$project$Main$LinkClicked, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
-_Platform_export({'Main':{'init':author$project$Main$main(
-	elm$json$Json$Decode$oneOf(
-		_List_fromArray(
-			[
-				elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
-				A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
-			])))({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Page.Register.Project":{"args":[],"type":"{}"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"],"WalletWebExtPresent":["()"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.Register.Msg":{"args":[],"tags":{"Register":["Page.Register.Project"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
+_Platform_export({'Main':{'init':author$project$Main$main(elm$json$Json$Decode$value)({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Page.Register.Project":{"args":[],"type":"{}"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["Maybe.Maybe KeyPair.KeyPair"],"KeyPairFetched":["Maybe.Maybe KeyPair.KeyPair"],"WalletWebExtPresent":["()"]}},"KeyPair.KeyPair":{"args":[],"tags":{"KeyPair":["String.String"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.Register.Msg":{"args":[],"tags":{"Register":["Page.Register.Project"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
