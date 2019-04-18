@@ -16129,7 +16129,32 @@ var author$project$Atom$Heading$sectionWithInfo = F2(
 					component)
 				]));
 	});
-var author$project$Style$Color$grey = A3(mdgriffith$elm_ui$Element$rgb255, 144, 160, 174);
+var author$project$Atom$Currency$smallCircle = function (bgColor) {
+	return A2(
+		elm$svg$Svg$svg,
+		_List_fromArray(
+			[
+				elm$svg$Svg$Attributes$width('14'),
+				elm$svg$Svg$Attributes$height('14'),
+				elm$svg$Svg$Attributes$viewBox('0 0 14 14'),
+				elm$svg$Svg$Attributes$fill('none')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				elm$svg$Svg$circle,
+				_List_fromArray(
+					[
+						elm$svg$Svg$Attributes$cx('7'),
+						elm$svg$Svg$Attributes$cy('7'),
+						elm$svg$Svg$Attributes$r('6'),
+						elm$svg$Svg$Attributes$stroke(
+						author$project$Style$Color$toCssString(bgColor)),
+						elm$svg$Svg$Attributes$strokeWidth('2')
+					]),
+				_List_Nil)
+			]));
+};
 var author$project$Style$Font$mediumBodyTextMono = function (textColor) {
 	return _List_fromArray(
 		[
@@ -16140,6 +16165,227 @@ var author$project$Style$Font$mediumBodyTextMono = function (textColor) {
 			mdgriffith$elm_ui$Element$Font$size(16)
 		]);
 };
+var author$project$Atom$Currency$small = F2(
+	function (amount, bgColor) {
+		return A2(
+			mdgriffith$elm_ui$Element$row,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_List_Nil,
+					mdgriffith$elm_ui$Element$html(
+						author$project$Atom$Currency$smallCircle(bgColor))),
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$paddingEach(
+								{bottom: 0, left: 8, right: 0, top: 0})
+							]),
+						author$project$Style$Font$mediumBodyTextMono(bgColor)),
+					mdgriffith$elm_ui$Element$text(amount))
+				]));
+	});
+var author$project$Style$Color$almostWhite = A3(mdgriffith$elm_ui$Element$rgb255, 248, 248, 248);
+var author$project$Style$Font$smallMediumText = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaMedium, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(14)
+		]);
+};
+var author$project$Style$Font$smallText = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaRegular, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(14)
+		]);
+};
+var mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var mdgriffith$elm_ui$Element$centerX = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$CenterX);
+var mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var mdgriffith$elm_ui$Element$centerY = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$CenterY);
+var author$project$Page$Project$Funds$viewFunds = function (title) {
+	return A2(
+		mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+			]),
+		_List_fromArray(
+			[
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				_Utils_ap(
+					_List_fromArray(
+						[
+							mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
+							mdgriffith$elm_ui$Element$paddingEach(
+							{bottom: 12, left: 24, right: 0, top: 0})
+						]),
+					author$project$Style$Font$mediumBodyText(author$project$Style$Color$black)),
+				mdgriffith$elm_ui$Element$text(title)),
+				A2(
+				mdgriffith$elm_ui$Element$row,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$almostWhite),
+						mdgriffith$elm_ui$Element$Border$width(1),
+						mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
+						mdgriffith$elm_ui$Element$Border$rounded(2),
+						mdgriffith$elm_ui$Element$height(
+						mdgriffith$elm_ui$Element$px(36)),
+						A2(mdgriffith$elm_ui$Element$paddingXY, 24, 0),
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+								]),
+							author$project$Style$Font$smallMediumText(author$project$Style$Color$darkGrey)),
+						mdgriffith$elm_ui$Element$text('SOURCE')),
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+								]),
+							author$project$Style$Font$smallMediumText(author$project$Style$Color$darkGrey)),
+						mdgriffith$elm_ui$Element$text('TYPE')),
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+								]),
+							author$project$Style$Font$smallMediumText(author$project$Style$Color$darkGrey)),
+						mdgriffith$elm_ui$Element$text('DATE')),
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+								]),
+							author$project$Style$Font$smallMediumText(author$project$Style$Color$darkGrey)),
+						mdgriffith$elm_ui$Element$text('AMOUNT'))
+					])),
+				A2(
+				mdgriffith$elm_ui$Element$row,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$height(
+						mdgriffith$elm_ui$Element$px(40)),
+						A2(mdgriffith$elm_ui$Element$paddingXY, 24, 0),
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+								]),
+							author$project$Style$Font$smallMediumText(author$project$Style$Color$darkGrey)),
+						mdgriffith$elm_ui$Element$text('oscoin network')),
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+								]),
+							author$project$Style$Font$smallText(author$project$Style$Color$darkGrey)),
+						mdgriffith$elm_ui$Element$text('osrank reward')),
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+								]),
+							author$project$Style$Font$smallText(author$project$Style$Color$darkGrey)),
+						mdgriffith$elm_ui$Element$text('19-04-12')),
+						A2(author$project$Atom$Currency$small, '84', author$project$Style$Color$darkGrey)
+					])),
+				A2(
+				mdgriffith$elm_ui$Element$row,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$height(
+						mdgriffith$elm_ui$Element$px(40)),
+						A2(mdgriffith$elm_ui$Element$paddingXY, 24, 0),
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+								]),
+							author$project$Style$Font$smallMediumText(author$project$Style$Color$darkGrey)),
+						mdgriffith$elm_ui$Element$text('IPFS')),
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+								]),
+							author$project$Style$Font$smallText(author$project$Style$Color$darkGrey)),
+						mdgriffith$elm_ui$Element$text('Donation')),
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+								]),
+							author$project$Style$Font$smallText(author$project$Style$Color$darkGrey)),
+						mdgriffith$elm_ui$Element$text('19-04-18')),
+						A2(author$project$Atom$Currency$small, '124', author$project$Style$Color$darkGrey)
+					])),
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$height(
+						mdgriffith$elm_ui$Element$px(40)),
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
+						mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$almostWhite),
+						mdgriffith$elm_ui$Element$Border$rounded(2)
+					]),
+				A2(
+					mdgriffith$elm_ui$Element$el,
+					_Utils_ap(
+						_List_fromArray(
+							[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+						author$project$Style$Font$linkText(author$project$Style$Color$darkGrey)),
+					mdgriffith$elm_ui$Element$text('View all')))
+			]));
+};
+var author$project$Style$Color$grey = A3(mdgriffith$elm_ui$Element$rgb255, 144, 160, 174);
 var mdgriffith$elm_ui$Internal$Model$Bottom = {$: 'Bottom'};
 var mdgriffith$elm_ui$Element$alignBottom = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$Bottom);
 var author$project$Page$Project$Funds$view = A2(
@@ -16179,41 +16425,18 @@ var author$project$Page$Project$Funds$view = A2(
 			_List_fromArray(
 				[
 					mdgriffith$elm_ui$Element$width(
-					mdgriffith$elm_ui$Element$fillPortion(2))
+					mdgriffith$elm_ui$Element$fillPortion(2)),
+					mdgriffith$elm_ui$Element$spacing(24)
 				]),
 			_List_fromArray(
 				[
-					A2(
-					mdgriffith$elm_ui$Element$el,
-					_Utils_ap(
-						_List_fromArray(
-							[
-								mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
-								mdgriffith$elm_ui$Element$paddingEach(
-								{bottom: 0, left: 24, right: 0, top: 0})
-							]),
-						author$project$Style$Font$mediumBodyText(author$project$Style$Color$black)),
-					mdgriffith$elm_ui$Element$text('Incoming funds')),
-					A2(
-					mdgriffith$elm_ui$Element$el,
-					_Utils_ap(
-						_List_fromArray(
-							[
-								mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
-								mdgriffith$elm_ui$Element$paddingEach(
-								{bottom: 0, left: 24, right: 0, top: 0})
-							]),
-						author$project$Style$Font$mediumBodyText(author$project$Style$Color$black)),
-					mdgriffith$elm_ui$Element$text('Outgoing funds'))
+					author$project$Page$Project$Funds$viewFunds('Incoming funds'),
+					author$project$Page$Project$Funds$viewFunds('Outgoing funds')
 				]))
 		]));
 var author$project$Style$Color$radicleBlue = A3(mdgriffith$elm_ui$Element$rgb255, 85, 85, 255);
 var mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var mdgriffith$elm_ui$Element$alignTop = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$Top);
-var mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
-var mdgriffith$elm_ui$Element$centerX = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$CenterX);
-var mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
-var mdgriffith$elm_ui$Element$centerY = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$CenterY);
 var author$project$Page$Project$Header$viewLogo = A2(
 	mdgriffith$elm_ui$Element$el,
 	_List_fromArray(
@@ -16777,7 +17000,7 @@ var author$project$Page$Project$view = _Utils_Tuple2(
 				{bottom: 96, left: 0, right: 0, top: 0})
 			]),
 		_List_fromArray(
-			[author$project$Page$Project$Header$view, author$project$Page$Project$Actions$view, author$project$Page$Project$People$view, author$project$Page$Project$Contract$view, author$project$Page$Project$Funds$view])));
+			[author$project$Page$Project$Header$view, author$project$Page$Project$Actions$view, author$project$Page$Project$Contract$view, author$project$Page$Project$People$view, author$project$Page$Project$Funds$view])));
 var author$project$Page$Register$view = _Utils_Tuple2(
 	'register',
 	A2(
@@ -16939,7 +17162,6 @@ var author$project$Style$Color$pink = A3(mdgriffith$elm_ui$Element$rgb255, 224, 
 var author$project$Atom$Button$accent = function (btnText) {
 	return A4(author$project$Atom$Button$style, author$project$Style$Color$pink, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
 };
-var author$project$Style$Color$almostWhite = A3(mdgriffith$elm_ui$Element$rgb255, 248, 248, 248);
 var author$project$TopBar$SearchUpdated = function (a) {
 	return {$: 'SearchUpdated', a: a};
 };
