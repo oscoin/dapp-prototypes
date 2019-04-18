@@ -43,6 +43,7 @@ style bgColor textColor hoverColor btnText =
          , Border.rounded 2
          , Element.paddingEach { top = 9, right = 16, bottom = 11, left = 16 }
          , Element.mouseOver [ Background.color hoverColor ]
+         , Element.pointer
          ]
             ++ Font.mediumBodyText textColor
         )

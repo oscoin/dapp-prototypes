@@ -5,11 +5,9 @@ import Element
 import Element.Background as Background
 import Element.Border as Border
 import Element.Input as Input
-import Html.Attributes
+import Route exposing (Route(..))
 import Style.Color as Color
 import Style.Font as Font
-import Url
-import Url.Builder
 
 
 
@@ -17,14 +15,17 @@ import Url.Builder
 
 
 type alias Model =
-    { searchTerm : String
-    , url : Url.Url
-    }
+    String
 
 
-init : Url.Url -> Model
-init url =
-    Model "" url
+
+-- { searchTerm : String
+-- }
+
+
+init : Model
+init =
+    ""
 
 
 
@@ -36,18 +37,18 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update msg _ =
     case msg of
         SearchUpdated term ->
-            ( { model | searchTerm = term }, Cmd.none )
+            ( term, Cmd.none )
 
 
 
 -- VIEW
 
 
-view : Model -> Element.Element Msg
-view model =
+view : Model -> String -> Element.Element Msg
+view searchTerm registerUrl =
     Element.row
         [ Border.color Color.lightGrey
         , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
@@ -76,22 +77,13 @@ view model =
             { label = Input.labelHidden "search"
             , onChange = SearchUpdated
             , placeholder = Just <| Input.placeholder [] <| Element.text "Search projects"
-            , text = model.searchTerm
+            , text = searchTerm
             }
 
         -- Register link
         , Element.link
             [ Element.alignRight ]
-            { url = toRegisterUrl model.url
+            { url = registerUrl
             , label = Button.accent "Register a project"
             }
         ]
-
-
-
--- HELPER
-
-
-toRegisterUrl : Url.Url -> String
-toRegisterUrl url =
-    Url.Builder.relative [ url.path ] [ Url.Builder.string "overlay" "register" ]

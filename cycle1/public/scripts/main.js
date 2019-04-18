@@ -4893,55 +4893,11 @@ var author$project$Main$LinkClicked = function (a) {
 var author$project$Main$UrlChanged = function (a) {
 	return {$: 'UrlChanged', a: a};
 };
-var author$project$Main$Model = F4(
-	function (topBarModel, overlay, page, url) {
-		return {overlay: overlay, page: page, topBarModel: topBarModel, url: url};
+var elm$core$Array$branchFactor = 32;
+var elm$core$Array$Array_elm_builtin = F4(
+	function (a, b, c, d) {
+		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
 	});
-var author$project$Main$NotFound = function (a) {
-	return {$: 'NotFound', a: a};
-};
-var author$project$Main$Home = function (a) {
-	return {$: 'Home', a: a};
-};
-var author$project$Main$Project = function (a) {
-	return {$: 'Project', a: a};
-};
-var author$project$Main$Register = function (a) {
-	return {$: 'Register', a: a};
-};
-var author$project$Main$toNavKey = function (page) {
-	switch (page.$) {
-		case 'NotFound':
-			var key = page.a;
-			return key;
-		case 'Home':
-			var key = page.a;
-			return key;
-		case 'Project':
-			var key = page.a;
-			return key;
-		default:
-			var key = page.a;
-			return key;
-	}
-};
-var elm$core$Basics$apL = F2(
-	function (f, x) {
-		return f(x);
-	});
-var elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
-};
-var elm$core$Maybe$Nothing = {$: 'Nothing'};
-var elm$core$Basics$False = {$: 'False'};
-var elm$core$Basics$True = {$: 'True'};
-var elm$core$Result$isOk = function (result) {
-	if (result.$ === 'Ok') {
-		return true;
-	} else {
-		return false;
-	}
-};
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$GT = {$: 'GT'};
 var elm$core$Basics$LT = {$: 'LT'};
@@ -5022,11 +4978,6 @@ var elm$core$Array$foldr = F3(
 var elm$core$Array$toList = function (array) {
 	return A3(elm$core$Array$foldr, elm$core$List$cons, _List_Nil, array);
 };
-var elm$core$Array$branchFactor = 32;
-var elm$core$Array$Array_elm_builtin = F4(
-	function (a, b, c, d) {
-		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
-	});
 var elm$core$Basics$ceiling = _Basics_ceiling;
 var elm$core$Basics$fdiv = _Basics_fdiv;
 var elm$core$Basics$logBase = F2(
@@ -5115,6 +5066,10 @@ var elm$core$Array$treeFromBuilder = F2(
 		}
 	});
 var elm$core$Basics$add = _Basics_add;
+var elm$core$Basics$apL = F2(
+	function (f, x) {
+		return f(x);
+	});
 var elm$core$Basics$floor = _Basics_floor;
 var elm$core$Basics$gt = _Utils_gt;
 var elm$core$Basics$max = F2(
@@ -5147,6 +5102,7 @@ var elm$core$Array$builderToArray = F2(
 				builder.tail);
 		}
 	});
+var elm$core$Basics$False = {$: 'False'};
 var elm$core$Basics$idiv = _Basics_idiv;
 var elm$core$Basics$lt = _Utils_lt;
 var elm$core$Elm$JsArray$initialize = _JsArray_initialize;
@@ -5189,11 +5145,23 @@ var elm$core$Array$initialize = F2(
 			return A5(elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
+var elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
+var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
 var elm$core$Result$Ok = function (a) {
 	return {$: 'Ok', a: a};
+};
+var elm$core$Basics$True = {$: 'True'};
+var elm$core$Result$isOk = function (result) {
+	if (result.$ === 'Ok') {
+		return true;
+	} else {
+		return false;
+	}
 };
 var elm$json$Json$Decode$Failure = F2(
 	function (a, b) {
@@ -5400,65 +5368,263 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 			}
 		}
 	});
+var elm$json$Json$Encode$null = _Json_encodeNull;
+var author$project$Main$requireKeyPair = _Platform_outgoingPort(
+	'requireKeyPair',
+	function ($) {
+		return elm$json$Json$Encode$null;
+	});
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
-var author$project$Main$changePage = F2(
-	function (maybeRoute, model) {
-		var key = author$project$Main$toNavKey(model.page);
-		if (maybeRoute.$ === 'Nothing') {
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{
-						page: author$project$Main$NotFound(key)
-					}),
-				elm$core$Platform$Cmd$none);
-		} else {
+var author$project$Main$cmdFromOverlay = function (maybePage) {
+	if ((maybePage.$ === 'Just') && (maybePage.a.$ === 'WaitForKeyPair')) {
+		var _n1 = maybePage.a;
+		return author$project$Main$requireKeyPair(_Utils_Tuple0);
+	} else {
+		return elm$core$Platform$Cmd$none;
+	}
+};
+var author$project$Main$WaitForKeyPair = {$: 'WaitForKeyPair'};
+var author$project$Main$WalletSetup = function (a) {
+	return {$: 'WalletSetup', a: a};
+};
+var author$project$Overlay$WalletSetup$Info = {$: 'Info'};
+var author$project$Overlay$WalletSetup$Model = function (step) {
+	return {step: step};
+};
+var author$project$Overlay$WalletSetup$init = author$project$Overlay$WalletSetup$Model(author$project$Overlay$WalletSetup$Info);
+var author$project$Main$overlayFromRoute = function (maybeRoute) {
+	if ((maybeRoute.$ === 'Just') && (maybeRoute.a.$ === 'Register')) {
+		var maybeOverlay = maybeRoute.a.a;
+		_n1$2:
+		while (true) {
+			if (maybeOverlay.$ === 'Just') {
+				switch (maybeOverlay.a.$) {
+					case 'WaitForKeyPair':
+						var _n2 = maybeOverlay.a;
+						return elm$core$Maybe$Just(author$project$Main$WaitForKeyPair);
+					case 'WalletSetup':
+						var _n3 = maybeOverlay.a;
+						return elm$core$Maybe$Just(
+							author$project$Main$WalletSetup(author$project$Overlay$WalletSetup$init));
+					default:
+						break _n1$2;
+				}
+			} else {
+				break _n1$2;
+			}
+		}
+		return elm$core$Maybe$Nothing;
+	} else {
+		return elm$core$Maybe$Nothing;
+	}
+};
+var author$project$Main$Home = {$: 'Home'};
+var author$project$Main$NotFound = {$: 'NotFound'};
+var author$project$Main$Project = {$: 'Project'};
+var author$project$Main$Register = function (a) {
+	return {$: 'Register', a: a};
+};
+var author$project$Page$Register$Model = function (project) {
+	return {project: project};
+};
+var author$project$Page$Register$Project = {};
+var author$project$Page$Register$init = author$project$Page$Register$Model(author$project$Page$Register$Project);
+var author$project$Main$pageFromRoute = function (maybeRoute) {
+	_n0$3:
+	while (true) {
+		if (maybeRoute.$ === 'Just') {
 			switch (maybeRoute.a.$) {
 				case 'Home':
 					var _n1 = maybeRoute.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								page: author$project$Main$Home(key)
-							}),
-						elm$core$Platform$Cmd$none);
+					return author$project$Main$Home;
 				case 'Project':
-					var maybeOverlay = maybeRoute.a.a;
-					var overlay = function () {
-						if ((maybeOverlay.$ === 'Just') && (maybeOverlay.a.$ === 'Register')) {
-							var _n3 = maybeOverlay.a;
-							return elm$core$Maybe$Just(
-								author$project$Main$Register(key));
-						} else {
-							return elm$core$Maybe$Nothing;
-						}
-					}();
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								overlay: overlay,
-								page: author$project$Main$Project(key)
-							}),
-						elm$core$Platform$Cmd$none);
+					var _n2 = maybeRoute.a;
+					return author$project$Main$Project;
+				case 'Register':
+					return author$project$Main$Register(author$project$Page$Register$init);
 				default:
-					var _n4 = maybeRoute.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								page: author$project$Main$Register(key)
-							}),
-						elm$core$Platform$Cmd$none);
+					break _n0$3;
+			}
+		} else {
+			break _n0$3;
+		}
+	}
+	return author$project$Main$NotFound;
+};
+var author$project$Route$Project = {$: 'Project'};
+var author$project$Route$Register = function (a) {
+	return {$: 'Register', a: a};
+};
+var author$project$Route$WaitForKeyPair = {$: 'WaitForKeyPair'};
+var author$project$Route$WalletSetup = {$: 'WalletSetup'};
+var author$project$Route$routeToPaths = function (route) {
+	switch (route.$) {
+		case 'Home':
+			return _List_Nil;
+		case 'Project':
+			return _List_fromArray(
+				['project']);
+		case 'Register':
+			return _List_fromArray(
+				['register']);
+		case 'WaitForKeyPair':
+			return _List_fromArray(
+				['wait-for-keypair']);
+		default:
+			return _List_fromArray(
+				['wallet-setup']);
+	}
+};
+var elm$core$List$foldrHelper = F4(
+	function (fn, acc, ctr, ls) {
+		if (!ls.b) {
+			return acc;
+		} else {
+			var a = ls.a;
+			var r1 = ls.b;
+			if (!r1.b) {
+				return A2(fn, a, acc);
+			} else {
+				var b = r1.a;
+				var r2 = r1.b;
+				if (!r2.b) {
+					return A2(
+						fn,
+						a,
+						A2(fn, b, acc));
+				} else {
+					var c = r2.a;
+					var r3 = r2.b;
+					if (!r3.b) {
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(fn, c, acc)));
+					} else {
+						var d = r3.a;
+						var r4 = r3.b;
+						var res = (ctr > 500) ? A3(
+							elm$core$List$foldl,
+							fn,
+							acc,
+							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(
+									fn,
+									c,
+									A2(fn, d, res))));
+					}
+				}
 			}
 		}
 	});
-var author$project$Route$Project = function (a) {
-	return {$: 'Project', a: a};
+var elm$core$List$foldr = F3(
+	function (fn, acc, ls) {
+		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
+	});
+var elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var elm$url$Url$Builder$toQueryPair = function (_n0) {
+	var key = _n0.a;
+	var value = _n0.b;
+	return key + ('=' + value);
 };
-var author$project$Route$Register = {$: 'Register'};
+var elm$url$Url$Builder$toQuery = function (parameters) {
+	if (!parameters.b) {
+		return '';
+	} else {
+		return '?' + A2(
+			elm$core$String$join,
+			'&',
+			A2(elm$core$List$map, elm$url$Url$Builder$toQueryPair, parameters));
+	}
+};
+var elm$url$Url$Builder$relative = F2(
+	function (pathSegments, parameters) {
+		return _Utils_ap(
+			A2(elm$core$String$join, '/', pathSegments),
+			elm$url$Url$Builder$toQuery(parameters));
+	});
+var elm$url$Url$percentEncode = _Url_percentEncode;
+var elm$url$Url$Builder$QueryParameter = F2(
+	function (a, b) {
+		return {$: 'QueryParameter', a: a, b: b};
+	});
+var elm$url$Url$Builder$string = F2(
+	function (key, value) {
+		return A2(
+			elm$url$Url$Builder$QueryParameter,
+			elm$url$Url$percentEncode(key),
+			elm$url$Url$percentEncode(value));
+	});
+var author$project$Route$toString = function (route) {
+	var queryParams = function () {
+		if (route.$ === 'Register') {
+			var overlay = route.a;
+			_n1$2:
+			while (true) {
+				if (overlay.$ === 'Just') {
+					switch (overlay.a.$) {
+						case 'WaitForKeyPair':
+							var _n2 = overlay.a;
+							return _List_fromArray(
+								[
+									A2(
+									elm$url$Url$Builder$string,
+									'overlay',
+									A2(
+										elm$url$Url$Builder$relative,
+										author$project$Route$routeToPaths(author$project$Route$WaitForKeyPair),
+										_List_Nil))
+								]);
+						case 'WalletSetup':
+							var _n3 = overlay.a;
+							return _List_fromArray(
+								[
+									A2(
+									elm$url$Url$Builder$string,
+									'overlay',
+									A2(
+										elm$url$Url$Builder$relative,
+										author$project$Route$routeToPaths(author$project$Route$WalletSetup),
+										_List_Nil))
+								]);
+						default:
+							break _n1$2;
+					}
+				} else {
+					break _n1$2;
+				}
+			}
+			return _List_Nil;
+		} else {
+			return _List_Nil;
+		}
+	}();
+	var paths = author$project$Route$routeToPaths(route);
+	return A2(elm$url$Url$Builder$relative, paths, queryParams);
+};
 var elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
 var elm$core$Dict$empty = elm$core$Dict$RBEmpty_elm_builtin;
 var elm$core$Dict$Black = {$: 'Black'};
@@ -5659,77 +5825,13 @@ var author$project$Route$queryOverlay = A2(
 	elm$core$Dict$fromList(
 		_List_fromArray(
 			[
-				_Utils_Tuple2('register', author$project$Route$Register)
+				_Utils_Tuple2(
+				author$project$Route$toString(author$project$Route$WaitForKeyPair),
+				author$project$Route$WaitForKeyPair),
+				_Utils_Tuple2(
+				author$project$Route$toString(author$project$Route$WalletSetup),
+				author$project$Route$WalletSetup)
 			])));
-var elm$core$List$foldrHelper = F4(
-	function (fn, acc, ctr, ls) {
-		if (!ls.b) {
-			return acc;
-		} else {
-			var a = ls.a;
-			var r1 = ls.b;
-			if (!r1.b) {
-				return A2(fn, a, acc);
-			} else {
-				var b = r1.a;
-				var r2 = r1.b;
-				if (!r2.b) {
-					return A2(
-						fn,
-						a,
-						A2(fn, b, acc));
-				} else {
-					var c = r2.a;
-					var r3 = r2.b;
-					if (!r3.b) {
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(fn, c, acc)));
-					} else {
-						var d = r3.a;
-						var r4 = r3.b;
-						var res = (ctr > 500) ? A3(
-							elm$core$List$foldl,
-							fn,
-							acc,
-							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(
-									fn,
-									c,
-									A2(fn, d, res))));
-					}
-				}
-			}
-		}
-	});
-var elm$core$List$foldr = F3(
-	function (fn, acc, ls) {
-		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
-	});
-var elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
 var elm$url$Url$Parser$Parser = function (a) {
 	return {$: 'Parser', a: a};
 };
@@ -5872,21 +5974,18 @@ var elm$url$Url$Parser$top = elm$url$Url$Parser$Parser(
 var author$project$Route$parser = elm$url$Url$Parser$oneOf(
 	_List_fromArray(
 		[
+			A2(elm$url$Url$Parser$map, author$project$Route$Project, elm$url$Url$Parser$top),
 			A2(
 			elm$url$Url$Parser$map,
 			author$project$Route$Project,
-			A2(elm$url$Url$Parser$questionMark, elm$url$Url$Parser$top, author$project$Route$queryOverlay)),
-			A2(
-			elm$url$Url$Parser$map,
-			author$project$Route$Project,
-			A2(
-				elm$url$Url$Parser$questionMark,
-				elm$url$Url$Parser$s('project'),
-				author$project$Route$queryOverlay)),
+			elm$url$Url$Parser$s('project')),
 			A2(
 			elm$url$Url$Parser$map,
 			author$project$Route$Register,
-			elm$url$Url$Parser$s('register'))
+			A2(
+				elm$url$Url$Parser$questionMark,
+				elm$url$Url$Parser$s('register'),
+				author$project$Route$queryOverlay))
 		]));
 var elm$url$Url$Parser$getFirstMatch = function (states) {
 	getFirstMatch:
@@ -6379,42 +6478,95 @@ var elm$url$Url$Parser$parse = F2(
 var author$project$Route$fromUrl = function (url) {
 	return A2(elm$url$Url$Parser$parse, author$project$Route$parser, url);
 };
-var author$project$TopBar$Model = F2(
-	function (searchTerm, url) {
-		return {searchTerm: searchTerm, url: url};
-	});
-var author$project$TopBar$init = function (url) {
-	return A2(author$project$TopBar$Model, '', url);
-};
+var author$project$TopBar$init = '';
 var author$project$Main$init = F3(
-	function (_n0, url, navKey) {
-		var model = A4(
-			author$project$Main$Model,
-			author$project$TopBar$init(url),
-			elm$core$Maybe$Nothing,
-			author$project$Main$NotFound(navKey),
-			url);
-		return A2(
-			author$project$Main$changePage,
-			author$project$Route$fromUrl(url),
-			model);
+	function (maybeKeyPair, url, navKey) {
+		var maybeRoute = author$project$Route$fromUrl(url);
+		var page = author$project$Main$pageFromRoute(maybeRoute);
+		var maybeOverlay = author$project$Main$overlayFromRoute(maybeRoute);
+		var cmd = author$project$Main$cmdFromOverlay(maybeOverlay);
+		return _Utils_Tuple2(
+			{keyPair: maybeKeyPair, navKey: navKey, overlay: maybeOverlay, page: page, topBarModel: author$project$TopBar$init, url: url, wallet: elm$core$Maybe$Nothing},
+			cmd);
 	});
+var author$project$Main$KeyPairCreated = function (a) {
+	return {$: 'KeyPairCreated', a: a};
+};
+var author$project$Main$KeyPairFetched = function (a) {
+	return {$: 'KeyPairFetched', a: a};
+};
+var author$project$Main$WalletWebExtPresent = function (a) {
+	return {$: 'WalletWebExtPresent', a: a};
+};
+var elm$json$Json$Decode$string = _Json_decodeString;
+var author$project$Main$keyPairCreated = _Platform_incomingPort('keyPairCreated', elm$json$Json$Decode$string);
+var author$project$Main$keyPairFetched = _Platform_incomingPort('keyPairFetched', elm$json$Json$Decode$string);
+var elm$json$Json$Decode$null = _Json_decodeNull;
+var author$project$Main$walletWebExtPresent = _Platform_incomingPort(
+	'walletWebExtPresent',
+	elm$json$Json$Decode$null(_Utils_Tuple0));
 var elm$core$Platform$Sub$batch = _Platform_batch;
-var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
 var author$project$Main$subscriptions = function (_n0) {
-	return elm$core$Platform$Sub$none;
+	return elm$core$Platform$Sub$batch(
+		_List_fromArray(
+			[
+				author$project$Main$keyPairCreated(author$project$Main$KeyPairCreated),
+				author$project$Main$keyPairFetched(author$project$Main$KeyPairFetched),
+				author$project$Main$walletWebExtPresent(author$project$Main$WalletWebExtPresent)
+			]));
+};
+var author$project$Main$OverlayWalletSetup = function (a) {
+	return {$: 'OverlayWalletSetup', a: a};
+};
+var author$project$Main$PageRegister = function (a) {
+	return {$: 'PageRegister', a: a};
 };
 var author$project$Main$TopBarMsg = function (a) {
 	return {$: 'TopBarMsg', a: a};
 };
-var author$project$TopBar$update = F2(
+var author$project$Main$WebExt = {$: 'WebExt'};
+var elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			elm$core$List$foldl,
+			F2(
+				function (_n0, obj) {
+					var k = _n0.a;
+					var v = _n0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var author$project$Main$registerProject = _Platform_outgoingPort(
+	'registerProject',
+	function ($) {
+		return elm$json$Json$Encode$object(_List_Nil);
+	});
+var author$project$Overlay$WalletSetup$Pick = {$: 'Pick'};
+var elm$core$Debug$log = _Debug_log;
+var author$project$Overlay$WalletSetup$update = F2(
 	function (msg, model) {
-		var term = msg.a;
+		var _n0 = A2(elm$core$Debug$log, 'WalletSetup.Msg', msg);
 		return _Utils_Tuple2(
 			_Utils_update(
 				model,
-				{searchTerm: term}),
+				{step: author$project$Overlay$WalletSetup$Pick}),
 			elm$core$Platform$Cmd$none);
+	});
+var author$project$Page$Register$update = F2(
+	function (msg, model) {
+		var project = msg.a;
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{project: project}),
+			elm$core$Platform$Cmd$none);
+	});
+var author$project$TopBar$update = F2(
+	function (msg, _n0) {
+		var term = msg.a;
+		return _Utils_Tuple2(term, elm$core$Platform$Cmd$none);
 	});
 var elm$browser$Browser$External = function (a) {
 	return {$: 'External', a: a};
@@ -8409,7 +8561,6 @@ var elm$browser$Debugger$Metadata$Alias = F2(
 	});
 var elm$json$Json$Decode$field = _Json_decodeField;
 var elm$json$Json$Decode$list = _Json_decodeList;
-var elm$json$Json$Decode$string = _Json_decodeString;
 var elm$browser$Debugger$Metadata$decodeAlias = A3(
 	elm$json$Json$Decode$map2,
 	elm$browser$Debugger$Metadata$Alias,
@@ -9230,19 +9381,6 @@ var elm$browser$Debugger$History$encode = function (_n0) {
 			elm$browser$Debugger$History$encodeHelp,
 			elm$core$List$reverse(recent.messages),
 			snapshots));
-};
-var elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			elm$core$List$foldl,
-			F2(
-				function (_n0, obj) {
-					var k = _n0.a;
-					var v = _n0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
 };
 var elm$browser$Debugger$Metadata$encodeAlias = function (_n0) {
 	var args = _n0.args;
@@ -10119,17 +10257,17 @@ var elm$url$Url$toString = function (url) {
 };
 var author$project$Main$update = F2(
 	function (msg, model) {
-		var _n0 = _Utils_Tuple2(msg, model);
-		switch (_n0.a.$) {
+		var _n0 = A2(elm$core$Debug$log, 'Main.msg', msg);
+		switch (_n0.$) {
 			case 'LinkClicked':
-				var urlRequest = _n0.a.a;
+				var urlRequest = _n0.a;
 				if (urlRequest.$ === 'Internal') {
 					var url = urlRequest.a;
 					return _Utils_Tuple2(
 						model,
 						A2(
 							elm$browser$Browser$Navigation$pushUrl,
-							author$project$Main$toNavKey(model.page),
+							model.navKey,
 							elm$url$Url$toString(url)));
 				} else {
 					var href = urlRequest.a;
@@ -10138,25 +10276,123 @@ var author$project$Main$update = F2(
 						elm$browser$Browser$Navigation$load(href));
 				}
 			case 'UrlChanged':
-				var url = _n0.a.a;
-				return A2(
-					author$project$Main$changePage,
-					author$project$Route$fromUrl(url),
+				var url = _n0.a;
+				var maybeRoute = author$project$Route$fromUrl(url);
+				var overlay = author$project$Main$overlayFromRoute(maybeRoute);
+				var page = author$project$Main$pageFromRoute(maybeRoute);
+				var cmd = author$project$Main$cmdFromOverlay(overlay);
+				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{url: url}));
-			default:
-				var subMsg = _n0.a.a;
-				var _n2 = A2(author$project$TopBar$update, subMsg, model.topBarModel);
-				var topBarModel = _n2.a;
-				var topBarMsg = _n2.b;
+						{overlay: overlay, page: page}),
+					cmd);
+			case 'KeyPairCreated':
+				var id = _n0.a;
+				var cmd = function () {
+					var _n2 = model.overlay;
+					if ((_n2.$ === 'Just') && (_n2.a.$ === 'WaitForKeyPair')) {
+						var _n3 = _n2.a;
+						return A2(
+							elm$browser$Browser$Navigation$pushUrl,
+							model.navKey,
+							author$project$Route$toString(
+								author$project$Route$Register(elm$core$Maybe$Nothing)));
+					} else {
+						return elm$core$Platform$Cmd$none;
+					}
+				}();
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							keyPair: elm$core$Maybe$Just(id)
+						}),
+					cmd);
+			case 'KeyPairFetched':
+				var id = _n0.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							keyPair: elm$core$Maybe$Just(id)
+						}),
+					elm$core$Platform$Cmd$none);
+			case 'PageRegister':
+				var subCmd = _n0.a;
+				var _n4 = model.page;
+				if (_n4.$ === 'Register') {
+					var oldModel = _n4.a;
+					var portCmd = function () {
+						var project = subCmd.a;
+						return author$project$Main$registerProject(project);
+					}();
+					var _n5 = A2(author$project$Page$Register$update, subCmd, oldModel);
+					var pageModel = _n5.a;
+					var pageCmd = _n5.b;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								page: author$project$Main$Register(pageModel)
+							}),
+						elm$core$Platform$Cmd$batch(
+							_List_fromArray(
+								[
+									A2(elm$core$Platform$Cmd$map, author$project$Main$PageRegister, pageCmd),
+									portCmd
+								])));
+				} else {
+					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				}
+			case 'OverlayWalletSetup':
+				var subCmd = _n0.a;
+				var _n7 = model.overlay;
+				if ((_n7.$ === 'Just') && (_n7.a.$ === 'WalletSetup')) {
+					var oldModel = _n7.a.a;
+					var _n8 = A2(author$project$Overlay$WalletSetup$update, subCmd, oldModel);
+					var overlayModel = _n8.a;
+					var overlayCmd = _n8.b;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								overlay: elm$core$Maybe$Just(
+									author$project$Main$WalletSetup(overlayModel))
+							}),
+						A2(elm$core$Platform$Cmd$map, author$project$Main$OverlayWalletSetup, overlayCmd));
+				} else {
+					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				}
+			case 'TopBarMsg':
+				var subMsg = _n0.a;
+				var _n9 = A2(author$project$TopBar$update, subMsg, model.topBarModel);
+				var topBarModel = _n9.a;
+				var topBarMsg = _n9.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{topBarModel: topBarModel}),
 					A2(elm$core$Platform$Cmd$map, author$project$Main$TopBarMsg, topBarMsg));
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							wallet: elm$core$Maybe$Just(author$project$Main$WebExt)
+						}),
+					elm$core$Platform$Cmd$none);
 		}
 	});
+var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
+	return {$: 'AlignX', a: a};
+};
+var mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var mdgriffith$elm_ui$Element$centerX = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$CenterX);
+var mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
+	return {$: 'AlignY', a: a};
+};
+var mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var mdgriffith$elm_ui$Element$centerY = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$CenterY);
 var mdgriffith$elm_ui$Internal$Model$Height = function (a) {
 	return {$: 'Height', a: a};
 };
@@ -10170,8 +10406,8 @@ var mdgriffith$elm_ui$Element$width = mdgriffith$elm_ui$Internal$Model$Width;
 var mdgriffith$elm_ui$Internal$Model$Unkeyed = function (a) {
 	return {$: 'Unkeyed', a: a};
 };
-var mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
-var mdgriffith$elm_ui$Internal$Model$asColumn = mdgriffith$elm_ui$Internal$Model$AsColumn;
+var mdgriffith$elm_ui$Internal$Model$AsEl = {$: 'AsEl'};
+var mdgriffith$elm_ui$Internal$Model$asEl = mdgriffith$elm_ui$Internal$Model$AsEl;
 var mdgriffith$elm_ui$Internal$Model$Generic = {$: 'Generic'};
 var mdgriffith$elm_ui$Internal$Model$div = mdgriffith$elm_ui$Internal$Model$Generic;
 var mdgriffith$elm_ui$Internal$Flag$Field = F2(
@@ -10277,8 +10513,6 @@ var mdgriffith$elm_ui$Internal$Model$addKeyedChildren = F3(
 							inFront)));
 		}
 	});
-var mdgriffith$elm_ui$Internal$Model$AsEl = {$: 'AsEl'};
-var mdgriffith$elm_ui$Internal$Model$asEl = mdgriffith$elm_ui$Internal$Model$AsEl;
 var mdgriffith$elm_ui$Internal$Model$AsParagraph = {$: 'AsParagraph'};
 var mdgriffith$elm_ui$Internal$Model$asParagraph = mdgriffith$elm_ui$Internal$Model$AsParagraph;
 var elm$html$Html$s = _VirtualDom_node('s');
@@ -15269,6 +15503,31 @@ var mdgriffith$elm_ui$Internal$Model$element = F4(
 				mdgriffith$elm_ui$Internal$Model$NoNearbyChildren,
 				elm$core$List$reverse(attributes)));
 	});
+var mdgriffith$elm_ui$Element$el = F2(
+	function (attrs, child) {
+		return A4(
+			mdgriffith$elm_ui$Internal$Model$element,
+			mdgriffith$elm_ui$Internal$Model$asEl,
+			mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				elm$core$List$cons,
+				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
+				A2(
+					elm$core$List$cons,
+					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
+					attrs)),
+			mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[child])));
+	});
+var mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
+	return {$: 'Fill', a: a};
+};
+var mdgriffith$elm_ui$Element$fill = mdgriffith$elm_ui$Internal$Model$Fill(1);
+var mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
+var mdgriffith$elm_ui$Element$none = mdgriffith$elm_ui$Internal$Model$Empty;
+var mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
+var mdgriffith$elm_ui$Internal$Model$asRow = mdgriffith$elm_ui$Internal$Model$AsRow;
 var mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
 	return {$: 'Attr', a: a};
 };
@@ -15276,21 +15535,21 @@ var mdgriffith$elm_ui$Internal$Model$htmlClass = function (cls) {
 	return mdgriffith$elm_ui$Internal$Model$Attr(
 		elm$html$Html$Attributes$class(cls));
 };
-var mdgriffith$elm_ui$Element$column = F2(
+var mdgriffith$elm_ui$Element$row = F2(
 	function (attrs, children) {
 		return A4(
 			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asColumn,
+			mdgriffith$elm_ui$Internal$Model$asRow,
 			mdgriffith$elm_ui$Internal$Model$div,
 			A2(
 				elm$core$List$cons,
-				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentTop + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentLeft)),
+				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
 				A2(
 					elm$core$List$cons,
-					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
+					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
 					A2(
 						elm$core$List$cons,
-						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
+						mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
 						attrs))),
 			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
@@ -15300,37 +15559,105 @@ var mdgriffith$elm_ui$Internal$Model$Text = function (a) {
 var mdgriffith$elm_ui$Element$text = function (content) {
 	return mdgriffith$elm_ui$Internal$Model$Text(content);
 };
-var author$project$Page$Home$view = _Utils_Tuple2(
-	'home',
-	A2(
-		mdgriffith$elm_ui$Element$column,
-		_List_Nil,
-		_List_fromArray(
-			[
-				mdgriffith$elm_ui$Element$text('home')
-			])));
-var author$project$Page$NotFound$view = _Utils_Tuple2(
-	'Page Not Found',
-	A2(
-		mdgriffith$elm_ui$Element$column,
-		_List_Nil,
-		_List_fromArray(
-			[
-				mdgriffith$elm_ui$Element$text('Page Not Found')
-			])));
-var mdgriffith$elm_ui$Internal$Model$Typeface = function (a) {
-	return {$: 'Typeface', a: a};
+var author$project$Main$viewKeyPair = function (maybeKeyPair) {
+	if (maybeKeyPair.$ === 'Nothing') {
+		return mdgriffith$elm_ui$Element$none;
+	} else {
+		var keyPair = maybeKeyPair.a;
+		return A2(
+			mdgriffith$elm_ui$Element$row,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+				]),
+			_List_fromArray(
+				[
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_List_fromArray(
+						[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+					mdgriffith$elm_ui$Element$text('Your current key pair: ' + keyPair))
+				]));
+	}
 };
-var mdgriffith$elm_ui$Element$Font$typeface = mdgriffith$elm_ui$Internal$Model$Typeface;
-var author$project$Style$Font$fontGTAmericaMedium = mdgriffith$elm_ui$Element$Font$typeface('GT America Medium');
-var mdgriffith$elm_ui$Internal$Flag$fontColor = mdgriffith$elm_ui$Internal$Flag$flag(14);
-var mdgriffith$elm_ui$Internal$Model$Colored = F3(
-	function (a, b, c) {
-		return {$: 'Colored', a: a, b: b, c: c};
+var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
+	function (a, b, c, d) {
+		return {$: 'Rgba', a: a, b: b, c: c, d: d};
 	});
+var mdgriffith$elm_ui$Element$rgb255 = F3(
+	function (red, green, blue) {
+		return A4(mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
+	});
+var author$project$Style$Color$black = A3(mdgriffith$elm_ui$Element$rgb255, 40, 51, 61);
+var mdgriffith$elm_ui$Internal$Flag$transparency = mdgriffith$elm_ui$Internal$Flag$flag(0);
 var mdgriffith$elm_ui$Internal$Model$StyleClass = F2(
 	function (a, b) {
 		return {$: 'StyleClass', a: a, b: b};
+	});
+var mdgriffith$elm_ui$Internal$Model$Transparency = F2(
+	function (a, b) {
+		return {$: 'Transparency', a: a, b: b};
+	});
+var mdgriffith$elm_ui$Element$alpha = function (o) {
+	var transparency = function (x) {
+		return 1 - x;
+	}(
+		A2(
+			elm$core$Basics$min,
+			1.0,
+			A2(elm$core$Basics$max, 0.0, o)));
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$transparency,
+		A2(
+			mdgriffith$elm_ui$Internal$Model$Transparency,
+			'transparency-' + mdgriffith$elm_ui$Internal$Model$floatClass(transparency),
+			transparency));
+};
+var mdgriffith$elm_ui$Element$htmlAttribute = mdgriffith$elm_ui$Internal$Model$Attr;
+var mdgriffith$elm_ui$Internal$Model$InFront = {$: 'InFront'};
+var mdgriffith$elm_ui$Internal$Model$Nearby = F2(
+	function (a, b) {
+		return {$: 'Nearby', a: a, b: b};
+	});
+var mdgriffith$elm_ui$Element$inFront = function (element) {
+	return A2(mdgriffith$elm_ui$Internal$Model$Nearby, mdgriffith$elm_ui$Internal$Model$InFront, element);
+};
+var elm$html$Html$Attributes$rel = _VirtualDom_attribute('rel');
+var mdgriffith$elm_ui$Element$link = F2(
+	function (attrs, _n0) {
+		var url = _n0.url;
+		var label = _n0.label;
+		return A4(
+			mdgriffith$elm_ui$Internal$Model$element,
+			mdgriffith$elm_ui$Internal$Model$asEl,
+			mdgriffith$elm_ui$Internal$Model$NodeName('a'),
+			A2(
+				elm$core$List$cons,
+				mdgriffith$elm_ui$Internal$Model$Attr(
+					elm$html$Html$Attributes$href(url)),
+				A2(
+					elm$core$List$cons,
+					mdgriffith$elm_ui$Internal$Model$Attr(
+						elm$html$Html$Attributes$rel('noopener noreferrer')),
+					A2(
+						elm$core$List$cons,
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
+						A2(
+							elm$core$List$cons,
+							mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
+							A2(
+								elm$core$List$cons,
+								mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentCenterX + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
+								attrs))))),
+			mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[label])));
+	});
+var mdgriffith$elm_ui$Internal$Flag$bgColor = mdgriffith$elm_ui$Internal$Flag$flag(8);
+var mdgriffith$elm_ui$Internal$Model$Colored = F3(
+	function (a, b, c) {
+		return {$: 'Colored', a: a, b: b, c: c};
 	});
 var mdgriffith$elm_ui$Internal$Model$formatColorClass = function (_n0) {
 	var red = _n0.a;
@@ -15339,6 +15666,55 @@ var mdgriffith$elm_ui$Internal$Model$formatColorClass = function (_n0) {
 	var alpha = _n0.d;
 	return mdgriffith$elm_ui$Internal$Model$floatClass(red) + ('-' + (mdgriffith$elm_ui$Internal$Model$floatClass(green) + ('-' + (mdgriffith$elm_ui$Internal$Model$floatClass(blue) + ('-' + mdgriffith$elm_ui$Internal$Model$floatClass(alpha))))));
 };
+var mdgriffith$elm_ui$Element$Background$color = function (clr) {
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$bgColor,
+		A3(
+			mdgriffith$elm_ui$Internal$Model$Colored,
+			'bg-' + mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'background-color',
+			clr));
+};
+var author$project$Main$background = function (backUrl) {
+	return mdgriffith$elm_ui$Element$inFront(
+		A2(
+			mdgriffith$elm_ui$Element$link,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$black),
+					mdgriffith$elm_ui$Element$alpha(0.6),
+					mdgriffith$elm_ui$Element$htmlAttribute(
+					A2(elm$html$Html$Attributes$style, 'cursor', 'default')),
+					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+				]),
+			{label: mdgriffith$elm_ui$Element$none, url: backUrl}));
+};
+var author$project$Main$foreground = function (content) {
+	return mdgriffith$elm_ui$Element$inFront(
+		A2(
+			mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+			content));
+};
+var author$project$Main$overlayAttrs = F2(
+	function (content, backUrl) {
+		return _List_fromArray(
+			[
+				author$project$Main$background(backUrl),
+				author$project$Main$foreground(content)
+			]);
+	});
+var author$project$Style$Color$darkGrey = A3(mdgriffith$elm_ui$Element$rgb255, 84, 100, 116);
+var author$project$Style$Color$white = A3(mdgriffith$elm_ui$Element$rgb255, 255, 255, 255);
+var mdgriffith$elm_ui$Internal$Model$Typeface = function (a) {
+	return {$: 'Typeface', a: a};
+};
+var mdgriffith$elm_ui$Element$Font$typeface = mdgriffith$elm_ui$Internal$Model$Typeface;
+var author$project$Style$Font$fontGTAmericaRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America');
+var mdgriffith$elm_ui$Internal$Flag$fontColor = mdgriffith$elm_ui$Internal$Flag$flag(14);
 var mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
 	return A2(
 		mdgriffith$elm_ui$Internal$Model$StyleClass,
@@ -15414,6 +15790,63 @@ var mdgriffith$elm_ui$Element$Font$size = function (i) {
 		mdgriffith$elm_ui$Internal$Flag$fontSize,
 		mdgriffith$elm_ui$Internal$Model$FontSize(i));
 };
+var author$project$Style$Font$bodyText = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaRegular, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(16)
+		]);
+};
+var mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
+var mdgriffith$elm_ui$Internal$Model$asColumn = mdgriffith$elm_ui$Internal$Model$AsColumn;
+var mdgriffith$elm_ui$Element$column = F2(
+	function (attrs, children) {
+		return A4(
+			mdgriffith$elm_ui$Internal$Model$element,
+			mdgriffith$elm_ui$Internal$Model$asColumn,
+			mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				elm$core$List$cons,
+				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentTop + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentLeft)),
+				A2(
+					elm$core$List$cons,
+					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
+					A2(
+						elm$core$List$cons,
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
+						attrs))),
+			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
+var mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var mdgriffith$elm_ui$Element$px = mdgriffith$elm_ui$Internal$Model$Px;
+var author$project$Overlay$WaitForKeyPair$view = _Utils_Tuple2(
+	'wait for key pair',
+	A2(
+		mdgriffith$elm_ui$Element$column,
+		_Utils_ap(
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
+					mdgriffith$elm_ui$Element$height(
+					mdgriffith$elm_ui$Element$px(214)),
+					mdgriffith$elm_ui$Element$width(
+					mdgriffith$elm_ui$Element$px(396))
+				]),
+			author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
+		_List_fromArray(
+			[
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+				mdgriffith$elm_ui$Element$text('Please finish process in oscoin wallet.'))
+			])));
+var author$project$Style$Font$fontGTAmericaMedium = mdgriffith$elm_ui$Element$Font$typeface('GT America Medium');
 var author$project$Style$Font$mediumBodyText = function (textColor) {
 	return _List_fromArray(
 		[
@@ -15424,23 +15857,6 @@ var author$project$Style$Font$mediumBodyText = function (textColor) {
 			mdgriffith$elm_ui$Element$Font$size(16)
 		]);
 };
-var mdgriffith$elm_ui$Element$el = F2(
-	function (attrs, child) {
-		return A4(
-			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asEl,
-			mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				elm$core$List$cons,
-				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
-				A2(
-					elm$core$List$cons,
-					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
-					attrs)),
-			mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[child])));
-	});
 var mdgriffith$elm_ui$Internal$Flag$hover = mdgriffith$elm_ui$Internal$Flag$flag(33);
 var mdgriffith$elm_ui$Internal$Model$Hover = {$: 'Hover'};
 var mdgriffith$elm_ui$Internal$Model$PseudoSelector = F2(
@@ -15448,12 +15864,6 @@ var mdgriffith$elm_ui$Internal$Model$PseudoSelector = F2(
 		return {$: 'PseudoSelector', a: a, b: b};
 	});
 var elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
-var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
-	return {$: 'AlignX', a: a};
-};
-var mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
-	return {$: 'AlignY', a: a};
-};
 var mdgriffith$elm_ui$Internal$Model$Class = F2(
 	function (a, b) {
 		return {$: 'Class', a: a, b: b};
@@ -15461,16 +15871,11 @@ var mdgriffith$elm_ui$Internal$Model$Class = F2(
 var mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
 	return {$: 'Describe', a: a};
 };
-var mdgriffith$elm_ui$Internal$Model$Nearby = F2(
-	function (a, b) {
-		return {$: 'Nearby', a: a, b: b};
-	});
 var mdgriffith$elm_ui$Internal$Model$NoAttribute = {$: 'NoAttribute'};
 var mdgriffith$elm_ui$Internal$Model$TransformComponent = F2(
 	function (a, b) {
 		return {$: 'TransformComponent', a: a, b: b};
 	});
-var mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
 var mdgriffith$elm_ui$Internal$Model$map = F2(
 	function (fn, el) {
 		switch (el.$) {
@@ -15626,17 +16031,8 @@ var mdgriffith$elm_ui$Element$paddingEach = function (_n0) {
 			bottom,
 			left));
 };
-var mdgriffith$elm_ui$Internal$Flag$bgColor = mdgriffith$elm_ui$Internal$Flag$flag(8);
-var mdgriffith$elm_ui$Element$Background$color = function (clr) {
-	return A2(
-		mdgriffith$elm_ui$Internal$Model$StyleClass,
-		mdgriffith$elm_ui$Internal$Flag$bgColor,
-		A3(
-			mdgriffith$elm_ui$Internal$Model$Colored,
-			'bg-' + mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
-			'background-color',
-			clr));
-};
+var mdgriffith$elm_ui$Internal$Flag$cursor = mdgriffith$elm_ui$Internal$Flag$flag(21);
+var mdgriffith$elm_ui$Element$pointer = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$cursor, mdgriffith$elm_ui$Internal$Style$classes.cursorPointer);
 var mdgriffith$elm_ui$Internal$Flag$borderRound = mdgriffith$elm_ui$Internal$Flag$flag(17);
 var mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
 	return A2(
@@ -15663,26 +16059,56 @@ var author$project$Atom$Button$style = F4(
 						_List_fromArray(
 							[
 								mdgriffith$elm_ui$Element$Background$color(hoverColor)
-							]))
+							])),
+						mdgriffith$elm_ui$Element$pointer
 					]),
 				author$project$Style$Font$mediumBodyText(textColor)),
 			mdgriffith$elm_ui$Element$text(btnText));
 	});
-var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
-	function (a, b, c, d) {
-		return {$: 'Rgba', a: a, b: b, c: c, d: d};
-	});
-var mdgriffith$elm_ui$Element$rgb255 = F3(
-	function (red, green, blue) {
-		return A4(mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
-	});
-var author$project$Style$Color$black = A3(mdgriffith$elm_ui$Element$rgb255, 40, 51, 61);
-var author$project$Style$Color$purple = A3(mdgriffith$elm_ui$Element$rgb255, 120, 52, 232);
-var author$project$Style$Color$white = A3(mdgriffith$elm_ui$Element$rgb255, 255, 255, 255);
-var author$project$Atom$Button$primary = function (btnText) {
-	return A4(author$project$Atom$Button$style, author$project$Style$Color$purple, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
+var author$project$Style$Color$pink = A3(mdgriffith$elm_ui$Element$rgb255, 224, 116, 203);
+var author$project$Atom$Button$accent = function (btnText) {
+	return A4(author$project$Atom$Button$style, author$project$Style$Color$pink, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
 };
-var author$project$Style$Color$darkGrey = A3(mdgriffith$elm_ui$Element$rgb255, 84, 100, 116);
+var author$project$Overlay$WalletSetup$MoveToPick = {$: 'MoveToPick'};
+var mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
+var mdgriffith$elm_ui$Element$alignRight = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$Right);
+var mdgriffith$elm_ui$Element$padding = function (x) {
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$padding,
+		A5(
+			mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+			'p-' + elm$core$String$fromInt(x),
+			x,
+			x,
+			x,
+			x));
+};
+var mdgriffith$elm_ui$Element$Events$onClick = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Attr, elm$html$Html$Events$onClick);
+var author$project$Overlay$WalletSetup$viewInfo = A2(
+	mdgriffith$elm_ui$Element$column,
+	_List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$padding(20),
+			mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+		]),
+	_List_fromArray(
+		[
+			A2(
+			mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+			mdgriffith$elm_ui$Element$text('Setup your oscoin wallet.')),
+			A2(
+			mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$alignRight,
+					mdgriffith$elm_ui$Element$Events$onClick(author$project$Overlay$WalletSetup$MoveToPick)
+				]),
+			author$project$Atom$Button$accent('Get Started'))
+		]));
 var author$project$Style$Color$lightGrey = A3(mdgriffith$elm_ui$Element$rgb255, 206, 216, 225);
 var author$project$Atom$Button$secondary = function (btnText) {
 	return A4(author$project$Atom$Button$style, author$project$Style$Color$lightGrey, author$project$Style$Color$darkGrey, author$project$Style$Color$black, btnText);
@@ -15691,30 +16117,6 @@ var author$project$Style$Color$green = A3(mdgriffith$elm_ui$Element$rgb255, 0, 2
 var author$project$Atom$Button$secondaryAccent = function (btnText) {
 	return A4(author$project$Atom$Button$style, author$project$Style$Color$green, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
 };
-var mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
-	return {$: 'Fill', a: a};
-};
-var mdgriffith$elm_ui$Element$fill = mdgriffith$elm_ui$Internal$Model$Fill(1);
-var mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
-var mdgriffith$elm_ui$Internal$Model$asRow = mdgriffith$elm_ui$Internal$Model$AsRow;
-var mdgriffith$elm_ui$Element$row = F2(
-	function (attrs, children) {
-		return A4(
-			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asRow,
-			mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				elm$core$List$cons,
-				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
-				A2(
-					elm$core$List$cons,
-					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
-					A2(
-						elm$core$List$cons,
-						mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
-						attrs))),
-			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
 var mdgriffith$elm_ui$Internal$Flag$spacing = mdgriffith$elm_ui$Internal$Flag$flag(3);
 var mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
 	function (a, b, c) {
@@ -15733,6 +16135,112 @@ var mdgriffith$elm_ui$Element$spacing = function (x) {
 			A2(mdgriffith$elm_ui$Internal$Model$spacingName, x, x),
 			x,
 			x));
+};
+var author$project$Overlay$WalletSetup$viewPick = A2(
+	mdgriffith$elm_ui$Element$column,
+	_List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$padding(20),
+			mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+		]),
+	_List_fromArray(
+		[
+			A2(
+			mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[mdgriffith$elm_ui$Element$centerX]),
+			mdgriffith$elm_ui$Element$text('Choose wallet')),
+			A2(
+			mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$centerX,
+					mdgriffith$elm_ui$Element$spacing(24)
+				]),
+			_List_fromArray(
+				[
+					author$project$Atom$Button$accent('Firefox add-on'),
+					author$project$Atom$Button$secondary('Mobile app'),
+					author$project$Atom$Button$secondaryAccent('Ledger Nano S')
+				]))
+		]));
+var author$project$Overlay$WalletSetup$view = function (model) {
+	var viewStep = function () {
+		var _n0 = model.step;
+		if (_n0.$ === 'Info') {
+			return author$project$Overlay$WalletSetup$viewInfo;
+		} else {
+			return author$project$Overlay$WalletSetup$viewPick;
+		}
+	}();
+	return _Utils_Tuple2(
+		'wallet setup',
+		A2(
+			mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
+					mdgriffith$elm_ui$Element$height(
+					mdgriffith$elm_ui$Element$px(500)),
+					mdgriffith$elm_ui$Element$width(
+					mdgriffith$elm_ui$Element$px(540))
+				]),
+			viewStep));
+};
+var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
+var author$project$Main$viewOverlay = F2(
+	function (maybeOverlay, url) {
+		if (maybeOverlay.$ === 'Nothing') {
+			return _Utils_Tuple2(elm$core$Maybe$Nothing, _List_Nil);
+		} else {
+			var overlay = maybeOverlay.a;
+			var backUrl = A2(
+				elm$url$Url$Builder$relative,
+				_List_fromArray(
+					[url.path]),
+				_List_Nil);
+			var _n1 = function () {
+				if (overlay.$ === 'WaitForKeyPair') {
+					return author$project$Overlay$WaitForKeyPair$view;
+				} else {
+					var overlayModel = overlay.a;
+					var _n3 = author$project$Overlay$WalletSetup$view(overlayModel);
+					var overlayTitle = _n3.a;
+					var overlayView = _n3.b;
+					return _Utils_Tuple2(
+						overlayTitle,
+						A2(mdgriffith$elm_ui$Element$map, author$project$Main$OverlayWalletSetup, overlayView));
+				}
+			}();
+			var title = _n1.a;
+			var content = _n1.b;
+			return _Utils_Tuple2(
+				elm$core$Maybe$Just(title),
+				A2(author$project$Main$overlayAttrs, content, backUrl));
+		}
+	});
+var author$project$Page$Home$view = _Utils_Tuple2(
+	'home',
+	A2(
+		mdgriffith$elm_ui$Element$column,
+		_List_Nil,
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$text('home')
+			])));
+var author$project$Page$NotFound$view = _Utils_Tuple2(
+	'Page Not Found',
+	A2(
+		mdgriffith$elm_ui$Element$column,
+		_List_Nil,
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$text('Page Not Found')
+			])));
+var author$project$Style$Color$purple = A3(mdgriffith$elm_ui$Element$rgb255, 120, 52, 232);
+var author$project$Atom$Button$primary = function (btnText) {
+	return A4(author$project$Atom$Button$style, author$project$Style$Color$purple, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
 };
 var author$project$Page$Project$Actions$view = A2(
 	mdgriffith$elm_ui$Element$row,
@@ -15782,10 +16290,6 @@ var mdgriffith$elm_ui$Element$paddingXY = F2(
 				y,
 				x));
 	});
-var mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var mdgriffith$elm_ui$Element$px = mdgriffith$elm_ui$Internal$Model$Px;
 var mdgriffith$elm_ui$Internal$Flag$borderColor = mdgriffith$elm_ui$Internal$Flag$flag(28);
 var mdgriffith$elm_ui$Element$Border$color = function (clr) {
 	return A2(
@@ -15873,17 +16377,6 @@ var author$project$Style$Color$alpha = F2(
 		return A4(mdgriffith$elm_ui$Element$rgba, original.red, original.green, original.blue, transparency);
 	});
 var author$project$Style$Color$blue = A3(mdgriffith$elm_ui$Element$rgb255, 0, 146, 210);
-var author$project$Style$Font$fontGTAmericaRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America');
-var author$project$Style$Font$bodyText = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaRegular, mdgriffith$elm_ui$Element$Font$sansSerif])),
-			mdgriffith$elm_ui$Element$Font$size(16)
-		]);
-};
 var mdgriffith$elm_ui$Internal$Flag$fontWeight = mdgriffith$elm_ui$Internal$Flag$flag(13);
 var mdgriffith$elm_ui$Element$Font$medium = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$fontWeight, mdgriffith$elm_ui$Internal$Style$classes.textMedium);
 var mdgriffith$elm_ui$Element$Font$underline = mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.underline);
@@ -15898,18 +16391,6 @@ var author$project$Style$Font$linkText = function (textColor) {
 			mdgriffith$elm_ui$Element$Font$medium,
 			mdgriffith$elm_ui$Element$Font$underline
 		]);
-};
-var mdgriffith$elm_ui$Element$padding = function (x) {
-	return A2(
-		mdgriffith$elm_ui$Internal$Model$StyleClass,
-		mdgriffith$elm_ui$Internal$Flag$padding,
-		A5(
-			mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-			'p-' + elm$core$String$fromInt(x),
-			x,
-			x,
-			x,
-			x));
 };
 var mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
 var mdgriffith$elm_ui$Element$paragraph = F2(
@@ -16098,8 +16579,6 @@ var author$project$Atom$Currency$large = F2(
 					mdgriffith$elm_ui$Element$text(amount))
 				]));
 	});
-var mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
-var mdgriffith$elm_ui$Element$alignRight = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$Right);
 var author$project$Atom$Heading$sectionWithInfo = F2(
 	function (title, component) {
 		return A2(
@@ -16210,10 +16689,6 @@ var author$project$Style$Font$smallText = function (textColor) {
 			mdgriffith$elm_ui$Element$Font$size(14)
 		]);
 };
-var mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
-var mdgriffith$elm_ui$Element$centerX = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$CenterX);
-var mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
-var mdgriffith$elm_ui$Element$centerY = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$CenterY);
 var author$project$Page$Project$Funds$viewFunds = function (title) {
 	return A2(
 		mdgriffith$elm_ui$Element$column,
@@ -17001,191 +17476,76 @@ var author$project$Page$Project$view = _Utils_Tuple2(
 			]),
 		_List_fromArray(
 			[author$project$Page$Project$Header$view, author$project$Page$Project$Actions$view, author$project$Page$Project$Contract$view, author$project$Page$Project$People$view, author$project$Page$Project$Funds$view])));
-var author$project$Page$Register$view = _Utils_Tuple2(
-	'register',
-	A2(
-		mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
-				mdgriffith$elm_ui$Element$height(
-				mdgriffith$elm_ui$Element$px(320)),
-				mdgriffith$elm_ui$Element$width(
-				mdgriffith$elm_ui$Element$px(480))
-			]),
-		_List_fromArray(
-			[
-				mdgriffith$elm_ui$Element$text('register')
-			])));
+var author$project$Page$Register$Register = function (a) {
+	return {$: 'Register', a: a};
+};
+var author$project$Page$Register$view = function (model) {
+	return _Utils_Tuple2(
+		'register',
+		A2(
+			mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$width(
+					mdgriffith$elm_ui$Element$px(1074))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					author$project$Style$Font$bigHeader(author$project$Style$Color$black),
+					mdgriffith$elm_ui$Element$text('Register your project')),
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_List_fromArray(
+						[
+							mdgriffith$elm_ui$Element$Events$onClick(
+							author$project$Page$Register$Register(model.project))
+						]),
+					author$project$Atom$Button$accent('Register'))
+				])));
+};
 var author$project$Main$viewPage = function (page) {
 	switch (page.$) {
-		case 'NotFound':
-			return author$project$Page$NotFound$view;
 		case 'Home':
 			return author$project$Page$Home$view;
+		case 'NotFound':
+			return author$project$Page$NotFound$view;
 		case 'Project':
 			return author$project$Page$Project$view;
 		default:
-			return author$project$Page$Register$view;
+			var pageModel = page.a;
+			var _n1 = author$project$Page$Register$view(pageModel);
+			var pageTitle = _n1.a;
+			var pageView = _n1.b;
+			return _Utils_Tuple2(
+				pageTitle,
+				A2(mdgriffith$elm_ui$Element$map, author$project$Main$PageRegister, pageView));
 	}
 };
-var mdgriffith$elm_ui$Internal$Flag$transparency = mdgriffith$elm_ui$Internal$Flag$flag(0);
-var mdgriffith$elm_ui$Internal$Model$Transparency = F2(
-	function (a, b) {
-		return {$: 'Transparency', a: a, b: b};
-	});
-var mdgriffith$elm_ui$Element$alpha = function (o) {
-	var transparency = function (x) {
-		return 1 - x;
-	}(
-		A2(
-			elm$core$Basics$min,
-			1.0,
-			A2(elm$core$Basics$max, 0.0, o)));
-	return A2(
-		mdgriffith$elm_ui$Internal$Model$StyleClass,
-		mdgriffith$elm_ui$Internal$Flag$transparency,
-		A2(
-			mdgriffith$elm_ui$Internal$Model$Transparency,
-			'transparency-' + mdgriffith$elm_ui$Internal$Model$floatClass(transparency),
-			transparency));
-};
-var mdgriffith$elm_ui$Element$htmlAttribute = mdgriffith$elm_ui$Internal$Model$Attr;
-var mdgriffith$elm_ui$Internal$Model$InFront = {$: 'InFront'};
-var mdgriffith$elm_ui$Element$inFront = function (element) {
-	return A2(mdgriffith$elm_ui$Internal$Model$Nearby, mdgriffith$elm_ui$Internal$Model$InFront, element);
-};
-var elm$html$Html$Attributes$rel = _VirtualDom_attribute('rel');
-var mdgriffith$elm_ui$Element$link = F2(
-	function (attrs, _n0) {
-		var url = _n0.url;
-		var label = _n0.label;
-		return A4(
-			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asEl,
-			mdgriffith$elm_ui$Internal$Model$NodeName('a'),
-			A2(
-				elm$core$List$cons,
-				mdgriffith$elm_ui$Internal$Model$Attr(
-					elm$html$Html$Attributes$href(url)),
-				A2(
-					elm$core$List$cons,
-					mdgriffith$elm_ui$Internal$Model$Attr(
-						elm$html$Html$Attributes$rel('noopener noreferrer')),
-					A2(
-						elm$core$List$cons,
-						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
-						A2(
-							elm$core$List$cons,
-							mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
-							A2(
-								elm$core$List$cons,
-								mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentCenterX + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
-								attrs))))),
-			mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[label])));
-	});
-var mdgriffith$elm_ui$Element$none = mdgriffith$elm_ui$Internal$Model$Empty;
-var author$project$Overlay$background = function (backUrl) {
-	return mdgriffith$elm_ui$Element$inFront(
-		A2(
-			mdgriffith$elm_ui$Element$link,
+var author$project$Main$viewWallet = function (maybeWallet) {
+	if (maybeWallet.$ === 'Just') {
+		var _n1 = maybeWallet.a;
+		return A2(
+			mdgriffith$elm_ui$Element$row,
 			_List_fromArray(
 				[
-					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$black),
-					mdgriffith$elm_ui$Element$alpha(0.6),
-					mdgriffith$elm_ui$Element$htmlAttribute(
-					A2(elm$html$Html$Attributes$style, 'cursor', 'default')),
-					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
 					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
 				]),
-			{label: mdgriffith$elm_ui$Element$none, url: backUrl}));
-};
-var author$project$Overlay$foreground = function (content) {
-	return mdgriffith$elm_ui$Element$inFront(
-		A2(
-			mdgriffith$elm_ui$Element$el,
 			_List_fromArray(
-				[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
-			content));
-};
-var author$project$Overlay$attrs = F2(
-	function (content, backUrl) {
-		return _List_fromArray(
-			[
-				author$project$Overlay$background(backUrl),
-				author$project$Overlay$foreground(content)
-			]);
-	});
-var elm$url$Url$Builder$toQueryPair = function (_n0) {
-	var key = _n0.a;
-	var value = _n0.b;
-	return key + ('=' + value);
-};
-var elm$url$Url$Builder$toQuery = function (parameters) {
-	if (!parameters.b) {
-		return '';
+				[
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_List_fromArray(
+						[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+					mdgriffith$elm_ui$Element$text('Wallet connected: web extension'))
+				]));
 	} else {
-		return '?' + A2(
-			elm$core$String$join,
-			'&',
-			A2(elm$core$List$map, elm$url$Url$Builder$toQueryPair, parameters));
+		return mdgriffith$elm_ui$Element$none;
 	}
-};
-var elm$url$Url$Builder$relative = F2(
-	function (pathSegments, parameters) {
-		return _Utils_ap(
-			A2(elm$core$String$join, '/', pathSegments),
-			elm$url$Url$Builder$toQuery(parameters));
-	});
-var author$project$Main$viewOverlay = F2(
-	function (maybePage, url) {
-		if (maybePage.$ === 'Nothing') {
-			return _Utils_Tuple2(elm$core$Maybe$Nothing, _List_Nil);
-		} else {
-			var page = maybePage.a;
-			var backUrl = A2(
-				elm$url$Url$Builder$relative,
-				_List_fromArray(
-					[url.path]),
-				_List_Nil);
-			var _n1 = author$project$Main$viewPage(page);
-			var title = _n1.a;
-			var content = _n1.b;
-			return _Utils_Tuple2(
-				elm$core$Maybe$Just(title),
-				A2(author$project$Overlay$attrs, content, backUrl));
-		}
-	});
-var author$project$Style$Color$pink = A3(mdgriffith$elm_ui$Element$rgb255, 224, 116, 203);
-var author$project$Atom$Button$accent = function (btnText) {
-	return A4(author$project$Atom$Button$style, author$project$Style$Color$pink, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
 };
 var author$project$TopBar$SearchUpdated = function (a) {
 	return {$: 'SearchUpdated', a: a};
-};
-var elm$url$Url$percentEncode = _Url_percentEncode;
-var elm$url$Url$Builder$QueryParameter = F2(
-	function (a, b) {
-		return {$: 'QueryParameter', a: a, b: b};
-	});
-var elm$url$Url$Builder$string = F2(
-	function (key, value) {
-		return A2(
-			elm$url$Url$Builder$QueryParameter,
-			elm$url$Url$percentEncode(key),
-			elm$url$Url$percentEncode(value));
-	});
-var author$project$TopBar$toRegisterUrl = function (url) {
-	return A2(
-		elm$url$Url$Builder$relative,
-		_List_fromArray(
-			[url.path]),
-		_List_fromArray(
-			[
-				A2(elm$url$Url$Builder$string, 'overlay', 'register')
-			]));
 };
 var mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
 var mdgriffith$elm_ui$Element$alignLeft = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$Left);
@@ -17424,7 +17784,6 @@ var elm$html$Html$Attributes$value = elm$html$Html$Attributes$stringProperty('va
 var mdgriffith$elm_ui$Element$Input$value = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Attr, elm$html$Html$Attributes$value);
 var mdgriffith$elm_ui$Internal$Model$LivePolite = {$: 'LivePolite'};
 var mdgriffith$elm_ui$Element$Region$announce = mdgriffith$elm_ui$Internal$Model$Describe(mdgriffith$elm_ui$Internal$Model$LivePolite);
-var mdgriffith$elm_ui$Internal$Flag$cursor = mdgriffith$elm_ui$Internal$Flag$flag(21);
 var mdgriffith$elm_ui$Internal$Model$filter = function (attrs) {
 	return A3(
 		elm$core$List$foldr,
@@ -17877,69 +18236,70 @@ var mdgriffith$elm_ui$Element$Input$text = mdgriffith$elm_ui$Element$Input$textH
 		spellchecked: false,
 		type_: mdgriffith$elm_ui$Element$Input$TextInputNode('text')
 	});
-var author$project$TopBar$view = function (model) {
-	return A2(
-		mdgriffith$elm_ui$Element$row,
-		_List_fromArray(
-			[
-				mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
-				mdgriffith$elm_ui$Element$Border$widthEach(
-				{bottom: 1, left: 0, right: 0, top: 0}),
-				A2(mdgriffith$elm_ui$Element$paddingXY, 24, 0),
-				mdgriffith$elm_ui$Element$height(
-				mdgriffith$elm_ui$Element$px(64)),
-				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-			]),
-		_List_fromArray(
-			[
-				A2(
-				mdgriffith$elm_ui$Element$link,
-				_List_fromArray(
-					[mdgriffith$elm_ui$Element$alignLeft]),
-				{
-					label: A2(
-						mdgriffith$elm_ui$Element$el,
-						_List_Nil,
-						mdgriffith$elm_ui$Element$text('oscoin')),
-					url: 'http://oscoin.io'
-				}),
-				A2(
-				mdgriffith$elm_ui$Element$Input$text,
-				_Utils_ap(
+var author$project$TopBar$view = F2(
+	function (searchTerm, registerUrl) {
+		return A2(
+			mdgriffith$elm_ui$Element$row,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
+					mdgriffith$elm_ui$Element$Border$widthEach(
+					{bottom: 1, left: 0, right: 0, top: 0}),
+					A2(mdgriffith$elm_ui$Element$paddingXY, 24, 0),
+					mdgriffith$elm_ui$Element$height(
+					mdgriffith$elm_ui$Element$px(64)),
+					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+				]),
+			_List_fromArray(
+				[
+					A2(
+					mdgriffith$elm_ui$Element$link,
 					_List_fromArray(
-						[
-							A2(mdgriffith$elm_ui$Element$paddingXY, 16, 8),
-							mdgriffith$elm_ui$Element$height(
-							mdgriffith$elm_ui$Element$px(36)),
-							mdgriffith$elm_ui$Element$centerX,
-							mdgriffith$elm_ui$Element$width(
-							mdgriffith$elm_ui$Element$px(540)),
-							mdgriffith$elm_ui$Element$Border$width(1),
-							mdgriffith$elm_ui$Element$Border$rounded(2),
-							mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
-							mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$almostWhite)
-						]),
-					author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
-				{
-					label: mdgriffith$elm_ui$Element$Input$labelHidden('search'),
-					onChange: author$project$TopBar$SearchUpdated,
-					placeholder: elm$core$Maybe$Just(
-						A2(
-							mdgriffith$elm_ui$Element$Input$placeholder,
+						[mdgriffith$elm_ui$Element$alignLeft]),
+					{
+						label: A2(
+							mdgriffith$elm_ui$Element$el,
 							_List_Nil,
-							mdgriffith$elm_ui$Element$text('Search projects'))),
-					text: model.searchTerm
-				}),
-				A2(
-				mdgriffith$elm_ui$Element$link,
-				_List_fromArray(
-					[mdgriffith$elm_ui$Element$alignRight]),
-				{
-					label: author$project$Atom$Button$accent('Register a project'),
-					url: author$project$TopBar$toRegisterUrl(model.url)
-				})
-			]));
-};
+							mdgriffith$elm_ui$Element$text('oscoin')),
+						url: 'http://oscoin.io'
+					}),
+					A2(
+					mdgriffith$elm_ui$Element$Input$text,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								A2(mdgriffith$elm_ui$Element$paddingXY, 16, 8),
+								mdgriffith$elm_ui$Element$height(
+								mdgriffith$elm_ui$Element$px(36)),
+								mdgriffith$elm_ui$Element$centerX,
+								mdgriffith$elm_ui$Element$width(
+								mdgriffith$elm_ui$Element$px(540)),
+								mdgriffith$elm_ui$Element$Border$width(1),
+								mdgriffith$elm_ui$Element$Border$rounded(2),
+								mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$lightGrey),
+								mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$almostWhite)
+							]),
+						author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
+					{
+						label: mdgriffith$elm_ui$Element$Input$labelHidden('search'),
+						onChange: author$project$TopBar$SearchUpdated,
+						placeholder: elm$core$Maybe$Just(
+							A2(
+								mdgriffith$elm_ui$Element$Input$placeholder,
+								_List_Nil,
+								mdgriffith$elm_ui$Element$text('Search projects'))),
+						text: searchTerm
+					}),
+					A2(
+					mdgriffith$elm_ui$Element$link,
+					_List_fromArray(
+						[mdgriffith$elm_ui$Element$alignRight]),
+					{
+						label: author$project$Atom$Button$accent('Register a project'),
+						url: registerUrl
+					})
+				]));
+	});
 var mdgriffith$elm_ui$Internal$Model$OnlyDynamic = F2(
 	function (a, b) {
 		return {$: 'OnlyDynamic', a: a, b: b};
@@ -18144,14 +18504,39 @@ var mdgriffith$elm_ui$Element$layoutWith = F3(
 	});
 var mdgriffith$elm_ui$Element$layout = mdgriffith$elm_ui$Element$layoutWith(
 	{options: _List_Nil});
-var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
 var author$project$Main$view = function (model) {
+	var registerUrl = function () {
+		var _n3 = _Utils_Tuple2(model.wallet, model.keyPair);
+		if (_n3.a.$ === 'Just') {
+			if (_n3.b.$ === 'Nothing') {
+				var _n6 = _n3.b;
+				return author$project$Route$toString(
+					author$project$Route$Register(
+						elm$core$Maybe$Just(author$project$Route$WaitForKeyPair)));
+			} else {
+				return author$project$Route$toString(
+					author$project$Route$Register(elm$core$Maybe$Nothing));
+			}
+		} else {
+			if (_n3.b.$ === 'Nothing') {
+				var _n4 = _n3.a;
+				var _n5 = _n3.b;
+				return author$project$Route$toString(
+					author$project$Route$Register(
+						elm$core$Maybe$Just(author$project$Route$WalletSetup)));
+			} else {
+				var _n7 = _n3.a;
+				return author$project$Route$toString(
+					author$project$Route$Register(elm$core$Maybe$Nothing));
+			}
+		}
+	}();
 	var _n0 = author$project$Main$viewPage(model.page);
 	var pageTitle = _n0.a;
 	var pageContent = _n0.b;
 	var _n1 = A2(author$project$Main$viewOverlay, model.overlay, model.url);
 	var overlayTitle = _n1.a;
-	var overlayAttrs = _n1.b;
+	var attrs = _n1.b;
 	var titleParts = function () {
 		if (overlayTitle.$ === 'Nothing') {
 			return _List_fromArray(
@@ -18167,7 +18552,7 @@ var author$project$Main$view = function (model) {
 			[
 				A2(
 				mdgriffith$elm_ui$Element$layout,
-				overlayAttrs,
+				attrs,
 				A2(
 					mdgriffith$elm_ui$Element$column,
 					_List_fromArray(
@@ -18181,7 +18566,9 @@ var author$project$Main$view = function (model) {
 							A2(
 							mdgriffith$elm_ui$Element$map,
 							author$project$Main$TopBarMsg,
-							author$project$TopBar$view(model.topBarModel)),
+							A2(author$project$TopBar$view, model.topBarModel, registerUrl)),
+							author$project$Main$viewWallet(model.wallet),
+							author$project$Main$viewKeyPair(model.keyPair),
 							A2(
 							mdgriffith$elm_ui$Element$el,
 							_List_fromArray(
@@ -18193,7 +18580,13 @@ var author$project$Main$view = function (model) {
 	};
 };
 var elm$browser$Browser$application = _Browser_application;
+var elm$json$Json$Decode$oneOf = _Json_oneOf;
 var author$project$Main$main = elm$browser$Browser$application(
 	{init: author$project$Main$init, onUrlChange: author$project$Main$UrlChanged, onUrlRequest: author$project$Main$LinkClicked, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
-	elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"TopBarMsg":["TopBar.Msg"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
+	elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
+				A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
+			])))({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Page.Register.Project":{"args":[],"type":"{}"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["String.String"],"KeyPairFetched":["String.String"],"WalletWebExtPresent":["()"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.Register.Msg":{"args":[],"tags":{"Register":["Page.Register.Project"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
