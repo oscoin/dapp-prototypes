@@ -1,4 +1,4 @@
-module Atom.Currency exposing (large)
+module Atom.Currency exposing (large, small)
 
 import Element exposing (Element, toRgb)
 import Html exposing (..)
@@ -35,7 +35,7 @@ small amount bgColor =
         , Element.el
             ([ Element.paddingEach { top = 0, right = 0, bottom = 0, left = 8 }
              ]
-                ++ Font.bodyTextMono bgColor
+                ++ Font.mediumBodyTextMono bgColor
             )
           <|
             Element.text amount
