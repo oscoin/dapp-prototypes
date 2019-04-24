@@ -1643,6 +1643,23 @@ function _Json_addEntry(func)
 var _Json_encodeNull = _Json_wrap(null);
 
 
+function _Url_percentEncode(string)
+{
+	return encodeURIComponent(string);
+}
+
+function _Url_percentDecode(string)
+{
+	try
+	{
+		return elm$core$Maybe$Just(decodeURIComponent(string));
+	}
+	catch (e)
+	{
+		return elm$core$Maybe$Nothing;
+	}
+}
+
 
 // TASKS
 
@@ -2312,23 +2329,6 @@ function _Platform_mergeExportsDebug(moduleName, obj, exports)
 	}
 }
 
-
-function _Url_percentEncode(string)
-{
-	return encodeURIComponent(string);
-}
-
-function _Url_percentDecode(string)
-{
-	try
-	{
-		return elm$core$Maybe$Just(decodeURIComponent(string));
-	}
-	catch (e)
-	{
-		return elm$core$Maybe$Nothing;
-	}
-}
 
 
 
@@ -4907,10 +4907,6 @@ var elm$core$Basics$apR = F2(
 var elm$core$Basics$identity = function (x) {
 	return x;
 };
-var elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
-};
-var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Array$branchFactor = 32;
 var elm$core$Array$Array_elm_builtin = F4(
 	function (a, b, c, d) {
@@ -5155,6 +5151,10 @@ var elm$core$Array$initialize = F2(
 			return A5(elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
+var elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
+var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
@@ -5375,119 +5375,63 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 		}
 	});
 var elm$json$Json$Decode$andThen = _Json_andThen;
+var elm$json$Json$Decode$fail = _Json_fail;
 var elm$json$Json$Decode$string = _Json_decodeString;
 var elm$json$Json$Decode$succeed = _Json_succeed;
 var author$project$KeyPair$decoder = A2(
 	elm$json$Json$Decode$andThen,
 	function (str) {
 		if (str === '') {
-			return elm$json$Json$Decode$succeed(elm$core$Maybe$Nothing);
+			return elm$json$Json$Decode$fail('empty key pair');
 		} else {
 			var keyPair = str;
 			return elm$json$Json$Decode$succeed(
-				elm$core$Maybe$Just(
-					author$project$KeyPair$KeyPair(keyPair)));
+				author$project$KeyPair$KeyPair(keyPair));
 		}
 	},
 	elm$json$Json$Decode$string);
-var elm$core$Debug$log = _Debug_log;
-var elm$json$Json$Decode$decodeValue = _Json_run;
-var author$project$KeyPair$decode = function (json) {
-	var _n0 = A2(elm$json$Json$Decode$decodeValue, author$project$KeyPair$decoder, json);
-	if (_n0.$ === 'Ok') {
-		var keyPair = _n0.a;
-		return keyPair;
-	} else {
-		var err = _n0.a;
-		var _n1 = A2(elm$core$Debug$log, 'Error decoding key pair', err);
-		return elm$core$Maybe$Nothing;
-	}
-};
-var elm$json$Json$Encode$null = _Json_encodeNull;
-var author$project$Main$requireKeyPair = _Platform_outgoingPort(
-	'requireKeyPair',
-	function ($) {
-		return elm$json$Json$Encode$null;
+var author$project$Main$Flags = F2(
+	function (maybeKeyPair, maybeWallet) {
+		return {maybeKeyPair: maybeKeyPair, maybeWallet: maybeWallet};
 	});
-var elm$core$Platform$Cmd$batch = _Platform_batch;
-var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
-var author$project$Main$cmdFromOverlay = function (maybePage) {
-	if ((maybePage.$ === 'Just') && (maybePage.a.$ === 'WaitForKeyPair')) {
-		var _n1 = maybePage.a;
-		return author$project$Main$requireKeyPair(_Utils_Tuple0);
-	} else {
-		return elm$core$Platform$Cmd$none;
-	}
-};
-var author$project$Main$WaitForKeyPair = {$: 'WaitForKeyPair'};
-var author$project$Main$WalletSetup = function (a) {
-	return {$: 'WalletSetup', a: a};
-};
-var author$project$Overlay$WalletSetup$Info = {$: 'Info'};
-var author$project$Overlay$WalletSetup$Model = function (step) {
-	return {step: step};
-};
-var author$project$Overlay$WalletSetup$init = author$project$Overlay$WalletSetup$Model(author$project$Overlay$WalletSetup$Info);
-var author$project$Main$overlayFromRoute = function (maybeRoute) {
-	if ((maybeRoute.$ === 'Just') && (maybeRoute.a.$ === 'Register')) {
-		var maybeOverlay = maybeRoute.a.a;
-		_n1$2:
-		while (true) {
-			if (maybeOverlay.$ === 'Just') {
-				switch (maybeOverlay.a.$) {
-					case 'WaitForKeyPair':
-						var _n2 = maybeOverlay.a;
-						return elm$core$Maybe$Just(author$project$Main$WaitForKeyPair);
-					case 'WalletSetup':
-						var _n3 = maybeOverlay.a;
-						return elm$core$Maybe$Just(
-							author$project$Main$WalletSetup(author$project$Overlay$WalletSetup$init));
-					default:
-						break _n1$2;
-				}
-			} else {
-				break _n1$2;
-			}
+var author$project$Wallet$WebExt = {$: 'WebExt'};
+var author$project$Wallet$decoder = A2(
+	elm$json$Json$Decode$andThen,
+	function (str) {
+		switch (str) {
+			case '':
+				return elm$json$Json$Decode$fail('Wallet not supported');
+			case 'webext':
+				return elm$json$Json$Decode$succeed(author$project$Wallet$WebExt);
+			default:
+				return elm$json$Json$Decode$fail('Format not supported');
 		}
-		return elm$core$Maybe$Nothing;
-	} else {
-		return elm$core$Maybe$Nothing;
-	}
+	},
+	elm$json$Json$Decode$string);
+var elm$json$Json$Decode$field = _Json_decodeField;
+var elm$json$Json$Decode$map2 = _Json_map2;
+var elm$json$Json$Decode$map = _Json_map1;
+var elm$json$Json$Decode$null = _Json_decodeNull;
+var elm$json$Json$Decode$oneOf = _Json_oneOf;
+var elm$json$Json$Decode$nullable = function (decoder) {
+	return elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
+				A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, decoder)
+			]));
 };
-var author$project$Main$Home = {$: 'Home'};
-var author$project$Main$NotFound = {$: 'NotFound'};
-var author$project$Main$Project = {$: 'Project'};
-var author$project$Main$Register = function (a) {
-	return {$: 'Register', a: a};
-};
-var author$project$Page$Register$Model = function (project) {
-	return {project: project};
-};
-var author$project$Page$Register$Project = {};
-var author$project$Page$Register$init = author$project$Page$Register$Model(author$project$Page$Register$Project);
-var author$project$Main$pageFromRoute = function (maybeRoute) {
-	_n0$3:
-	while (true) {
-		if (maybeRoute.$ === 'Just') {
-			switch (maybeRoute.a.$) {
-				case 'Home':
-					var _n1 = maybeRoute.a;
-					return author$project$Main$Home;
-				case 'Project':
-					var _n2 = maybeRoute.a;
-					return author$project$Main$Project;
-				case 'Register':
-					return author$project$Main$Register(author$project$Page$Register$init);
-				default:
-					break _n0$3;
-			}
-		} else {
-			break _n0$3;
-		}
-	}
-	return author$project$Main$NotFound;
-};
-var author$project$Route$Project = {$: 'Project'};
+var author$project$Main$flagDecoder = A3(
+	elm$json$Json$Decode$map2,
+	author$project$Main$Flags,
+	A2(
+		elm$json$Json$Decode$field,
+		'keyPair',
+		elm$json$Json$Decode$nullable(author$project$KeyPair$decoder)),
+	A2(
+		elm$json$Json$Decode$field,
+		'wallet',
+		elm$json$Json$Decode$nullable(author$project$Wallet$decoder)));
 var author$project$Route$Register = function (a) {
 	return {$: 'Register', a: a};
 };
@@ -5660,959 +5604,32 @@ var author$project$Route$toString = function (route) {
 	var paths = author$project$Route$routeToPaths(route);
 	return A2(elm$url$Url$Builder$relative, paths, queryParams);
 };
-var elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
-var elm$core$Dict$empty = elm$core$Dict$RBEmpty_elm_builtin;
-var elm$core$Dict$Black = {$: 'Black'};
-var elm$core$Dict$RBNode_elm_builtin = F5(
-	function (a, b, c, d, e) {
-		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
-	});
-var elm$core$Basics$compare = _Utils_compare;
-var elm$core$Dict$Red = {$: 'Red'};
-var elm$core$Dict$balance = F5(
-	function (color, key, value, left, right) {
-		if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Red')) {
-			var _n1 = right.a;
-			var rK = right.b;
-			var rV = right.c;
-			var rLeft = right.d;
-			var rRight = right.e;
-			if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
-				var _n3 = left.a;
-				var lK = left.b;
-				var lV = left.c;
-				var lLeft = left.d;
-				var lRight = left.e;
-				return A5(
-					elm$core$Dict$RBNode_elm_builtin,
-					elm$core$Dict$Red,
-					key,
-					value,
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, lK, lV, lLeft, lRight),
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, rK, rV, rLeft, rRight));
+var author$project$Main$registerUrl = F2(
+	function (maybeWallet, maybeKeyPair) {
+		var _n0 = _Utils_Tuple2(maybeWallet, maybeKeyPair);
+		if (_n0.a.$ === 'Just') {
+			if (_n0.b.$ === 'Nothing') {
+				var _n3 = _n0.b;
+				return author$project$Route$toString(
+					author$project$Route$Register(
+						elm$core$Maybe$Just(author$project$Route$WaitForKeyPair)));
 			} else {
-				return A5(
-					elm$core$Dict$RBNode_elm_builtin,
-					color,
-					rK,
-					rV,
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, key, value, left, rLeft),
-					rRight);
+				return author$project$Route$toString(
+					author$project$Route$Register(elm$core$Maybe$Nothing));
 			}
 		} else {
-			if ((((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) && (left.d.$ === 'RBNode_elm_builtin')) && (left.d.a.$ === 'Red')) {
-				var _n5 = left.a;
-				var lK = left.b;
-				var lV = left.c;
-				var _n6 = left.d;
-				var _n7 = _n6.a;
-				var llK = _n6.b;
-				var llV = _n6.c;
-				var llLeft = _n6.d;
-				var llRight = _n6.e;
-				var lRight = left.e;
-				return A5(
-					elm$core$Dict$RBNode_elm_builtin,
-					elm$core$Dict$Red,
-					lK,
-					lV,
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, llK, llV, llLeft, llRight),
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, key, value, lRight, right));
+			if (_n0.b.$ === 'Nothing') {
+				var _n1 = _n0.a;
+				var _n2 = _n0.b;
+				return author$project$Route$toString(
+					author$project$Route$Register(
+						elm$core$Maybe$Just(author$project$Route$WalletSetup)));
 			} else {
-				return A5(elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
+				var _n4 = _n0.a;
+				return author$project$Route$toString(
+					author$project$Route$Register(elm$core$Maybe$Nothing));
 			}
 		}
-	});
-var elm$core$Dict$insertHelp = F3(
-	function (key, value, dict) {
-		if (dict.$ === 'RBEmpty_elm_builtin') {
-			return A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, key, value, elm$core$Dict$RBEmpty_elm_builtin, elm$core$Dict$RBEmpty_elm_builtin);
-		} else {
-			var nColor = dict.a;
-			var nKey = dict.b;
-			var nValue = dict.c;
-			var nLeft = dict.d;
-			var nRight = dict.e;
-			var _n1 = A2(elm$core$Basics$compare, key, nKey);
-			switch (_n1.$) {
-				case 'LT':
-					return A5(
-						elm$core$Dict$balance,
-						nColor,
-						nKey,
-						nValue,
-						A3(elm$core$Dict$insertHelp, key, value, nLeft),
-						nRight);
-				case 'EQ':
-					return A5(elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
-				default:
-					return A5(
-						elm$core$Dict$balance,
-						nColor,
-						nKey,
-						nValue,
-						nLeft,
-						A3(elm$core$Dict$insertHelp, key, value, nRight));
-			}
-		}
-	});
-var elm$core$Dict$insert = F3(
-	function (key, value, dict) {
-		var _n0 = A3(elm$core$Dict$insertHelp, key, value, dict);
-		if ((_n0.$ === 'RBNode_elm_builtin') && (_n0.a.$ === 'Red')) {
-			var _n1 = _n0.a;
-			var k = _n0.b;
-			var v = _n0.c;
-			var l = _n0.d;
-			var r = _n0.e;
-			return A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, k, v, l, r);
-		} else {
-			var x = _n0;
-			return x;
-		}
-	});
-var elm$core$Dict$fromList = function (assocs) {
-	return A3(
-		elm$core$List$foldl,
-		F2(
-			function (_n0, dict) {
-				var key = _n0.a;
-				var value = _n0.b;
-				return A3(elm$core$Dict$insert, key, value, dict);
-			}),
-		elm$core$Dict$empty,
-		assocs);
-};
-var elm$core$Dict$get = F2(
-	function (targetKey, dict) {
-		get:
-		while (true) {
-			if (dict.$ === 'RBEmpty_elm_builtin') {
-				return elm$core$Maybe$Nothing;
-			} else {
-				var key = dict.b;
-				var value = dict.c;
-				var left = dict.d;
-				var right = dict.e;
-				var _n1 = A2(elm$core$Basics$compare, targetKey, key);
-				switch (_n1.$) {
-					case 'LT':
-						var $temp$targetKey = targetKey,
-							$temp$dict = left;
-						targetKey = $temp$targetKey;
-						dict = $temp$dict;
-						continue get;
-					case 'EQ':
-						return elm$core$Maybe$Just(value);
-					default:
-						var $temp$targetKey = targetKey,
-							$temp$dict = right;
-						targetKey = $temp$targetKey;
-						dict = $temp$dict;
-						continue get;
-				}
-			}
-		}
-	});
-var elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
-var elm$url$Url$Parser$Internal$Parser = function (a) {
-	return {$: 'Parser', a: a};
-};
-var elm$url$Url$Parser$Query$custom = F2(
-	function (key, func) {
-		return elm$url$Url$Parser$Internal$Parser(
-			function (dict) {
-				return func(
-					A2(
-						elm$core$Maybe$withDefault,
-						_List_Nil,
-						A2(elm$core$Dict$get, key, dict)));
-			});
-	});
-var elm$url$Url$Parser$Query$enum = F2(
-	function (key, dict) {
-		return A2(
-			elm$url$Url$Parser$Query$custom,
-			key,
-			function (stringList) {
-				if (stringList.b && (!stringList.b.b)) {
-					var str = stringList.a;
-					return A2(elm$core$Dict$get, str, dict);
-				} else {
-					return elm$core$Maybe$Nothing;
-				}
-			});
-	});
-var author$project$Route$queryOverlay = A2(
-	elm$url$Url$Parser$Query$enum,
-	'overlay',
-	elm$core$Dict$fromList(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				author$project$Route$toString(author$project$Route$WaitForKeyPair),
-				author$project$Route$WaitForKeyPair),
-				_Utils_Tuple2(
-				author$project$Route$toString(author$project$Route$WalletSetup),
-				author$project$Route$WalletSetup)
-			])));
-var elm$url$Url$Parser$Parser = function (a) {
-	return {$: 'Parser', a: a};
-};
-var elm$url$Url$Parser$State = F5(
-	function (visited, unvisited, params, frag, value) {
-		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
-	});
-var elm$url$Url$Parser$mapState = F2(
-	function (func, _n0) {
-		var visited = _n0.visited;
-		var unvisited = _n0.unvisited;
-		var params = _n0.params;
-		var frag = _n0.frag;
-		var value = _n0.value;
-		return A5(
-			elm$url$Url$Parser$State,
-			visited,
-			unvisited,
-			params,
-			frag,
-			func(value));
-	});
-var elm$url$Url$Parser$map = F2(
-	function (subValue, _n0) {
-		var parseArg = _n0.a;
-		return elm$url$Url$Parser$Parser(
-			function (_n1) {
-				var visited = _n1.visited;
-				var unvisited = _n1.unvisited;
-				var params = _n1.params;
-				var frag = _n1.frag;
-				var value = _n1.value;
-				return A2(
-					elm$core$List$map,
-					elm$url$Url$Parser$mapState(value),
-					parseArg(
-						A5(elm$url$Url$Parser$State, visited, unvisited, params, frag, subValue)));
-			});
-	});
-var elm$core$List$append = F2(
-	function (xs, ys) {
-		if (!ys.b) {
-			return xs;
-		} else {
-			return A3(elm$core$List$foldr, elm$core$List$cons, ys, xs);
-		}
-	});
-var elm$core$List$concat = function (lists) {
-	return A3(elm$core$List$foldr, elm$core$List$append, _List_Nil, lists);
-};
-var elm$core$List$concatMap = F2(
-	function (f, list) {
-		return elm$core$List$concat(
-			A2(elm$core$List$map, f, list));
-	});
-var elm$url$Url$Parser$oneOf = function (parsers) {
-	return elm$url$Url$Parser$Parser(
-		function (state) {
-			return A2(
-				elm$core$List$concatMap,
-				function (_n0) {
-					var parser = _n0.a;
-					return parser(state);
-				},
-				parsers);
-		});
-};
-var elm$url$Url$Parser$query = function (_n0) {
-	var queryParser = _n0.a;
-	return elm$url$Url$Parser$Parser(
-		function (_n1) {
-			var visited = _n1.visited;
-			var unvisited = _n1.unvisited;
-			var params = _n1.params;
-			var frag = _n1.frag;
-			var value = _n1.value;
-			return _List_fromArray(
-				[
-					A5(
-					elm$url$Url$Parser$State,
-					visited,
-					unvisited,
-					params,
-					frag,
-					value(
-						queryParser(params)))
-				]);
-		});
-};
-var elm$url$Url$Parser$slash = F2(
-	function (_n0, _n1) {
-		var parseBefore = _n0.a;
-		var parseAfter = _n1.a;
-		return elm$url$Url$Parser$Parser(
-			function (state) {
-				return A2(
-					elm$core$List$concatMap,
-					parseAfter,
-					parseBefore(state));
-			});
-	});
-var elm$url$Url$Parser$questionMark = F2(
-	function (parser, queryParser) {
-		return A2(
-			elm$url$Url$Parser$slash,
-			parser,
-			elm$url$Url$Parser$query(queryParser));
-	});
-var elm$url$Url$Parser$s = function (str) {
-	return elm$url$Url$Parser$Parser(
-		function (_n0) {
-			var visited = _n0.visited;
-			var unvisited = _n0.unvisited;
-			var params = _n0.params;
-			var frag = _n0.frag;
-			var value = _n0.value;
-			if (!unvisited.b) {
-				return _List_Nil;
-			} else {
-				var next = unvisited.a;
-				var rest = unvisited.b;
-				return _Utils_eq(next, str) ? _List_fromArray(
-					[
-						A5(
-						elm$url$Url$Parser$State,
-						A2(elm$core$List$cons, next, visited),
-						rest,
-						params,
-						frag,
-						value)
-					]) : _List_Nil;
-			}
-		});
-};
-var elm$url$Url$Parser$top = elm$url$Url$Parser$Parser(
-	function (state) {
-		return _List_fromArray(
-			[state]);
-	});
-var author$project$Route$parser = elm$url$Url$Parser$oneOf(
-	_List_fromArray(
-		[
-			A2(elm$url$Url$Parser$map, author$project$Route$Project, elm$url$Url$Parser$top),
-			A2(
-			elm$url$Url$Parser$map,
-			author$project$Route$Project,
-			elm$url$Url$Parser$s('project')),
-			A2(
-			elm$url$Url$Parser$map,
-			author$project$Route$Register,
-			A2(
-				elm$url$Url$Parser$questionMark,
-				elm$url$Url$Parser$s('register'),
-				author$project$Route$queryOverlay))
-		]));
-var elm$url$Url$Parser$getFirstMatch = function (states) {
-	getFirstMatch:
-	while (true) {
-		if (!states.b) {
-			return elm$core$Maybe$Nothing;
-		} else {
-			var state = states.a;
-			var rest = states.b;
-			var _n1 = state.unvisited;
-			if (!_n1.b) {
-				return elm$core$Maybe$Just(state.value);
-			} else {
-				if ((_n1.a === '') && (!_n1.b.b)) {
-					return elm$core$Maybe$Just(state.value);
-				} else {
-					var $temp$states = rest;
-					states = $temp$states;
-					continue getFirstMatch;
-				}
-			}
-		}
-	}
-};
-var elm$url$Url$Parser$removeFinalEmpty = function (segments) {
-	if (!segments.b) {
-		return _List_Nil;
-	} else {
-		if ((segments.a === '') && (!segments.b.b)) {
-			return _List_Nil;
-		} else {
-			var segment = segments.a;
-			var rest = segments.b;
-			return A2(
-				elm$core$List$cons,
-				segment,
-				elm$url$Url$Parser$removeFinalEmpty(rest));
-		}
-	}
-};
-var elm$url$Url$Parser$preparePath = function (path) {
-	var _n0 = A2(elm$core$String$split, '/', path);
-	if (_n0.b && (_n0.a === '')) {
-		var segments = _n0.b;
-		return elm$url$Url$Parser$removeFinalEmpty(segments);
-	} else {
-		var segments = _n0;
-		return elm$url$Url$Parser$removeFinalEmpty(segments);
-	}
-};
-var elm$core$Dict$getMin = function (dict) {
-	getMin:
-	while (true) {
-		if ((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) {
-			var left = dict.d;
-			var $temp$dict = left;
-			dict = $temp$dict;
-			continue getMin;
-		} else {
-			return dict;
-		}
-	}
-};
-var elm$core$Dict$moveRedLeft = function (dict) {
-	if (((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) && (dict.e.$ === 'RBNode_elm_builtin')) {
-		if ((dict.e.d.$ === 'RBNode_elm_builtin') && (dict.e.d.a.$ === 'Red')) {
-			var clr = dict.a;
-			var k = dict.b;
-			var v = dict.c;
-			var _n1 = dict.d;
-			var lClr = _n1.a;
-			var lK = _n1.b;
-			var lV = _n1.c;
-			var lLeft = _n1.d;
-			var lRight = _n1.e;
-			var _n2 = dict.e;
-			var rClr = _n2.a;
-			var rK = _n2.b;
-			var rV = _n2.c;
-			var rLeft = _n2.d;
-			var _n3 = rLeft.a;
-			var rlK = rLeft.b;
-			var rlV = rLeft.c;
-			var rlL = rLeft.d;
-			var rlR = rLeft.e;
-			var rRight = _n2.e;
-			return A5(
-				elm$core$Dict$RBNode_elm_builtin,
-				elm$core$Dict$Red,
-				rlK,
-				rlV,
-				A5(
-					elm$core$Dict$RBNode_elm_builtin,
-					elm$core$Dict$Black,
-					k,
-					v,
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					rlL),
-				A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, rK, rV, rlR, rRight));
-		} else {
-			var clr = dict.a;
-			var k = dict.b;
-			var v = dict.c;
-			var _n4 = dict.d;
-			var lClr = _n4.a;
-			var lK = _n4.b;
-			var lV = _n4.c;
-			var lLeft = _n4.d;
-			var lRight = _n4.e;
-			var _n5 = dict.e;
-			var rClr = _n5.a;
-			var rK = _n5.b;
-			var rV = _n5.c;
-			var rLeft = _n5.d;
-			var rRight = _n5.e;
-			if (clr.$ === 'Black') {
-				return A5(
-					elm$core$Dict$RBNode_elm_builtin,
-					elm$core$Dict$Black,
-					k,
-					v,
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight));
-			} else {
-				return A5(
-					elm$core$Dict$RBNode_elm_builtin,
-					elm$core$Dict$Black,
-					k,
-					v,
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight));
-			}
-		}
-	} else {
-		return dict;
-	}
-};
-var elm$core$Dict$moveRedRight = function (dict) {
-	if (((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) && (dict.e.$ === 'RBNode_elm_builtin')) {
-		if ((dict.d.d.$ === 'RBNode_elm_builtin') && (dict.d.d.a.$ === 'Red')) {
-			var clr = dict.a;
-			var k = dict.b;
-			var v = dict.c;
-			var _n1 = dict.d;
-			var lClr = _n1.a;
-			var lK = _n1.b;
-			var lV = _n1.c;
-			var _n2 = _n1.d;
-			var _n3 = _n2.a;
-			var llK = _n2.b;
-			var llV = _n2.c;
-			var llLeft = _n2.d;
-			var llRight = _n2.e;
-			var lRight = _n1.e;
-			var _n4 = dict.e;
-			var rClr = _n4.a;
-			var rK = _n4.b;
-			var rV = _n4.c;
-			var rLeft = _n4.d;
-			var rRight = _n4.e;
-			return A5(
-				elm$core$Dict$RBNode_elm_builtin,
-				elm$core$Dict$Red,
-				lK,
-				lV,
-				A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, llK, llV, llLeft, llRight),
-				A5(
-					elm$core$Dict$RBNode_elm_builtin,
-					elm$core$Dict$Black,
-					k,
-					v,
-					lRight,
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight)));
-		} else {
-			var clr = dict.a;
-			var k = dict.b;
-			var v = dict.c;
-			var _n5 = dict.d;
-			var lClr = _n5.a;
-			var lK = _n5.b;
-			var lV = _n5.c;
-			var lLeft = _n5.d;
-			var lRight = _n5.e;
-			var _n6 = dict.e;
-			var rClr = _n6.a;
-			var rK = _n6.b;
-			var rV = _n6.c;
-			var rLeft = _n6.d;
-			var rRight = _n6.e;
-			if (clr.$ === 'Black') {
-				return A5(
-					elm$core$Dict$RBNode_elm_builtin,
-					elm$core$Dict$Black,
-					k,
-					v,
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight));
-			} else {
-				return A5(
-					elm$core$Dict$RBNode_elm_builtin,
-					elm$core$Dict$Black,
-					k,
-					v,
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight));
-			}
-		}
-	} else {
-		return dict;
-	}
-};
-var elm$core$Dict$removeHelpPrepEQGT = F7(
-	function (targetKey, dict, color, key, value, left, right) {
-		if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
-			var _n1 = left.a;
-			var lK = left.b;
-			var lV = left.c;
-			var lLeft = left.d;
-			var lRight = left.e;
-			return A5(
-				elm$core$Dict$RBNode_elm_builtin,
-				color,
-				lK,
-				lV,
-				lLeft,
-				A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, key, value, lRight, right));
-		} else {
-			_n2$2:
-			while (true) {
-				if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Black')) {
-					if (right.d.$ === 'RBNode_elm_builtin') {
-						if (right.d.a.$ === 'Black') {
-							var _n3 = right.a;
-							var _n4 = right.d;
-							var _n5 = _n4.a;
-							return elm$core$Dict$moveRedRight(dict);
-						} else {
-							break _n2$2;
-						}
-					} else {
-						var _n6 = right.a;
-						var _n7 = right.d;
-						return elm$core$Dict$moveRedRight(dict);
-					}
-				} else {
-					break _n2$2;
-				}
-			}
-			return dict;
-		}
-	});
-var elm$core$Dict$removeMin = function (dict) {
-	if ((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) {
-		var color = dict.a;
-		var key = dict.b;
-		var value = dict.c;
-		var left = dict.d;
-		var lColor = left.a;
-		var lLeft = left.d;
-		var right = dict.e;
-		if (lColor.$ === 'Black') {
-			if ((lLeft.$ === 'RBNode_elm_builtin') && (lLeft.a.$ === 'Red')) {
-				var _n3 = lLeft.a;
-				return A5(
-					elm$core$Dict$RBNode_elm_builtin,
-					color,
-					key,
-					value,
-					elm$core$Dict$removeMin(left),
-					right);
-			} else {
-				var _n4 = elm$core$Dict$moveRedLeft(dict);
-				if (_n4.$ === 'RBNode_elm_builtin') {
-					var nColor = _n4.a;
-					var nKey = _n4.b;
-					var nValue = _n4.c;
-					var nLeft = _n4.d;
-					var nRight = _n4.e;
-					return A5(
-						elm$core$Dict$balance,
-						nColor,
-						nKey,
-						nValue,
-						elm$core$Dict$removeMin(nLeft),
-						nRight);
-				} else {
-					return elm$core$Dict$RBEmpty_elm_builtin;
-				}
-			}
-		} else {
-			return A5(
-				elm$core$Dict$RBNode_elm_builtin,
-				color,
-				key,
-				value,
-				elm$core$Dict$removeMin(left),
-				right);
-		}
-	} else {
-		return elm$core$Dict$RBEmpty_elm_builtin;
-	}
-};
-var elm$core$Dict$removeHelp = F2(
-	function (targetKey, dict) {
-		if (dict.$ === 'RBEmpty_elm_builtin') {
-			return elm$core$Dict$RBEmpty_elm_builtin;
-		} else {
-			var color = dict.a;
-			var key = dict.b;
-			var value = dict.c;
-			var left = dict.d;
-			var right = dict.e;
-			if (_Utils_cmp(targetKey, key) < 0) {
-				if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Black')) {
-					var _n4 = left.a;
-					var lLeft = left.d;
-					if ((lLeft.$ === 'RBNode_elm_builtin') && (lLeft.a.$ === 'Red')) {
-						var _n6 = lLeft.a;
-						return A5(
-							elm$core$Dict$RBNode_elm_builtin,
-							color,
-							key,
-							value,
-							A2(elm$core$Dict$removeHelp, targetKey, left),
-							right);
-					} else {
-						var _n7 = elm$core$Dict$moveRedLeft(dict);
-						if (_n7.$ === 'RBNode_elm_builtin') {
-							var nColor = _n7.a;
-							var nKey = _n7.b;
-							var nValue = _n7.c;
-							var nLeft = _n7.d;
-							var nRight = _n7.e;
-							return A5(
-								elm$core$Dict$balance,
-								nColor,
-								nKey,
-								nValue,
-								A2(elm$core$Dict$removeHelp, targetKey, nLeft),
-								nRight);
-						} else {
-							return elm$core$Dict$RBEmpty_elm_builtin;
-						}
-					}
-				} else {
-					return A5(
-						elm$core$Dict$RBNode_elm_builtin,
-						color,
-						key,
-						value,
-						A2(elm$core$Dict$removeHelp, targetKey, left),
-						right);
-				}
-			} else {
-				return A2(
-					elm$core$Dict$removeHelpEQGT,
-					targetKey,
-					A7(elm$core$Dict$removeHelpPrepEQGT, targetKey, dict, color, key, value, left, right));
-			}
-		}
-	});
-var elm$core$Dict$removeHelpEQGT = F2(
-	function (targetKey, dict) {
-		if (dict.$ === 'RBNode_elm_builtin') {
-			var color = dict.a;
-			var key = dict.b;
-			var value = dict.c;
-			var left = dict.d;
-			var right = dict.e;
-			if (_Utils_eq(targetKey, key)) {
-				var _n1 = elm$core$Dict$getMin(right);
-				if (_n1.$ === 'RBNode_elm_builtin') {
-					var minKey = _n1.b;
-					var minValue = _n1.c;
-					return A5(
-						elm$core$Dict$balance,
-						color,
-						minKey,
-						minValue,
-						left,
-						elm$core$Dict$removeMin(right));
-				} else {
-					return elm$core$Dict$RBEmpty_elm_builtin;
-				}
-			} else {
-				return A5(
-					elm$core$Dict$balance,
-					color,
-					key,
-					value,
-					left,
-					A2(elm$core$Dict$removeHelp, targetKey, right));
-			}
-		} else {
-			return elm$core$Dict$RBEmpty_elm_builtin;
-		}
-	});
-var elm$core$Dict$remove = F2(
-	function (key, dict) {
-		var _n0 = A2(elm$core$Dict$removeHelp, key, dict);
-		if ((_n0.$ === 'RBNode_elm_builtin') && (_n0.a.$ === 'Red')) {
-			var _n1 = _n0.a;
-			var k = _n0.b;
-			var v = _n0.c;
-			var l = _n0.d;
-			var r = _n0.e;
-			return A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, k, v, l, r);
-		} else {
-			var x = _n0;
-			return x;
-		}
-	});
-var elm$core$Dict$update = F3(
-	function (targetKey, alter, dictionary) {
-		var _n0 = alter(
-			A2(elm$core$Dict$get, targetKey, dictionary));
-		if (_n0.$ === 'Just') {
-			var value = _n0.a;
-			return A3(elm$core$Dict$insert, targetKey, value, dictionary);
-		} else {
-			return A2(elm$core$Dict$remove, targetKey, dictionary);
-		}
-	});
-var elm$url$Url$percentDecode = _Url_percentDecode;
-var elm$url$Url$Parser$addToParametersHelp = F2(
-	function (value, maybeList) {
-		if (maybeList.$ === 'Nothing') {
-			return elm$core$Maybe$Just(
-				_List_fromArray(
-					[value]));
-		} else {
-			var list = maybeList.a;
-			return elm$core$Maybe$Just(
-				A2(elm$core$List$cons, value, list));
-		}
-	});
-var elm$url$Url$Parser$addParam = F2(
-	function (segment, dict) {
-		var _n0 = A2(elm$core$String$split, '=', segment);
-		if ((_n0.b && _n0.b.b) && (!_n0.b.b.b)) {
-			var rawKey = _n0.a;
-			var _n1 = _n0.b;
-			var rawValue = _n1.a;
-			var _n2 = elm$url$Url$percentDecode(rawKey);
-			if (_n2.$ === 'Nothing') {
-				return dict;
-			} else {
-				var key = _n2.a;
-				var _n3 = elm$url$Url$percentDecode(rawValue);
-				if (_n3.$ === 'Nothing') {
-					return dict;
-				} else {
-					var value = _n3.a;
-					return A3(
-						elm$core$Dict$update,
-						key,
-						elm$url$Url$Parser$addToParametersHelp(value),
-						dict);
-				}
-			}
-		} else {
-			return dict;
-		}
-	});
-var elm$url$Url$Parser$prepareQuery = function (maybeQuery) {
-	if (maybeQuery.$ === 'Nothing') {
-		return elm$core$Dict$empty;
-	} else {
-		var qry = maybeQuery.a;
-		return A3(
-			elm$core$List$foldr,
-			elm$url$Url$Parser$addParam,
-			elm$core$Dict$empty,
-			A2(elm$core$String$split, '&', qry));
-	}
-};
-var elm$url$Url$Parser$parse = F2(
-	function (_n0, url) {
-		var parser = _n0.a;
-		return elm$url$Url$Parser$getFirstMatch(
-			parser(
-				A5(
-					elm$url$Url$Parser$State,
-					_List_Nil,
-					elm$url$Url$Parser$preparePath(url.path),
-					elm$url$Url$Parser$prepareQuery(url.query),
-					url.fragment,
-					elm$core$Basics$identity)));
-	});
-var author$project$Route$fromUrl = function (url) {
-	return A2(elm$url$Url$Parser$parse, author$project$Route$parser, url);
-};
-var author$project$TopBar$init = '';
-var author$project$Main$init = F3(
-	function (flags, url, navKey) {
-		var maybeRoute = author$project$Route$fromUrl(url);
-		var page = author$project$Main$pageFromRoute(maybeRoute);
-		var maybeOverlay = author$project$Main$overlayFromRoute(maybeRoute);
-		var cmd = author$project$Main$cmdFromOverlay(maybeOverlay);
-		return _Utils_Tuple2(
-			{
-				keyPair: author$project$KeyPair$decode(flags),
-				navKey: navKey,
-				overlay: maybeOverlay,
-				page: page,
-				topBarModel: author$project$TopBar$init,
-				url: url,
-				wallet: elm$core$Maybe$Nothing
-			},
-			cmd);
-	});
-var author$project$Main$KeyPairCreated = function (a) {
-	return {$: 'KeyPairCreated', a: a};
-};
-var author$project$Main$KeyPairFetched = function (a) {
-	return {$: 'KeyPairFetched', a: a};
-};
-var author$project$Main$WalletWebExtPresent = function (a) {
-	return {$: 'WalletWebExtPresent', a: a};
-};
-var elm$json$Json$Decode$value = _Json_decodeValue;
-var author$project$Main$keyPairCreated = _Platform_incomingPort('keyPairCreated', elm$json$Json$Decode$value);
-var author$project$Main$keyPairFetched = _Platform_incomingPort('keyPairFetched', elm$json$Json$Decode$value);
-var elm$json$Json$Decode$null = _Json_decodeNull;
-var author$project$Main$walletWebExtPresent = _Platform_incomingPort(
-	'walletWebExtPresent',
-	elm$json$Json$Decode$null(_Utils_Tuple0));
-var elm$core$Basics$composeR = F3(
-	function (f, g, x) {
-		return g(
-			f(x));
-	});
-var elm$core$Platform$Sub$batch = _Platform_batch;
-var author$project$Main$subscriptions = function (_n0) {
-	return elm$core$Platform$Sub$batch(
-		_List_fromArray(
-			[
-				author$project$Main$keyPairCreated(
-				A2(elm$core$Basics$composeR, author$project$KeyPair$decode, author$project$Main$KeyPairCreated)),
-				author$project$Main$keyPairFetched(
-				A2(elm$core$Basics$composeR, author$project$KeyPair$decode, author$project$Main$KeyPairFetched)),
-				author$project$Main$walletWebExtPresent(author$project$Main$WalletWebExtPresent)
-			]));
-};
-var author$project$Main$OverlayWalletSetup = function (a) {
-	return {$: 'OverlayWalletSetup', a: a};
-};
-var author$project$Main$PageRegister = function (a) {
-	return {$: 'PageRegister', a: a};
-};
-var author$project$Main$TopBarMsg = function (a) {
-	return {$: 'TopBarMsg', a: a};
-};
-var author$project$Main$WebExt = {$: 'WebExt'};
-var elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			elm$core$List$foldl,
-			F2(
-				function (_n0, obj) {
-					var k = _n0.a;
-					var v = _n0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
-var author$project$Main$registerProject = _Platform_outgoingPort(
-	'registerProject',
-	function ($) {
-		return elm$json$Json$Encode$object(_List_Nil);
-	});
-var author$project$Overlay$WalletSetup$Pick = {$: 'Pick'};
-var author$project$Overlay$WalletSetup$update = F2(
-	function (msg, model) {
-		var _n0 = A2(elm$core$Debug$log, 'WalletSetup.Msg', msg);
-		return _Utils_Tuple2(
-			_Utils_update(
-				model,
-				{step: author$project$Overlay$WalletSetup$Pick}),
-			elm$core$Platform$Cmd$none);
-	});
-var author$project$Page$Register$update = F2(
-	function (msg, model) {
-		var project = msg.a;
-		return _Utils_Tuple2(
-			_Utils_update(
-				model,
-				{project: project}),
-			elm$core$Platform$Cmd$none);
-	});
-var author$project$TopBar$update = F2(
-	function (msg, _n0) {
-		var term = msg.a;
-		return _Utils_Tuple2(term, elm$core$Platform$Cmd$none);
 	});
 var elm$browser$Browser$External = function (a) {
 	return {$: 'External', a: a};
@@ -6711,7 +5728,6 @@ var elm$core$Task$perform = F2(
 			elm$core$Task$Perform(
 				A2(elm$core$Task$map, toMessage, task)));
 	});
-var elm$json$Json$Decode$map = _Json_map1;
 var elm$browser$Debugger$Expando$ArraySeq = {$: 'ArraySeq'};
 var elm$browser$Debugger$Expando$Constructor = F3(
 	function (a, b, c) {
@@ -6769,7 +5785,6 @@ var elm$browser$Debugger$Overlay$Choose = F2(
 	});
 var elm$browser$Debugger$Overlay$goodNews1 = '\nThe good news is that having values like this in your message type is not\nso great in the long run. You are better off using simpler data, like\n';
 var elm$browser$Debugger$Overlay$goodNews2 = '\nfunction can pattern match on that data and call whatever functions, JSON\ndecoders, etc. you need. This makes the code much more explicit and easy to\nfollow for other readers (or you in a few months!)\n';
-var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
 		case 'Normal':
@@ -7566,6 +6581,15 @@ var elm$core$Dict$isEmpty = function (dict) {
 		return false;
 	}
 };
+var elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
 var elm$browser$Debugger$Expando$viewExtraTiny = function (value) {
 	if (value.$ === 'Record') {
 		var record = value.b;
@@ -8463,6 +7487,11 @@ var elm$browser$Debugger$Main$toBlockerType = function (model) {
 		elm$browser$Debugger$Main$isPaused(model.state),
 		model.overlay);
 };
+var elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
+var elm$core$Dict$RBNode_elm_builtin = F5(
+	function (a, b, c, d, e) {
+		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
+	});
 var elm$core$Dict$map = F2(
 	function (func, dict) {
 		if (dict.$ === 'RBEmpty_elm_builtin') {
@@ -8604,7 +7633,6 @@ var elm$browser$Debugger$Metadata$Alias = F2(
 	function (args, tipe) {
 		return {args: args, tipe: tipe};
 	});
-var elm$json$Json$Decode$field = _Json_decodeField;
 var elm$json$Json$Decode$list = _Json_decodeList;
 var elm$browser$Debugger$Metadata$decodeAlias = A3(
 	elm$json$Json$Decode$map2,
@@ -8618,6 +7646,124 @@ var elm$browser$Debugger$Metadata$Union = F2(
 	function (args, tags) {
 		return {args: args, tags: tags};
 	});
+var elm$core$Dict$empty = elm$core$Dict$RBEmpty_elm_builtin;
+var elm$core$Dict$Black = {$: 'Black'};
+var elm$core$Basics$compare = _Utils_compare;
+var elm$core$Dict$Red = {$: 'Red'};
+var elm$core$Dict$balance = F5(
+	function (color, key, value, left, right) {
+		if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Red')) {
+			var _n1 = right.a;
+			var rK = right.b;
+			var rV = right.c;
+			var rLeft = right.d;
+			var rRight = right.e;
+			if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
+				var _n3 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var lLeft = left.d;
+				var lRight = left.e;
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Red,
+					key,
+					value,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, lK, lV, lLeft, lRight),
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					color,
+					rK,
+					rV,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, key, value, left, rLeft),
+					rRight);
+			}
+		} else {
+			if ((((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) && (left.d.$ === 'RBNode_elm_builtin')) && (left.d.a.$ === 'Red')) {
+				var _n5 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var _n6 = left.d;
+				var _n7 = _n6.a;
+				var llK = _n6.b;
+				var llV = _n6.c;
+				var llLeft = _n6.d;
+				var llRight = _n6.e;
+				var lRight = left.e;
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Red,
+					lK,
+					lV,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, llK, llV, llLeft, llRight),
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, key, value, lRight, right));
+			} else {
+				return A5(elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
+			}
+		}
+	});
+var elm$core$Dict$insertHelp = F3(
+	function (key, value, dict) {
+		if (dict.$ === 'RBEmpty_elm_builtin') {
+			return A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, key, value, elm$core$Dict$RBEmpty_elm_builtin, elm$core$Dict$RBEmpty_elm_builtin);
+		} else {
+			var nColor = dict.a;
+			var nKey = dict.b;
+			var nValue = dict.c;
+			var nLeft = dict.d;
+			var nRight = dict.e;
+			var _n1 = A2(elm$core$Basics$compare, key, nKey);
+			switch (_n1.$) {
+				case 'LT':
+					return A5(
+						elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						A3(elm$core$Dict$insertHelp, key, value, nLeft),
+						nRight);
+				case 'EQ':
+					return A5(elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
+				default:
+					return A5(
+						elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						nLeft,
+						A3(elm$core$Dict$insertHelp, key, value, nRight));
+			}
+		}
+	});
+var elm$core$Dict$insert = F3(
+	function (key, value, dict) {
+		var _n0 = A3(elm$core$Dict$insertHelp, key, value, dict);
+		if ((_n0.$ === 'RBNode_elm_builtin') && (_n0.a.$ === 'Red')) {
+			var _n1 = _n0.a;
+			var k = _n0.b;
+			var v = _n0.c;
+			var l = _n0.d;
+			var r = _n0.e;
+			return A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, k, v, l, r);
+		} else {
+			var x = _n0;
+			return x;
+		}
+	});
+var elm$core$Dict$fromList = function (assocs) {
+	return A3(
+		elm$core$List$foldl,
+		F2(
+			function (_n0, dict) {
+				var key = _n0.a;
+				var value = _n0.b;
+				return A3(elm$core$Dict$insert, key, value, dict);
+			}),
+		elm$core$Dict$empty,
+		assocs);
+};
 var elm$json$Json$Decode$keyValuePairs = _Json_decodeKeyValuePairs;
 var elm$json$Json$Decode$dict = function (decoder) {
 	return A2(
@@ -8741,6 +7887,22 @@ var elm$core$Dict$values = function (dict) {
 		_List_Nil,
 		dict);
 };
+var elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3(elm$core$List$foldr, elm$core$List$cons, ys, xs);
+		}
+	});
+var elm$core$List$concat = function (lists) {
+	return A3(elm$core$List$foldr, elm$core$List$append, _List_Nil, lists);
+};
+var elm$core$List$concatMap = F2(
+	function (f, list) {
+		return elm$core$List$concat(
+			A2(elm$core$List$map, f, list));
+	});
 var elm$browser$Debugger$Metadata$collectBadUnions = F3(
 	function (name, _n0, list) {
 		var tags = _n0.tags;
@@ -8796,6 +7958,7 @@ var elm$browser$Debugger$Metadata$isPortable = function (_n0) {
 			A2(elm$browser$Debugger$Metadata$Error, types.message, problems));
 	}
 };
+var elm$json$Json$Decode$decodeValue = _Json_run;
 var elm$browser$Debugger$Metadata$decode = function (value) {
 	var _n0 = A2(elm$json$Json$Decode$decodeValue, elm$browser$Debugger$Metadata$decoder, value);
 	if (_n0.$ === 'Err') {
@@ -8848,6 +8011,37 @@ var elm$browser$Debugger$Main$wrapSubs = F2(
 			elm$browser$Debugger$Main$UserMsg,
 			subscriptions(
 				elm$browser$Debugger$Main$getLatestModel(model.state)));
+	});
+var elm$core$Dict$get = F2(
+	function (targetKey, dict) {
+		get:
+		while (true) {
+			if (dict.$ === 'RBEmpty_elm_builtin') {
+				return elm$core$Maybe$Nothing;
+			} else {
+				var key = dict.b;
+				var value = dict.c;
+				var left = dict.d;
+				var right = dict.e;
+				var _n1 = A2(elm$core$Basics$compare, targetKey, key);
+				switch (_n1.$) {
+					case 'LT':
+						var $temp$targetKey = targetKey,
+							$temp$dict = left;
+						targetKey = $temp$targetKey;
+						dict = $temp$dict;
+						continue get;
+					case 'EQ':
+						return elm$core$Maybe$Just(value);
+					default:
+						var $temp$targetKey = targetKey,
+							$temp$dict = right;
+						targetKey = $temp$targetKey;
+						dict = $temp$dict;
+						continue get;
+				}
+			}
+		}
 	});
 var elm$browser$Debugger$Expando$mergeDictHelp = F3(
 	function (oldDict, key, value) {
@@ -8978,6 +8172,379 @@ var elm$browser$Debugger$Expando$updateIndex = F3(
 		}
 	});
 var elm$core$Basics$not = _Basics_not;
+var elm$core$Dict$getMin = function (dict) {
+	getMin:
+	while (true) {
+		if ((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) {
+			var left = dict.d;
+			var $temp$dict = left;
+			dict = $temp$dict;
+			continue getMin;
+		} else {
+			return dict;
+		}
+	}
+};
+var elm$core$Dict$moveRedLeft = function (dict) {
+	if (((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) && (dict.e.$ === 'RBNode_elm_builtin')) {
+		if ((dict.e.d.$ === 'RBNode_elm_builtin') && (dict.e.d.a.$ === 'Red')) {
+			var clr = dict.a;
+			var k = dict.b;
+			var v = dict.c;
+			var _n1 = dict.d;
+			var lClr = _n1.a;
+			var lK = _n1.b;
+			var lV = _n1.c;
+			var lLeft = _n1.d;
+			var lRight = _n1.e;
+			var _n2 = dict.e;
+			var rClr = _n2.a;
+			var rK = _n2.b;
+			var rV = _n2.c;
+			var rLeft = _n2.d;
+			var _n3 = rLeft.a;
+			var rlK = rLeft.b;
+			var rlV = rLeft.c;
+			var rlL = rLeft.d;
+			var rlR = rLeft.e;
+			var rRight = _n2.e;
+			return A5(
+				elm$core$Dict$RBNode_elm_builtin,
+				elm$core$Dict$Red,
+				rlK,
+				rlV,
+				A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Black,
+					k,
+					v,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
+					rlL),
+				A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, rK, rV, rlR, rRight));
+		} else {
+			var clr = dict.a;
+			var k = dict.b;
+			var v = dict.c;
+			var _n4 = dict.d;
+			var lClr = _n4.a;
+			var lK = _n4.b;
+			var lV = _n4.c;
+			var lLeft = _n4.d;
+			var lRight = _n4.e;
+			var _n5 = dict.e;
+			var rClr = _n5.a;
+			var rK = _n5.b;
+			var rV = _n5.c;
+			var rLeft = _n5.d;
+			var rRight = _n5.e;
+			if (clr.$ === 'Black') {
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Black,
+					k,
+					v,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Black,
+					k,
+					v,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight));
+			}
+		}
+	} else {
+		return dict;
+	}
+};
+var elm$core$Dict$moveRedRight = function (dict) {
+	if (((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) && (dict.e.$ === 'RBNode_elm_builtin')) {
+		if ((dict.d.d.$ === 'RBNode_elm_builtin') && (dict.d.d.a.$ === 'Red')) {
+			var clr = dict.a;
+			var k = dict.b;
+			var v = dict.c;
+			var _n1 = dict.d;
+			var lClr = _n1.a;
+			var lK = _n1.b;
+			var lV = _n1.c;
+			var _n2 = _n1.d;
+			var _n3 = _n2.a;
+			var llK = _n2.b;
+			var llV = _n2.c;
+			var llLeft = _n2.d;
+			var llRight = _n2.e;
+			var lRight = _n1.e;
+			var _n4 = dict.e;
+			var rClr = _n4.a;
+			var rK = _n4.b;
+			var rV = _n4.c;
+			var rLeft = _n4.d;
+			var rRight = _n4.e;
+			return A5(
+				elm$core$Dict$RBNode_elm_builtin,
+				elm$core$Dict$Red,
+				lK,
+				lV,
+				A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, llK, llV, llLeft, llRight),
+				A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Black,
+					k,
+					v,
+					lRight,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight)));
+		} else {
+			var clr = dict.a;
+			var k = dict.b;
+			var v = dict.c;
+			var _n5 = dict.d;
+			var lClr = _n5.a;
+			var lK = _n5.b;
+			var lV = _n5.c;
+			var lLeft = _n5.d;
+			var lRight = _n5.e;
+			var _n6 = dict.e;
+			var rClr = _n6.a;
+			var rK = _n6.b;
+			var rV = _n6.c;
+			var rLeft = _n6.d;
+			var rRight = _n6.e;
+			if (clr.$ === 'Black') {
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Black,
+					k,
+					v,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Black,
+					k,
+					v,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight));
+			}
+		}
+	} else {
+		return dict;
+	}
+};
+var elm$core$Dict$removeHelpPrepEQGT = F7(
+	function (targetKey, dict, color, key, value, left, right) {
+		if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
+			var _n1 = left.a;
+			var lK = left.b;
+			var lV = left.c;
+			var lLeft = left.d;
+			var lRight = left.e;
+			return A5(
+				elm$core$Dict$RBNode_elm_builtin,
+				color,
+				lK,
+				lV,
+				lLeft,
+				A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, key, value, lRight, right));
+		} else {
+			_n2$2:
+			while (true) {
+				if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Black')) {
+					if (right.d.$ === 'RBNode_elm_builtin') {
+						if (right.d.a.$ === 'Black') {
+							var _n3 = right.a;
+							var _n4 = right.d;
+							var _n5 = _n4.a;
+							return elm$core$Dict$moveRedRight(dict);
+						} else {
+							break _n2$2;
+						}
+					} else {
+						var _n6 = right.a;
+						var _n7 = right.d;
+						return elm$core$Dict$moveRedRight(dict);
+					}
+				} else {
+					break _n2$2;
+				}
+			}
+			return dict;
+		}
+	});
+var elm$core$Dict$removeMin = function (dict) {
+	if ((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) {
+		var color = dict.a;
+		var key = dict.b;
+		var value = dict.c;
+		var left = dict.d;
+		var lColor = left.a;
+		var lLeft = left.d;
+		var right = dict.e;
+		if (lColor.$ === 'Black') {
+			if ((lLeft.$ === 'RBNode_elm_builtin') && (lLeft.a.$ === 'Red')) {
+				var _n3 = lLeft.a;
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					color,
+					key,
+					value,
+					elm$core$Dict$removeMin(left),
+					right);
+			} else {
+				var _n4 = elm$core$Dict$moveRedLeft(dict);
+				if (_n4.$ === 'RBNode_elm_builtin') {
+					var nColor = _n4.a;
+					var nKey = _n4.b;
+					var nValue = _n4.c;
+					var nLeft = _n4.d;
+					var nRight = _n4.e;
+					return A5(
+						elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						elm$core$Dict$removeMin(nLeft),
+						nRight);
+				} else {
+					return elm$core$Dict$RBEmpty_elm_builtin;
+				}
+			}
+		} else {
+			return A5(
+				elm$core$Dict$RBNode_elm_builtin,
+				color,
+				key,
+				value,
+				elm$core$Dict$removeMin(left),
+				right);
+		}
+	} else {
+		return elm$core$Dict$RBEmpty_elm_builtin;
+	}
+};
+var elm$core$Dict$removeHelp = F2(
+	function (targetKey, dict) {
+		if (dict.$ === 'RBEmpty_elm_builtin') {
+			return elm$core$Dict$RBEmpty_elm_builtin;
+		} else {
+			var color = dict.a;
+			var key = dict.b;
+			var value = dict.c;
+			var left = dict.d;
+			var right = dict.e;
+			if (_Utils_cmp(targetKey, key) < 0) {
+				if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Black')) {
+					var _n4 = left.a;
+					var lLeft = left.d;
+					if ((lLeft.$ === 'RBNode_elm_builtin') && (lLeft.a.$ === 'Red')) {
+						var _n6 = lLeft.a;
+						return A5(
+							elm$core$Dict$RBNode_elm_builtin,
+							color,
+							key,
+							value,
+							A2(elm$core$Dict$removeHelp, targetKey, left),
+							right);
+					} else {
+						var _n7 = elm$core$Dict$moveRedLeft(dict);
+						if (_n7.$ === 'RBNode_elm_builtin') {
+							var nColor = _n7.a;
+							var nKey = _n7.b;
+							var nValue = _n7.c;
+							var nLeft = _n7.d;
+							var nRight = _n7.e;
+							return A5(
+								elm$core$Dict$balance,
+								nColor,
+								nKey,
+								nValue,
+								A2(elm$core$Dict$removeHelp, targetKey, nLeft),
+								nRight);
+						} else {
+							return elm$core$Dict$RBEmpty_elm_builtin;
+						}
+					}
+				} else {
+					return A5(
+						elm$core$Dict$RBNode_elm_builtin,
+						color,
+						key,
+						value,
+						A2(elm$core$Dict$removeHelp, targetKey, left),
+						right);
+				}
+			} else {
+				return A2(
+					elm$core$Dict$removeHelpEQGT,
+					targetKey,
+					A7(elm$core$Dict$removeHelpPrepEQGT, targetKey, dict, color, key, value, left, right));
+			}
+		}
+	});
+var elm$core$Dict$removeHelpEQGT = F2(
+	function (targetKey, dict) {
+		if (dict.$ === 'RBNode_elm_builtin') {
+			var color = dict.a;
+			var key = dict.b;
+			var value = dict.c;
+			var left = dict.d;
+			var right = dict.e;
+			if (_Utils_eq(targetKey, key)) {
+				var _n1 = elm$core$Dict$getMin(right);
+				if (_n1.$ === 'RBNode_elm_builtin') {
+					var minKey = _n1.b;
+					var minValue = _n1.c;
+					return A5(
+						elm$core$Dict$balance,
+						color,
+						minKey,
+						minValue,
+						left,
+						elm$core$Dict$removeMin(right));
+				} else {
+					return elm$core$Dict$RBEmpty_elm_builtin;
+				}
+			} else {
+				return A5(
+					elm$core$Dict$balance,
+					color,
+					key,
+					value,
+					left,
+					A2(elm$core$Dict$removeHelp, targetKey, right));
+			}
+		} else {
+			return elm$core$Dict$RBEmpty_elm_builtin;
+		}
+	});
+var elm$core$Dict$remove = F2(
+	function (key, dict) {
+		var _n0 = A2(elm$core$Dict$removeHelp, key, dict);
+		if ((_n0.$ === 'RBNode_elm_builtin') && (_n0.a.$ === 'Red')) {
+			var _n1 = _n0.a;
+			var k = _n0.b;
+			var v = _n0.c;
+			var l = _n0.d;
+			var r = _n0.e;
+			return A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, k, v, l, r);
+		} else {
+			var x = _n0;
+			return x;
+		}
+	});
+var elm$core$Dict$update = F3(
+	function (targetKey, alter, dictionary) {
+		var _n0 = alter(
+			A2(elm$core$Dict$get, targetKey, dictionary));
+		if (_n0.$ === 'Just') {
+			var value = _n0.a;
+			return A3(elm$core$Dict$insert, targetKey, value, dictionary);
+		} else {
+			return A2(elm$core$Dict$remove, targetKey, dictionary);
+		}
+	});
 var elm$browser$Debugger$Expando$update = F2(
 	function (msg, value) {
 		switch (value.$) {
@@ -9426,6 +8993,19 @@ var elm$browser$Debugger$History$encode = function (_n0) {
 			elm$core$List$reverse(recent.messages),
 			snapshots));
 };
+var elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			elm$core$List$foldl,
+			F2(
+				function (_n0, obj) {
+					var k = _n0.a;
+					var v = _n0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
 var elm$browser$Debugger$Metadata$encodeAlias = function (_n0) {
 	var args = _n0.args;
 	var tipe = _n0.tipe;
@@ -9532,6 +9112,7 @@ var elm$browser$Debugger$Main$download = F2(
 			A2(_Debugger_download, historyLength, json));
 	});
 var elm$browser$Debugger$History$jsToElm = _Debugger_unsafeCoerce;
+var elm$json$Json$Decode$value = _Json_decodeValue;
 var elm$browser$Debugger$History$decoder = F2(
 	function (initialModel, update) {
 		var addMessage = F2(
@@ -9573,6 +9154,8 @@ var elm$browser$Debugger$Overlay$BadImport = function (a) {
 };
 var elm$browser$Debugger$Report$CorruptHistory = {$: 'CorruptHistory'};
 var elm$browser$Debugger$Overlay$corruptImport = elm$browser$Debugger$Overlay$BadImport(elm$browser$Debugger$Report$CorruptHistory);
+var elm$core$Platform$Cmd$batch = _Platform_batch;
+var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var elm$browser$Debugger$Main$loadNewHistory = F3(
 	function (rawHistory, update, model) {
 		var pureUserUpdate = F2(
@@ -10252,8 +9835,505 @@ var elm$url$Url$fromString = function (str) {
 		elm$url$Url$Https,
 		A2(elm$core$String$dropLeft, 8, str)) : elm$core$Maybe$Nothing);
 };
-var elm$browser$Browser$Navigation$load = _Browser_load;
 var elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
+var author$project$Main$guardUrl = F4(
+	function (navKey, maybeRoute, maybeWallet, maybeKeyPair) {
+		if ((maybeRoute.$ === 'Just') && (maybeRoute.a.$ === 'Register')) {
+			var url = A2(author$project$Main$registerUrl, maybeWallet, maybeKeyPair);
+			return A2(elm$browser$Browser$Navigation$pushUrl, navKey, url);
+		} else {
+			return elm$core$Platform$Cmd$none;
+		}
+	});
+var author$project$Main$WaitForKeyPair = {$: 'WaitForKeyPair'};
+var author$project$Main$WalletSetup = function (a) {
+	return {$: 'WalletSetup', a: a};
+};
+var author$project$Overlay$WalletSetup$Info = {$: 'Info'};
+var author$project$Overlay$WalletSetup$Model = function (step) {
+	return {step: step};
+};
+var author$project$Overlay$WalletSetup$init = author$project$Overlay$WalletSetup$Model(author$project$Overlay$WalletSetup$Info);
+var author$project$Main$overlayFromRoute = function (maybeRoute) {
+	if ((maybeRoute.$ === 'Just') && (maybeRoute.a.$ === 'Register')) {
+		var maybeOverlay = maybeRoute.a.a;
+		_n1$2:
+		while (true) {
+			if (maybeOverlay.$ === 'Just') {
+				switch (maybeOverlay.a.$) {
+					case 'WaitForKeyPair':
+						var _n2 = maybeOverlay.a;
+						return elm$core$Maybe$Just(author$project$Main$WaitForKeyPair);
+					case 'WalletSetup':
+						var _n3 = maybeOverlay.a;
+						return elm$core$Maybe$Just(
+							author$project$Main$WalletSetup(author$project$Overlay$WalletSetup$init));
+					default:
+						break _n1$2;
+				}
+			} else {
+				break _n1$2;
+			}
+		}
+		return elm$core$Maybe$Nothing;
+	} else {
+		return elm$core$Maybe$Nothing;
+	}
+};
+var author$project$Main$Home = {$: 'Home'};
+var author$project$Main$NotFound = {$: 'NotFound'};
+var author$project$Main$Project = {$: 'Project'};
+var author$project$Main$Register = function (a) {
+	return {$: 'Register', a: a};
+};
+var author$project$Page$Register$Model = function (project) {
+	return {project: project};
+};
+var author$project$Page$Register$Project = {};
+var author$project$Page$Register$init = author$project$Page$Register$Model(author$project$Page$Register$Project);
+var author$project$Main$pageFromRoute = function (maybeRoute) {
+	_n0$3:
+	while (true) {
+		if (maybeRoute.$ === 'Just') {
+			switch (maybeRoute.a.$) {
+				case 'Home':
+					var _n1 = maybeRoute.a;
+					return author$project$Main$Home;
+				case 'Project':
+					var _n2 = maybeRoute.a;
+					return author$project$Main$Project;
+				case 'Register':
+					return author$project$Main$Register(author$project$Page$Register$init);
+				default:
+					break _n0$3;
+			}
+		} else {
+			break _n0$3;
+		}
+	}
+	return author$project$Main$NotFound;
+};
+var author$project$Route$Project = {$: 'Project'};
+var elm$url$Url$Parser$Internal$Parser = function (a) {
+	return {$: 'Parser', a: a};
+};
+var elm$url$Url$Parser$Query$custom = F2(
+	function (key, func) {
+		return elm$url$Url$Parser$Internal$Parser(
+			function (dict) {
+				return func(
+					A2(
+						elm$core$Maybe$withDefault,
+						_List_Nil,
+						A2(elm$core$Dict$get, key, dict)));
+			});
+	});
+var elm$url$Url$Parser$Query$enum = F2(
+	function (key, dict) {
+		return A2(
+			elm$url$Url$Parser$Query$custom,
+			key,
+			function (stringList) {
+				if (stringList.b && (!stringList.b.b)) {
+					var str = stringList.a;
+					return A2(elm$core$Dict$get, str, dict);
+				} else {
+					return elm$core$Maybe$Nothing;
+				}
+			});
+	});
+var author$project$Route$queryOverlay = A2(
+	elm$url$Url$Parser$Query$enum,
+	'overlay',
+	elm$core$Dict$fromList(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				author$project$Route$toString(author$project$Route$WaitForKeyPair),
+				author$project$Route$WaitForKeyPair),
+				_Utils_Tuple2(
+				author$project$Route$toString(author$project$Route$WalletSetup),
+				author$project$Route$WalletSetup)
+			])));
+var elm$url$Url$Parser$Parser = function (a) {
+	return {$: 'Parser', a: a};
+};
+var elm$url$Url$Parser$State = F5(
+	function (visited, unvisited, params, frag, value) {
+		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
+	});
+var elm$url$Url$Parser$mapState = F2(
+	function (func, _n0) {
+		var visited = _n0.visited;
+		var unvisited = _n0.unvisited;
+		var params = _n0.params;
+		var frag = _n0.frag;
+		var value = _n0.value;
+		return A5(
+			elm$url$Url$Parser$State,
+			visited,
+			unvisited,
+			params,
+			frag,
+			func(value));
+	});
+var elm$url$Url$Parser$map = F2(
+	function (subValue, _n0) {
+		var parseArg = _n0.a;
+		return elm$url$Url$Parser$Parser(
+			function (_n1) {
+				var visited = _n1.visited;
+				var unvisited = _n1.unvisited;
+				var params = _n1.params;
+				var frag = _n1.frag;
+				var value = _n1.value;
+				return A2(
+					elm$core$List$map,
+					elm$url$Url$Parser$mapState(value),
+					parseArg(
+						A5(elm$url$Url$Parser$State, visited, unvisited, params, frag, subValue)));
+			});
+	});
+var elm$url$Url$Parser$oneOf = function (parsers) {
+	return elm$url$Url$Parser$Parser(
+		function (state) {
+			return A2(
+				elm$core$List$concatMap,
+				function (_n0) {
+					var parser = _n0.a;
+					return parser(state);
+				},
+				parsers);
+		});
+};
+var elm$url$Url$Parser$query = function (_n0) {
+	var queryParser = _n0.a;
+	return elm$url$Url$Parser$Parser(
+		function (_n1) {
+			var visited = _n1.visited;
+			var unvisited = _n1.unvisited;
+			var params = _n1.params;
+			var frag = _n1.frag;
+			var value = _n1.value;
+			return _List_fromArray(
+				[
+					A5(
+					elm$url$Url$Parser$State,
+					visited,
+					unvisited,
+					params,
+					frag,
+					value(
+						queryParser(params)))
+				]);
+		});
+};
+var elm$url$Url$Parser$slash = F2(
+	function (_n0, _n1) {
+		var parseBefore = _n0.a;
+		var parseAfter = _n1.a;
+		return elm$url$Url$Parser$Parser(
+			function (state) {
+				return A2(
+					elm$core$List$concatMap,
+					parseAfter,
+					parseBefore(state));
+			});
+	});
+var elm$url$Url$Parser$questionMark = F2(
+	function (parser, queryParser) {
+		return A2(
+			elm$url$Url$Parser$slash,
+			parser,
+			elm$url$Url$Parser$query(queryParser));
+	});
+var elm$url$Url$Parser$s = function (str) {
+	return elm$url$Url$Parser$Parser(
+		function (_n0) {
+			var visited = _n0.visited;
+			var unvisited = _n0.unvisited;
+			var params = _n0.params;
+			var frag = _n0.frag;
+			var value = _n0.value;
+			if (!unvisited.b) {
+				return _List_Nil;
+			} else {
+				var next = unvisited.a;
+				var rest = unvisited.b;
+				return _Utils_eq(next, str) ? _List_fromArray(
+					[
+						A5(
+						elm$url$Url$Parser$State,
+						A2(elm$core$List$cons, next, visited),
+						rest,
+						params,
+						frag,
+						value)
+					]) : _List_Nil;
+			}
+		});
+};
+var elm$url$Url$Parser$top = elm$url$Url$Parser$Parser(
+	function (state) {
+		return _List_fromArray(
+			[state]);
+	});
+var author$project$Route$parser = elm$url$Url$Parser$oneOf(
+	_List_fromArray(
+		[
+			A2(elm$url$Url$Parser$map, author$project$Route$Project, elm$url$Url$Parser$top),
+			A2(
+			elm$url$Url$Parser$map,
+			author$project$Route$Project,
+			elm$url$Url$Parser$s('project')),
+			A2(
+			elm$url$Url$Parser$map,
+			author$project$Route$Register,
+			A2(
+				elm$url$Url$Parser$questionMark,
+				elm$url$Url$Parser$s('register'),
+				author$project$Route$queryOverlay))
+		]));
+var elm$url$Url$Parser$getFirstMatch = function (states) {
+	getFirstMatch:
+	while (true) {
+		if (!states.b) {
+			return elm$core$Maybe$Nothing;
+		} else {
+			var state = states.a;
+			var rest = states.b;
+			var _n1 = state.unvisited;
+			if (!_n1.b) {
+				return elm$core$Maybe$Just(state.value);
+			} else {
+				if ((_n1.a === '') && (!_n1.b.b)) {
+					return elm$core$Maybe$Just(state.value);
+				} else {
+					var $temp$states = rest;
+					states = $temp$states;
+					continue getFirstMatch;
+				}
+			}
+		}
+	}
+};
+var elm$url$Url$Parser$removeFinalEmpty = function (segments) {
+	if (!segments.b) {
+		return _List_Nil;
+	} else {
+		if ((segments.a === '') && (!segments.b.b)) {
+			return _List_Nil;
+		} else {
+			var segment = segments.a;
+			var rest = segments.b;
+			return A2(
+				elm$core$List$cons,
+				segment,
+				elm$url$Url$Parser$removeFinalEmpty(rest));
+		}
+	}
+};
+var elm$url$Url$Parser$preparePath = function (path) {
+	var _n0 = A2(elm$core$String$split, '/', path);
+	if (_n0.b && (_n0.a === '')) {
+		var segments = _n0.b;
+		return elm$url$Url$Parser$removeFinalEmpty(segments);
+	} else {
+		var segments = _n0;
+		return elm$url$Url$Parser$removeFinalEmpty(segments);
+	}
+};
+var elm$url$Url$percentDecode = _Url_percentDecode;
+var elm$url$Url$Parser$addToParametersHelp = F2(
+	function (value, maybeList) {
+		if (maybeList.$ === 'Nothing') {
+			return elm$core$Maybe$Just(
+				_List_fromArray(
+					[value]));
+		} else {
+			var list = maybeList.a;
+			return elm$core$Maybe$Just(
+				A2(elm$core$List$cons, value, list));
+		}
+	});
+var elm$url$Url$Parser$addParam = F2(
+	function (segment, dict) {
+		var _n0 = A2(elm$core$String$split, '=', segment);
+		if ((_n0.b && _n0.b.b) && (!_n0.b.b.b)) {
+			var rawKey = _n0.a;
+			var _n1 = _n0.b;
+			var rawValue = _n1.a;
+			var _n2 = elm$url$Url$percentDecode(rawKey);
+			if (_n2.$ === 'Nothing') {
+				return dict;
+			} else {
+				var key = _n2.a;
+				var _n3 = elm$url$Url$percentDecode(rawValue);
+				if (_n3.$ === 'Nothing') {
+					return dict;
+				} else {
+					var value = _n3.a;
+					return A3(
+						elm$core$Dict$update,
+						key,
+						elm$url$Url$Parser$addToParametersHelp(value),
+						dict);
+				}
+			}
+		} else {
+			return dict;
+		}
+	});
+var elm$url$Url$Parser$prepareQuery = function (maybeQuery) {
+	if (maybeQuery.$ === 'Nothing') {
+		return elm$core$Dict$empty;
+	} else {
+		var qry = maybeQuery.a;
+		return A3(
+			elm$core$List$foldr,
+			elm$url$Url$Parser$addParam,
+			elm$core$Dict$empty,
+			A2(elm$core$String$split, '&', qry));
+	}
+};
+var elm$url$Url$Parser$parse = F2(
+	function (_n0, url) {
+		var parser = _n0.a;
+		return elm$url$Url$Parser$getFirstMatch(
+			parser(
+				A5(
+					elm$url$Url$Parser$State,
+					_List_Nil,
+					elm$url$Url$Parser$preparePath(url.path),
+					elm$url$Url$Parser$prepareQuery(url.query),
+					url.fragment,
+					elm$core$Basics$identity)));
+	});
+var author$project$Route$fromUrl = function (url) {
+	return A2(elm$url$Url$Parser$parse, author$project$Route$parser, url);
+};
+var author$project$TopBar$init = '';
+var elm$core$Result$withDefault = F2(
+	function (def, result) {
+		if (result.$ === 'Ok') {
+			var a = result.a;
+			return a;
+		} else {
+			return def;
+		}
+	});
+var author$project$Main$init = F3(
+	function (flags, url, navKey) {
+		var maybeRoute = author$project$Route$fromUrl(url);
+		var page = author$project$Main$pageFromRoute(maybeRoute);
+		var maybeOverlay = author$project$Main$overlayFromRoute(maybeRoute);
+		var _n0 = A2(
+			elm$core$Result$withDefault,
+			{maybeKeyPair: elm$core$Maybe$Nothing, maybeWallet: elm$core$Maybe$Nothing},
+			A2(elm$json$Json$Decode$decodeValue, author$project$Main$flagDecoder, flags));
+		var maybeKeyPair = _n0.maybeKeyPair;
+		var maybeWallet = _n0.maybeWallet;
+		var cmd = A4(author$project$Main$guardUrl, navKey, maybeRoute, maybeWallet, maybeKeyPair);
+		return _Utils_Tuple2(
+			{keyPair: maybeKeyPair, navKey: navKey, overlay: maybeOverlay, page: page, topBarModel: author$project$TopBar$init, url: url, wallet: elm$core$Maybe$Nothing},
+			cmd);
+	});
+var elm$core$Debug$log = _Debug_log;
+var author$project$KeyPair$decode = function (json) {
+	var _n0 = A2(elm$json$Json$Decode$decodeValue, author$project$KeyPair$decoder, json);
+	if (_n0.$ === 'Ok') {
+		var keyPair = _n0.a;
+		return elm$core$Maybe$Just(keyPair);
+	} else {
+		var err = _n0.a;
+		var _n1 = A2(elm$core$Debug$log, 'Error decoding key pair', err);
+		return elm$core$Maybe$Nothing;
+	}
+};
+var author$project$Main$KeyPairCreated = function (a) {
+	return {$: 'KeyPairCreated', a: a};
+};
+var author$project$Main$KeyPairFetched = function (a) {
+	return {$: 'KeyPairFetched', a: a};
+};
+var author$project$Main$WalletWebExtPresent = function (a) {
+	return {$: 'WalletWebExtPresent', a: a};
+};
+var author$project$Main$keyPairCreated = _Platform_incomingPort('keyPairCreated', elm$json$Json$Decode$value);
+var author$project$Main$keyPairFetched = _Platform_incomingPort('keyPairFetched', elm$json$Json$Decode$value);
+var author$project$Main$walletWebExtPresent = _Platform_incomingPort(
+	'walletWebExtPresent',
+	elm$json$Json$Decode$null(_Utils_Tuple0));
+var elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
+var elm$core$Platform$Sub$batch = _Platform_batch;
+var author$project$Main$subscriptions = function (_n0) {
+	return elm$core$Platform$Sub$batch(
+		_List_fromArray(
+			[
+				author$project$Main$keyPairCreated(
+				A2(elm$core$Basics$composeR, author$project$KeyPair$decode, author$project$Main$KeyPairCreated)),
+				author$project$Main$keyPairFetched(
+				A2(elm$core$Basics$composeR, author$project$KeyPair$decode, author$project$Main$KeyPairFetched)),
+				author$project$Main$walletWebExtPresent(author$project$Main$WalletWebExtPresent)
+			]));
+};
+var author$project$Main$OverlayWalletSetup = function (a) {
+	return {$: 'OverlayWalletSetup', a: a};
+};
+var author$project$Main$PageRegister = function (a) {
+	return {$: 'PageRegister', a: a};
+};
+var author$project$Main$TopBarMsg = function (a) {
+	return {$: 'TopBarMsg', a: a};
+};
+var elm$json$Json$Encode$null = _Json_encodeNull;
+var author$project$Main$requireKeyPair = _Platform_outgoingPort(
+	'requireKeyPair',
+	function ($) {
+		return elm$json$Json$Encode$null;
+	});
+var author$project$Main$cmdFromOverlay = function (maybeOverlay) {
+	if ((maybeOverlay.$ === 'Just') && (maybeOverlay.a.$ === 'WaitForKeyPair')) {
+		var _n1 = maybeOverlay.a;
+		return author$project$Main$requireKeyPair(_Utils_Tuple0);
+	} else {
+		return elm$core$Platform$Cmd$none;
+	}
+};
+var author$project$Main$registerProject = _Platform_outgoingPort(
+	'registerProject',
+	function ($) {
+		return elm$json$Json$Encode$object(_List_Nil);
+	});
+var author$project$Overlay$WalletSetup$Pick = {$: 'Pick'};
+var author$project$Overlay$WalletSetup$update = F2(
+	function (msg, model) {
+		var _n0 = A2(elm$core$Debug$log, 'WalletSetup.Msg', msg);
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{step: author$project$Overlay$WalletSetup$Pick}),
+			elm$core$Platform$Cmd$none);
+	});
+var author$project$Page$Register$update = F2(
+	function (msg, model) {
+		var project = msg.a;
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{project: project}),
+			elm$core$Platform$Cmd$none);
+	});
+var author$project$TopBar$update = F2(
+	function (msg, _n0) {
+		var term = msg.a;
+		return _Utils_Tuple2(term, elm$core$Platform$Cmd$none);
+	});
+var elm$browser$Browser$Navigation$load = _Browser_load;
 var elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
 		if (maybePort.$ === 'Nothing') {
@@ -10424,7 +10504,7 @@ var author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							wallet: elm$core$Maybe$Just(author$project$Main$WebExt)
+							wallet: elm$core$Maybe$Just(author$project$Wallet$WebExt)
 						}),
 					elm$core$Platform$Cmd$none);
 		}
@@ -17162,9 +17242,12 @@ var author$project$Main$viewPage = function (page) {
 				A2(mdgriffith$elm_ui$Element$map, author$project$Main$PageRegister, pageView));
 	}
 };
+var author$project$Wallet$toString = function (wallet) {
+	return 'web extension';
+};
 var author$project$Main$viewWallet = function (maybeWallet) {
 	if (maybeWallet.$ === 'Just') {
-		var _n1 = maybeWallet.a;
+		var wallet = maybeWallet.a;
 		return A2(
 			mdgriffith$elm_ui$Element$row,
 			_List_fromArray(
@@ -17177,7 +17260,8 @@ var author$project$Main$viewWallet = function (maybeWallet) {
 					mdgriffith$elm_ui$Element$el,
 					_List_fromArray(
 						[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
-					mdgriffith$elm_ui$Element$text('Wallet connected: web extension'))
+					mdgriffith$elm_ui$Element$text(
+						'Wallet connected: ' + author$project$Wallet$toString(wallet)))
 				]));
 	} else {
 		return mdgriffith$elm_ui$Element$none;
@@ -18146,32 +18230,7 @@ var mdgriffith$elm_ui$Element$layoutWith = F3(
 var mdgriffith$elm_ui$Element$layout = mdgriffith$elm_ui$Element$layoutWith(
 	{options: _List_Nil});
 var author$project$Main$view = function (model) {
-	var registerUrl = function () {
-		var _n3 = _Utils_Tuple2(model.wallet, model.keyPair);
-		if (_n3.a.$ === 'Just') {
-			if (_n3.b.$ === 'Nothing') {
-				var _n6 = _n3.b;
-				return author$project$Route$toString(
-					author$project$Route$Register(
-						elm$core$Maybe$Just(author$project$Route$WaitForKeyPair)));
-			} else {
-				return author$project$Route$toString(
-					author$project$Route$Register(elm$core$Maybe$Nothing));
-			}
-		} else {
-			if (_n3.b.$ === 'Nothing') {
-				var _n4 = _n3.a;
-				var _n5 = _n3.b;
-				return author$project$Route$toString(
-					author$project$Route$Register(
-						elm$core$Maybe$Just(author$project$Route$WalletSetup)));
-			} else {
-				var _n7 = _n3.a;
-				return author$project$Route$toString(
-					author$project$Route$Register(elm$core$Maybe$Nothing));
-			}
-		}
-	}();
+	var rUrl = A2(author$project$Main$registerUrl, model.wallet, model.keyPair);
 	var _n0 = author$project$Main$viewPage(model.page);
 	var pageTitle = _n0.a;
 	var pageContent = _n0.b;
@@ -18207,7 +18266,7 @@ var author$project$Main$view = function (model) {
 							A2(
 							mdgriffith$elm_ui$Element$map,
 							author$project$Main$TopBarMsg,
-							A2(author$project$TopBar$view, model.topBarModel, registerUrl)),
+							A2(author$project$TopBar$view, model.topBarModel, rUrl)),
 							author$project$Main$viewWallet(model.wallet),
 							author$project$Main$viewKeyPair(model.keyPair),
 							A2(

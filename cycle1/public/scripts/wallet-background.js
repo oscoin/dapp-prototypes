@@ -1,5 +1,6 @@
 console.log('oscoin wallet | background | init')
 
+// Set the wallet icon dynamically.
 browser.browserAction.setIcon({ path: "icons/wallet-error.svg" })
   .then(() => {
     console.log('icon success')
