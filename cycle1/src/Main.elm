@@ -6,13 +6,15 @@ import Element
 import Element.Background as Background
 import Html.Attributes
 import Json.Decode as Decode
+import Json.Encode as Encode
 import KeyPair exposing (KeyPair)
 import Overlay.WaitForKeyPair
 import Overlay.WalletSetup
 import Page.Home
 import Page.NotFound
 import Page.Project
-import Page.Register exposing (Project)
+import Page.Register
+import Project exposing (Project)
 import Route exposing (Route)
 import Style.Color as Color
 import TopBar
@@ -54,6 +56,7 @@ type alias Model =
     }
 
 
+flagDecoder : Decode.Decoder Flags
 flagDecoder =
     Decode.map2 Flags
         (Decode.field "keyPair" (Decode.nullable KeyPair.decoder))
@@ -71,8 +74,6 @@ init flags url navKey =
                     , maybeWallet = Nothing
                     }
 
-        -- maybeKeyPair =
-        --     KeyPair.decode flags
         maybeRoute =
             Route.fromUrl url
 
@@ -91,7 +92,7 @@ init flags url navKey =
       , page = page
       , topBarModel = TopBar.init
       , url = url
-      , wallet = Nothing
+      , wallet = maybeWallet
       }
     , cmd
     )
@@ -101,7 +102,7 @@ init flags url navKey =
 -- PORTS - OUTGOING
 
 
-port registerProject : Project -> Cmd msg
+port registerProject : Encode.Value -> Cmd msg
 
 
 port requireKeyPair : () -> Cmd msg
@@ -210,7 +211,12 @@ update msg model =
                             case subCmd of
                                 -- Call out to our port to register the project.
                                 Page.Register.Register project ->
-                                    registerProject project
+                                    registerProject <| Project.encode project
+
+                                -- Ignore all other sub commands as they should
+                                -- be handled by the page.
+                                _ ->
+                                    Cmd.none
                     in
                     ( { model | page = Register pageModel }
                     , Cmd.batch
