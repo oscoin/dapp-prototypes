@@ -18,18 +18,17 @@ import Style.Color as Color
 import TopBar
 import Url
 import Url.Builder
+import Wallet exposing (Wallet(..))
 
 
 
 -- MODEL
 
 
-type Wallet
-    = WebExt
-
-
 type alias Flags =
-    Decode.Value
+    { maybeKeyPair : Maybe KeyPair
+    , maybeWallet : Maybe Wallet
+    }
 
 
 type Overlay
@@ -55,9 +54,25 @@ type alias Model =
     }
 
 
-init : Flags -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
+flagDecoder =
+    Decode.map2 Flags
+        (Decode.field "keyPair" (Decode.nullable KeyPair.decoder))
+        (Decode.field "wallet" (Decode.nullable Wallet.decoder))
+
+
+init : Decode.Value -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
+        { maybeKeyPair, maybeWallet } =
+            flags
+                |> Decode.decodeValue flagDecoder
+                |> Result.withDefault
+                    { maybeKeyPair = Nothing
+                    , maybeWallet = Nothing
+                    }
+
+        -- maybeKeyPair =
+        --     KeyPair.decode flags
         maybeRoute =
             Route.fromUrl url
 
@@ -68,9 +83,9 @@ init flags url navKey =
             overlayFromRoute maybeRoute
 
         cmd =
-            cmdFromOverlay maybeOverlay
+            guardUrl navKey maybeRoute maybeWallet maybeKeyPair
     in
-    ( { keyPair = KeyPair.decode flags
+    ( { keyPair = maybeKeyPair
       , navKey = navKey
       , overlay = maybeOverlay
       , page = page
@@ -314,7 +329,7 @@ viewPage page =
 viewWallet : Maybe Wallet -> Element.Element msg
 viewWallet maybeWallet =
     case maybeWallet of
-        Just WebExt ->
+        Just wallet ->
             Element.row
                 [ Element.width Element.fill
                 ]
@@ -323,7 +338,7 @@ viewWallet maybeWallet =
                     , Element.centerY
                     ]
                   <|
-                    Element.text "Wallet connected: web extension"
+                    Element.text ("Wallet connected: " ++ Wallet.toString wallet)
                 ]
 
         _ ->
@@ -347,24 +362,8 @@ view model =
                 Just oTitle ->
                     [ oTitle, pageTitle, "oscoin" ]
 
-        registerUrl =
-            case ( model.wallet, model.keyPair ) of
-                -- Neither Wallet nor key pair is present.
-                ( Nothing, Nothing ) ->
-                    Route.toString <| Route.Register <| Just Route.WalletSetup
-
-                -- Wallet is present but no key pair yet.
-                ( Just _, Nothing ) ->
-                    Route.toString <| Route.Register <| Just Route.WaitForKeyPair
-
-                -- Wallet and key pair are available.
-                ( Just _, Just _ ) ->
-                    Route.toString <| Route.Register Nothing
-
-                -- Only the key pair is present, unclear if this state is
-                -- possible, maybe for testing when we store have it in memory.
-                ( Nothing, Just _ ) ->
-                    Route.toString <| Route.Register Nothing
+        rUrl =
+            registerUrl model.wallet model.keyPair
     in
     { title = String.join " <> " titleParts
     , body =
@@ -376,7 +375,7 @@ view model =
                 , Element.height Element.fill
                 , Element.width Element.fill
                 ]
-                [ Element.map TopBarMsg <| TopBar.view model.topBarModel registerUrl
+                [ Element.map TopBarMsg <| TopBar.view model.topBarModel rUrl
                 , viewWallet model.wallet
                 , viewKeyPair model.keyPair
                 , Element.el [ Element.centerX ] <| pageContent
@@ -385,7 +384,7 @@ view model =
     }
 
 
-main : Program Flags Model Msg
+main : Program Decode.Value Model Msg
 main =
     Browser.application
         { init = init
@@ -402,11 +401,31 @@ main =
 
 
 cmdFromOverlay : Maybe Overlay -> Cmd msg
-cmdFromOverlay maybePage =
-    case maybePage of
+cmdFromOverlay maybeOverlay =
+    case maybeOverlay of
         Just WaitForKeyPair ->
             requireKeyPair ()
 
+        _ ->
+            Cmd.none
+
+
+guardUrl :
+    Navigation.Key
+    -> Maybe Route
+    -> Maybe Wallet
+    -> Maybe KeyPair
+    -> Cmd msg
+guardUrl navKey maybeRoute maybeWallet maybeKeyPair =
+    case maybeRoute of
+        Just (Route.Register _) ->
+            let
+                url =
+                    registerUrl maybeWallet maybeKeyPair
+            in
+            Navigation.pushUrl navKey url
+
+        -- Nothing to do for all other routes.
         _ ->
             Cmd.none
 
@@ -450,6 +469,27 @@ pageFromRoute maybeRoute =
 
         _ ->
             NotFound
+
+
+registerUrl : Maybe Wallet -> Maybe KeyPair -> String
+registerUrl maybeWallet maybeKeyPair =
+    case ( maybeWallet, maybeKeyPair ) of
+        -- Neither Wallet nor key pair is present.
+        ( Nothing, Nothing ) ->
+            Route.toString <| Route.Register <| Just Route.WalletSetup
+
+        -- Wallet is present but no key pair yet.
+        ( Just _, Nothing ) ->
+            Route.toString <| Route.Register <| Just Route.WaitForKeyPair
+
+        -- Wallet and key pair are available.
+        ( Just _, Just _ ) ->
+            Route.toString <| Route.Register Nothing
+
+        -- Only the key pair is present, unclear if this state is
+        -- possible, maybe for testing when we have it in memory.
+        ( Nothing, Just _ ) ->
+            Route.toString <| Route.Register Nothing
 
 
 

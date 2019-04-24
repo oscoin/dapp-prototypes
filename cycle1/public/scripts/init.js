@@ -1,6 +1,11 @@
-(function() {
+window.addEventListener('DOMContentLoaded', (_) => {
+  console.log(document.getElementById('wallet') ? 'webext' : null)
+
   var app = Elm.Main.init({
-    flags: null,
+    flags: {
+      keyPair: null,
+      wallet: document.getElementById('wallet') ? 'webext' : null
+    },
     node: document.getElementById('app')
   });
 
@@ -61,4 +66,4 @@
       }
     }
   })
-})();
+});

@@ -4885,7 +4885,6 @@ var author$project$WalletPopup$KeyPairList = function (a) {
 var author$project$WalletPopup$KeyPairSetup = function (a) {
 	return {$: 'KeyPairSetup', a: a};
 };
-var author$project$WalletPopup$NotFound = {$: 'NotFound'};
 var author$project$WalletPopup$SignTransaction = {$: 'SignTransaction'};
 var elm$core$Basics$apL = F2(
 	function (f, x) {
@@ -5396,7 +5395,7 @@ var author$project$WalletPopup$init = function (flags) {
 				}
 			}
 		}
-		return author$project$WalletPopup$NotFound;
+		return author$project$WalletPopup$KeyPairSetup(author$project$Page$KeyPairSetup$init);
 	}();
 	return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 };
@@ -5407,18 +5406,18 @@ var elm$core$Basics$identity = function (x) {
 	return x;
 };
 var elm$json$Json$Decode$andThen = _Json_andThen;
+var elm$json$Json$Decode$fail = _Json_fail;
 var elm$json$Json$Decode$string = _Json_decodeString;
 var elm$json$Json$Decode$succeed = _Json_succeed;
 var author$project$KeyPair$decoder = A2(
 	elm$json$Json$Decode$andThen,
 	function (str) {
 		if (str === '') {
-			return elm$json$Json$Decode$succeed(elm$core$Maybe$Nothing);
+			return elm$json$Json$Decode$fail('empty key pair');
 		} else {
 			var keyPair = str;
 			return elm$json$Json$Decode$succeed(
-				elm$core$Maybe$Just(
-					author$project$KeyPair$KeyPair(keyPair)));
+				author$project$KeyPair$KeyPair(keyPair));
 		}
 	},
 	elm$json$Json$Decode$string);
@@ -5428,7 +5427,7 @@ var author$project$KeyPair$decode = function (json) {
 	var _n0 = A2(elm$json$Json$Decode$decodeValue, author$project$KeyPair$decoder, json);
 	if (_n0.$ === 'Ok') {
 		var keyPair = _n0.a;
-		return keyPair;
+		return elm$core$Maybe$Just(keyPair);
 	} else {
 		var err = _n0.a;
 		var _n1 = A2(elm$core$Debug$log, 'Error decoding key pair', err);

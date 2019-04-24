@@ -1,4 +1,4 @@
-module KeyPair exposing (KeyPair, decode, toString)
+module KeyPair exposing (KeyPair, decode, decoder, toString)
 
 import Json.Decode as Decode
 
@@ -22,7 +22,7 @@ decode : Decode.Value -> Maybe KeyPair
 decode json =
     case Decode.decodeValue decoder json of
         Ok keyPair ->
-            keyPair
+            Just keyPair
 
         Err err ->
             let
@@ -32,15 +32,15 @@ decode json =
             Nothing
 
 
-decoder : Decode.Decoder (Maybe KeyPair)
+decoder : Decode.Decoder KeyPair
 decoder =
     Decode.string
         |> Decode.andThen
             (\str ->
                 case str of
                     "" ->
-                        Decode.succeed Nothing
+                        Decode.fail "empty key pair"
 
                     keyPair ->
-                        Decode.succeed <| Just (KeyPair keyPair)
+                        Decode.succeed <| KeyPair keyPair
             )

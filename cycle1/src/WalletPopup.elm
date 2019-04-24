@@ -51,7 +51,7 @@ init flags =
                     SignTransaction
 
                 ( _, _, _ ) ->
-                    NotFound
+                    KeyPairSetup Page.KeyPairSetup.init
     in
     ( model, Cmd.none )
 
@@ -111,7 +111,7 @@ update msg model =
                     , Cmd.map PageKeyPairSetup <| pageCmd
                     )
 
-        -- Ignore key apir create events for all other pages.
+        -- Ignore key pair create events for all other pages.
         ( KeyPairCreated _, _ ) ->
             ( model, Cmd.none )
 
