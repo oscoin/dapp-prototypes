@@ -12,7 +12,7 @@ window.addEventListener('DOMContentLoaded', (_) => {
   // Check if wallet is installed.
   window.postMessage({
     direction: 'page-to-wallet',
-    type: 'getWallet'
+    type: 'getKeyPair'
   });
 
   // Listen to project register messages that we hand off to the wallet for
