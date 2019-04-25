@@ -100,7 +100,7 @@ mapWebsiteUrl change (Project model) =
 
 websiteUrl : Project -> String
 websiteUrl (Project model) =
-    model.name
+    model.websiteUrl
 
 
 
@@ -110,5 +110,9 @@ websiteUrl (Project model) =
 encode : Project -> Encode.Value
 encode (Project model) =
     Encode.object
-        [ ( "name", Encode.string model.name )
+        [ ( "codeHostUrl", Encode.string model.codeHostUrl )
+        , ( "description", Encode.string model.description )
+        , ( "imageUrl", Encode.string model.imageUrl )
+        , ( "name", Encode.string model.name )
+        , ( "websiteUrl", Encode.string model.websiteUrl )
         ]

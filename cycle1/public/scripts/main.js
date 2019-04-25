@@ -10464,8 +10464,20 @@ var author$project$Project$encode = function (_n0) {
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
+				'codeHostUrl',
+				elm$json$Json$Encode$string(model.codeHostUrl)),
+				_Utils_Tuple2(
+				'description',
+				elm$json$Json$Encode$string(model.description)),
+				_Utils_Tuple2(
+				'imageUrl',
+				elm$json$Json$Encode$string(model.imageUrl)),
+				_Utils_Tuple2(
 				'name',
-				elm$json$Json$Encode$string(model.name))
+				elm$json$Json$Encode$string(model.name)),
+				_Utils_Tuple2(
+				'websiteUrl',
+				elm$json$Json$Encode$string(model.websiteUrl))
 			]));
 };
 var author$project$TopBar$update = F2(
@@ -17341,8 +17353,21 @@ var author$project$Page$Project$view = _Utils_Tuple2(
 		_List_fromArray(
 			[author$project$Page$Project$Header$view, author$project$Page$Project$Actions$view, author$project$Page$Project$People$view, author$project$Page$Project$Contract$view])));
 var author$project$Page$Register$MoveStepPreview = {$: 'MoveStepPreview'};
-var author$project$Page$Register$Register = function (a) {
-	return {$: 'Register', a: a};
+var author$project$Page$Register$viewContract = function (_n0) {
+	return A2(
+		mdgriffith$elm_ui$Element$column,
+		_List_Nil,
+		_List_fromArray(
+			[
+				author$project$Atom$Heading$section('Project contract'),
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$Events$onClick(author$project$Page$Register$MoveStepPreview)
+					]),
+				author$project$Atom$Button$primary('Next'))
+			]));
 };
 var author$project$Page$Register$MoveStepContract = {$: 'MoveStepContract'};
 var author$project$Page$Register$UpdateCodeHostUrl = function (a) {
@@ -17378,7 +17403,7 @@ var author$project$Project$name = function (_n0) {
 };
 var author$project$Project$websiteUrl = function (_n0) {
 	var model = _n0.a;
-	return model.name;
+	return model.websiteUrl;
 };
 var mdgriffith$elm_ui$Element$Input$Label = F3(
 	function (a, b, c) {
@@ -18076,6 +18101,7 @@ var author$project$Page$Register$viewInfo = function (project) {
 		_List_Nil,
 		_List_fromArray(
 			[
+				author$project$Atom$Heading$section('Project information'),
 				A2(
 				mdgriffith$elm_ui$Element$Input$text,
 				_List_Nil,
@@ -18153,6 +18179,26 @@ var author$project$Page$Register$viewInfo = function (project) {
 				author$project$Atom$Button$primary('Next'))
 			]));
 };
+var author$project$Page$Register$Register = function (a) {
+	return {$: 'Register', a: a};
+};
+var author$project$Page$Register$viewPreview = function (project) {
+	return A2(
+		mdgriffith$elm_ui$Element$column,
+		_List_Nil,
+		_List_fromArray(
+			[
+				author$project$Atom$Heading$section('Project preview'),
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$Events$onClick(
+						author$project$Page$Register$Register(project))
+					]),
+				author$project$Atom$Button$primary('Register this project'))
+			]));
+};
 var author$project$Page$Register$view = function (_n0) {
 	var step = _n0.a;
 	var project = _n0.b;
@@ -18161,34 +18207,9 @@ var author$project$Page$Register$view = function (_n0) {
 			case 'Info':
 				return author$project$Page$Register$viewInfo(project);
 			case 'Contract':
-				return A2(
-					mdgriffith$elm_ui$Element$column,
-					_List_Nil,
-					_List_fromArray(
-						[
-							A2(
-							mdgriffith$elm_ui$Element$el,
-							_List_fromArray(
-								[
-									mdgriffith$elm_ui$Element$Events$onClick(author$project$Page$Register$MoveStepPreview)
-								]),
-							author$project$Atom$Button$primary('Next'))
-						]));
+				return author$project$Page$Register$viewContract(project);
 			default:
-				return A2(
-					mdgriffith$elm_ui$Element$column,
-					_List_Nil,
-					_List_fromArray(
-						[
-							A2(
-							mdgriffith$elm_ui$Element$el,
-							_List_fromArray(
-								[
-									mdgriffith$elm_ui$Element$Events$onClick(
-									author$project$Page$Register$Register(project))
-								]),
-							author$project$Atom$Button$accent('Register'))
-						]));
+				return author$project$Page$Register$viewPreview(project);
 		}
 	}();
 	return _Utils_Tuple2(
@@ -18204,7 +18225,10 @@ var author$project$Page$Register$view = function (_n0) {
 				[
 					A2(
 					mdgriffith$elm_ui$Element$el,
-					author$project$Style$Font$bigHeader(author$project$Style$Color$black),
+					_Utils_ap(
+						_List_fromArray(
+							[mdgriffith$elm_ui$Element$centerX]),
+						author$project$Style$Font$bigHeader(author$project$Style$Color$black)),
 					mdgriffith$elm_ui$Element$text('Register your project')),
 					viewStep
 				])));

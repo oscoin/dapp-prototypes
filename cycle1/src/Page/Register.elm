@@ -1,6 +1,7 @@
 module Page.Register exposing (Model, Msg(..), init, update, view)
 
 import Atom.Button as Button
+import Atom.Heading as Heading
 import Element exposing (Element)
 import Element.Events as Events
 import Element.Input as Input
@@ -75,11 +76,24 @@ update msg (Model oldStep oldProject) =
 -- VIEW
 
 
+viewContract : Project -> Element Msg
+viewContract _ =
+    Element.column
+        []
+        [ Heading.section "Project contract"
+        , Element.el
+            [ Events.onClick <| MoveStepPreview ]
+          <|
+            Button.primary "Next"
+        ]
+
+
 viewInfo : Project -> Element Msg
 viewInfo project =
     Element.column
         []
-        [ Input.text
+        [ Heading.section "Project information"
+        , Input.text
             []
             { label = Input.labelLeft [] <| Element.text "name*"
             , onChange = UpdateName
@@ -121,6 +135,18 @@ viewInfo project =
         ]
 
 
+viewPreview : Project -> Element Msg
+viewPreview project =
+    Element.column
+        []
+        [ Heading.section "Project preview"
+        , Element.el
+            [ Events.onClick <| Register project ]
+          <|
+            Button.primary "Register this project"
+        ]
+
+
 view : Model -> ( String, Element Msg )
 view (Model step project) =
     let
@@ -130,28 +156,19 @@ view (Model step project) =
                     viewInfo project
 
                 Contract ->
-                    Element.column
-                        []
-                        [ Element.el
-                            [ Events.onClick <| MoveStepPreview ]
-                          <|
-                            Button.primary "Next"
-                        ]
+                    viewContract project
 
                 Preview ->
-                    Element.column
-                        []
-                        [ Element.el
-                            [ Events.onClick <| Register project ]
-                          <|
-                            Button.accent "Register"
-                        ]
+                    viewPreview project
     in
     ( "register"
     , Element.column
         [ Element.width (Element.px 1074) ]
         [ Element.el
-            (Font.bigHeader Color.black)
+            ([ Element.centerX
+             ]
+                ++ Font.bigHeader Color.black
+            )
           <|
             Element.text "Register your project"
         , viewStep
