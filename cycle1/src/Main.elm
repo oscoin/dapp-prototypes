@@ -284,6 +284,8 @@ viewOverlay maybeOverlay url =
 
         Just overlay ->
             let
+                backUrl =
+                    Url.Builder.relative [ url.path ] []
                 ( title, content ) =
                     case overlay of
                         WaitForKeyPair ->
@@ -292,14 +294,12 @@ viewOverlay maybeOverlay url =
                         WalletSetup overlayModel ->
                             let
                                 ( overlayTitle, overlayView ) =
-                                    Overlay.WalletSetup.view overlayModel
+                                    Overlay.WalletSetup.view overlayModel backUrl
                             in
                             ( overlayTitle
                             , Element.map OverlayWalletSetup <| overlayView
                             )
 
-                backUrl =
-                    Url.Builder.relative [ url.path ] []
             in
             ( Just title, overlayAttrs content backUrl )
 

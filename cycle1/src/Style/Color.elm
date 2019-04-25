@@ -17,6 +17,7 @@ module Style.Color exposing
     , radicleGreen
     , red
     , teal
+    , toCssString
     , white
     , yellow
     )
@@ -31,6 +32,24 @@ alpha color transparency =
             toRgb color
     in
     rgba original.red original.green original.blue transparency
+
+
+toCssString : Color -> String
+toCssString color =
+    let
+        rgb =
+            toRgb color
+
+        redRgb =
+            rgb.red * 255
+
+        greenRgb =
+            rgb.green * 255
+
+        blueRgb =
+            rgb.blue * 255
+    in
+    "rgba(" ++ String.fromFloat redRgb ++ ", " ++ String.fromFloat greenRgb ++ ", " ++ String.fromFloat blueRgb ++ ", " ++ String.fromFloat rgb.alpha ++ ")"
 
 
 black : Color
