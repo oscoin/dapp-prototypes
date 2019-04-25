@@ -3,7 +3,9 @@ module Page.Register exposing (Model, Msg(..), init, update, view)
 import Atom.Button as Button
 import Atom.Heading as Heading
 import Element exposing (Element)
+import Element.Border as Border
 import Element.Events as Events
+import Element.Font as Font
 import Element.Input as Input
 import Project exposing (Project)
 import Style.Color as Color
@@ -20,13 +22,17 @@ type Step
     | Preview
 
 
+type FieldError
+    = FieldError Bool Bool
+
+
 type Model
-    = Model Step Project
+    = Model Step Project FieldError
 
 
 init : Model
 init =
-    Model Info Project.init
+    Model Info Project.init (FieldError False False)
 
 
 
@@ -34,7 +40,9 @@ init =
 
 
 type Msg
-    = MoveStepContract
+    = BlurCodeHost
+    | BlurName
+    | MoveStepContract
     | MoveStepPreview
     | Register Project
     | UpdateCodeHostUrl String
@@ -45,31 +53,59 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg (Model oldStep oldProject) =
-    case msg of
+update msg (Model oldStep oldProject fieldError) =
+    case Debug.log "Register.Msg" msg of
+        BlurCodeHost ->
+            let
+                (FieldError nameError _) =
+                    fieldError
+
+                errors =
+                    if Project.codeHostUrl oldProject == "" then
+                        FieldError nameError True
+
+                    else
+                        FieldError nameError False
+            in
+            ( Model oldStep oldProject errors, Cmd.none )
+
+        BlurName ->
+            let
+                (FieldError _ codeHostError) =
+                    fieldError
+
+                errors =
+                    if Project.name oldProject == "" then
+                        FieldError True codeHostError
+
+                    else
+                        FieldError False codeHostError
+            in
+            ( Model oldStep oldProject errors, Cmd.none )
+
         MoveStepContract ->
-            ( Model Contract oldProject, Cmd.none )
+            ( Model Contract oldProject fieldError, Cmd.none )
 
         MoveStepPreview ->
-            ( Model Preview oldProject, Cmd.none )
+            ( Model Preview oldProject fieldError, Cmd.none )
 
         Register project ->
-            ( Model oldStep project, Cmd.none )
+            ( Model oldStep project fieldError, Cmd.none )
 
         UpdateCodeHostUrl url ->
-            ( Model oldStep (Project.mapCodeHostUrl (\_ -> url) oldProject), Cmd.none )
+            ( Model oldStep (Project.mapCodeHostUrl (\_ -> url) oldProject) fieldError, Cmd.none )
 
         UpdateDescription description ->
-            ( Model oldStep (Project.mapDescription (\_ -> description) oldProject), Cmd.none )
+            ( Model oldStep (Project.mapDescription (\_ -> description) oldProject) fieldError, Cmd.none )
 
         UpdateImageUrl url ->
-            ( Model oldStep (Project.mapImageUrl (\_ -> url) oldProject), Cmd.none )
+            ( Model oldStep (Project.mapImageUrl (\_ -> url) oldProject) fieldError, Cmd.none )
 
         UpdateName name ->
-            ( Model oldStep (Project.mapName (\_ -> name) oldProject), Cmd.none )
+            ( Model oldStep (Project.mapName (\_ -> name) oldProject) fieldError, Cmd.none )
 
         UpdateWebsiteUrl url ->
-            ( Model oldStep (Project.mapWebsiteUrl (\_ -> url) oldProject), Cmd.none )
+            ( Model oldStep (Project.mapWebsiteUrl (\_ -> url) oldProject) fieldError, Cmd.none )
 
 
 
@@ -88,20 +124,65 @@ viewContract _ =
         ]
 
 
-viewInfo : Project -> Element Msg
-viewInfo project =
+viewInfoFormError : Bool -> Element Msg
+viewInfoFormError show =
+    if show then
+        Element.el
+            [ Font.color Color.red
+            ]
+        <|
+            Element.text "Not all mandatory fields have been filled in."
+
+    else
+        Element.none
+
+
+viewInfoNext : Bool -> Element Msg
+viewInfoNext blocked =
+    if blocked then
+        Element.el
+            []
+        <|
+            Button.secondary "Next"
+
+    else
+        Element.el
+            [ Events.onClick <| MoveStepContract
+            ]
+        <|
+            Button.primary "Next"
+
+
+viewInfo : Project -> FieldError -> Element Msg
+viewInfo project (FieldError nameError codeHostError) =
     Element.column
         []
         [ Heading.section "Project information"
         , Input.text
-            []
+            ([ Events.onLoseFocus BlurName
+             ]
+                ++ (if nameError then
+                        errorAttrs
+
+                    else
+                        []
+                   )
+            )
             { label = Input.labelLeft [] <| Element.text "name*"
             , onChange = UpdateName
             , placeholder = Nothing
             , text = Project.name project
             }
         , Input.text
-            []
+            ([ Events.onLoseFocus BlurCodeHost
+             ]
+                ++ (if codeHostError then
+                        errorAttrs
+
+                    else
+                        []
+                   )
+            )
             { label = Input.labelLeft [] <| Element.text "code hosting url*"
             , onChange = UpdateCodeHostUrl
             , placeholder = Nothing
@@ -128,10 +209,8 @@ viewInfo project =
             , placeholder = Just <| Input.placeholder [] <| Element.text "svg, png or jpg - max 400 x 400 px"
             , text = Project.imageUrl project
             }
-        , Element.el
-            [ Events.onClick <| MoveStepContract ]
-          <|
-            Button.primary "Next"
+        , viewInfoFormError (nameError || codeHostError)
+        , viewInfoNext (nameError || codeHostError)
         ]
 
 
@@ -148,12 +227,12 @@ viewPreview project =
 
 
 view : Model -> ( String, Element Msg )
-view (Model step project) =
+view (Model step project fieldError) =
     let
         viewStep =
             case step of
                 Info ->
-                    viewInfo project
+                    viewInfo project fieldError
 
                 Contract ->
                     viewContract project
@@ -174,3 +253,13 @@ view (Model step project) =
         , viewStep
         ]
     )
+
+
+
+-- HELPER
+
+
+errorAttrs =
+    [ Border.color Color.red
+    , Border.width 1
+    ]

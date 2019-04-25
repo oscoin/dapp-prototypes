@@ -9886,17 +9886,25 @@ var author$project$Main$Project = {$: 'Project'};
 var author$project$Main$Register = function (a) {
 	return {$: 'Register', a: a};
 };
-var author$project$Page$Register$Info = {$: 'Info'};
-var author$project$Page$Register$Model = F2(
+var author$project$Page$Register$FieldError = F2(
 	function (a, b) {
-		return {$: 'Model', a: a, b: b};
+		return {$: 'FieldError', a: a, b: b};
+	});
+var author$project$Page$Register$Info = {$: 'Info'};
+var author$project$Page$Register$Model = F3(
+	function (a, b, c) {
+		return {$: 'Model', a: a, b: b, c: c};
 	});
 var author$project$Project$Project = function (a) {
 	return {$: 'Project', a: a};
 };
 var author$project$Project$initModel = {codeHostUrl: '', description: '', imageUrl: '', name: '', websiteUrl: ''};
 var author$project$Project$init = author$project$Project$Project(author$project$Project$initModel);
-var author$project$Page$Register$init = A2(author$project$Page$Register$Model, author$project$Page$Register$Info, author$project$Project$init);
+var author$project$Page$Register$init = A3(
+	author$project$Page$Register$Model,
+	author$project$Page$Register$Info,
+	author$project$Project$init,
+	A2(author$project$Page$Register$FieldError, false, false));
 var author$project$Main$pageFromRoute = function (maybeRoute) {
 	_n0$3:
 	while (true) {
@@ -10323,6 +10331,10 @@ var author$project$Overlay$WalletSetup$update = F2(
 	});
 var author$project$Page$Register$Contract = {$: 'Contract'};
 var author$project$Page$Register$Preview = {$: 'Preview'};
+var author$project$Project$codeHostUrl = function (_n0) {
+	var model = _n0.a;
+	return model.codeHostUrl;
+};
 var author$project$Project$mapCodeHostUrl = F2(
 	function (change, _n0) {
 		var model = _n0.a;
@@ -10373,88 +10385,113 @@ var author$project$Project$mapWebsiteUrl = F2(
 					name: change(model.websiteUrl)
 				}));
 	});
+var author$project$Project$name = function (_n0) {
+	var model = _n0.a;
+	return model.name;
+};
 var author$project$Page$Register$update = F2(
 	function (msg, _n0) {
 		var oldStep = _n0.a;
 		var oldProject = _n0.b;
-		switch (msg.$) {
+		var fieldError = _n0.c;
+		var _n1 = A2(elm$core$Debug$log, 'Register.Msg', msg);
+		switch (_n1.$) {
+			case 'BlurCodeHost':
+				var _n2 = fieldError;
+				var nameError = _n2.a;
+				var errors = (author$project$Project$codeHostUrl(oldProject) === '') ? A2(author$project$Page$Register$FieldError, nameError, true) : A2(author$project$Page$Register$FieldError, nameError, false);
+				return _Utils_Tuple2(
+					A3(author$project$Page$Register$Model, oldStep, oldProject, errors),
+					elm$core$Platform$Cmd$none);
+			case 'BlurName':
+				var _n3 = fieldError;
+				var codeHostError = _n3.b;
+				var errors = (author$project$Project$name(oldProject) === '') ? A2(author$project$Page$Register$FieldError, true, codeHostError) : A2(author$project$Page$Register$FieldError, false, codeHostError);
+				return _Utils_Tuple2(
+					A3(author$project$Page$Register$Model, oldStep, oldProject, errors),
+					elm$core$Platform$Cmd$none);
 			case 'MoveStepContract':
 				return _Utils_Tuple2(
-					A2(author$project$Page$Register$Model, author$project$Page$Register$Contract, oldProject),
+					A3(author$project$Page$Register$Model, author$project$Page$Register$Contract, oldProject, fieldError),
 					elm$core$Platform$Cmd$none);
 			case 'MoveStepPreview':
 				return _Utils_Tuple2(
-					A2(author$project$Page$Register$Model, author$project$Page$Register$Preview, oldProject),
+					A3(author$project$Page$Register$Model, author$project$Page$Register$Preview, oldProject, fieldError),
 					elm$core$Platform$Cmd$none);
 			case 'Register':
-				var project = msg.a;
+				var project = _n1.a;
 				return _Utils_Tuple2(
-					A2(author$project$Page$Register$Model, oldStep, project),
+					A3(author$project$Page$Register$Model, oldStep, project, fieldError),
 					elm$core$Platform$Cmd$none);
 			case 'UpdateCodeHostUrl':
-				var url = msg.a;
+				var url = _n1.a;
 				return _Utils_Tuple2(
-					A2(
+					A3(
 						author$project$Page$Register$Model,
 						oldStep,
 						A2(
 							author$project$Project$mapCodeHostUrl,
-							function (_n2) {
+							function (_n4) {
 								return url;
 							},
-							oldProject)),
+							oldProject),
+						fieldError),
 					elm$core$Platform$Cmd$none);
 			case 'UpdateDescription':
-				var description = msg.a;
+				var description = _n1.a;
 				return _Utils_Tuple2(
-					A2(
+					A3(
 						author$project$Page$Register$Model,
 						oldStep,
 						A2(
 							author$project$Project$mapDescription,
-							function (_n3) {
+							function (_n5) {
 								return description;
 							},
-							oldProject)),
+							oldProject),
+						fieldError),
 					elm$core$Platform$Cmd$none);
 			case 'UpdateImageUrl':
-				var url = msg.a;
+				var url = _n1.a;
 				return _Utils_Tuple2(
-					A2(
+					A3(
 						author$project$Page$Register$Model,
 						oldStep,
 						A2(
 							author$project$Project$mapImageUrl,
-							function (_n4) {
+							function (_n6) {
 								return url;
 							},
-							oldProject)),
+							oldProject),
+						fieldError),
 					elm$core$Platform$Cmd$none);
 			case 'UpdateName':
-				var name = msg.a;
+				var name = _n1.a;
 				return _Utils_Tuple2(
-					A2(
+					A3(
 						author$project$Page$Register$Model,
 						oldStep,
 						A2(
 							author$project$Project$mapName,
-							function (_n5) {
+							function (_n7) {
 								return name;
 							},
-							oldProject)),
+							oldProject),
+						fieldError),
 					elm$core$Platform$Cmd$none);
 			default:
-				var url = msg.a;
+				var url = _n1.a;
 				return _Utils_Tuple2(
-					A2(
+					A3(
 						author$project$Page$Register$Model,
 						oldStep,
 						A2(
 							author$project$Project$mapWebsiteUrl,
-							function (_n6) {
+							function (_n8) {
 								return url;
 							},
-							oldProject)),
+							oldProject),
+						fieldError),
 					elm$core$Platform$Cmd$none);
 		}
 	});
@@ -17369,7 +17406,8 @@ var author$project$Page$Register$viewContract = function (_n0) {
 				author$project$Atom$Button$primary('Next'))
 			]));
 };
-var author$project$Page$Register$MoveStepContract = {$: 'MoveStepContract'};
+var author$project$Page$Register$BlurCodeHost = {$: 'BlurCodeHost'};
+var author$project$Page$Register$BlurName = {$: 'BlurName'};
 var author$project$Page$Register$UpdateCodeHostUrl = function (a) {
 	return {$: 'UpdateCodeHostUrl', a: a};
 };
@@ -17385,9 +17423,33 @@ var author$project$Page$Register$UpdateName = function (a) {
 var author$project$Page$Register$UpdateWebsiteUrl = function (a) {
 	return {$: 'UpdateWebsiteUrl', a: a};
 };
-var author$project$Project$codeHostUrl = function (_n0) {
-	var model = _n0.a;
-	return model.codeHostUrl;
+var author$project$Style$Color$red = A3(mdgriffith$elm_ui$Element$rgb255, 250, 64, 72);
+var author$project$Page$Register$errorAttrs = _List_fromArray(
+	[
+		mdgriffith$elm_ui$Element$Border$color(author$project$Style$Color$red),
+		mdgriffith$elm_ui$Element$Border$width(1)
+	]);
+var author$project$Page$Register$viewInfoFormError = function (show) {
+	return show ? A2(
+		mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$Font$color(author$project$Style$Color$red)
+			]),
+		mdgriffith$elm_ui$Element$text('Not all mandatory fields have been filled in.')) : mdgriffith$elm_ui$Element$none;
+};
+var author$project$Page$Register$MoveStepContract = {$: 'MoveStepContract'};
+var author$project$Page$Register$viewInfoNext = function (blocked) {
+	return blocked ? A2(
+		mdgriffith$elm_ui$Element$el,
+		_List_Nil,
+		author$project$Atom$Button$secondary('Next')) : A2(
+		mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$Events$onClick(author$project$Page$Register$MoveStepContract)
+			]),
+		author$project$Atom$Button$primary('Next'));
 };
 var author$project$Project$description = function (_n0) {
 	var model = _n0.a;
@@ -17397,14 +17459,17 @@ var author$project$Project$imageUrl = function (_n0) {
 	var model = _n0.a;
 	return model.imageUrl;
 };
-var author$project$Project$name = function (_n0) {
-	var model = _n0.a;
-	return model.name;
-};
 var author$project$Project$websiteUrl = function (_n0) {
 	var model = _n0.a;
 	return model.websiteUrl;
 };
+var elm$html$Html$Events$onBlur = function (msg) {
+	return A2(
+		elm$html$Html$Events$on,
+		'blur',
+		elm$json$Json$Decode$succeed(msg));
+};
+var mdgriffith$elm_ui$Element$Events$onLoseFocus = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Attr, elm$html$Html$Events$onBlur);
 var mdgriffith$elm_ui$Element$Input$Label = F3(
 	function (a, b, c) {
 		return {$: 'Label', a: a, b: b, c: c};
@@ -18095,90 +18160,98 @@ var mdgriffith$elm_ui$Element$Input$text = mdgriffith$elm_ui$Element$Input$textH
 		spellchecked: false,
 		type_: mdgriffith$elm_ui$Element$Input$TextInputNode('text')
 	});
-var author$project$Page$Register$viewInfo = function (project) {
-	return A2(
-		mdgriffith$elm_ui$Element$column,
-		_List_Nil,
-		_List_fromArray(
-			[
-				author$project$Atom$Heading$section('Project information'),
-				A2(
-				mdgriffith$elm_ui$Element$Input$text,
-				_List_Nil,
-				{
-					label: A2(
-						mdgriffith$elm_ui$Element$Input$labelLeft,
-						_List_Nil,
-						mdgriffith$elm_ui$Element$text('name*')),
-					onChange: author$project$Page$Register$UpdateName,
-					placeholder: elm$core$Maybe$Nothing,
-					text: author$project$Project$name(project)
-				}),
-				A2(
-				mdgriffith$elm_ui$Element$Input$text,
-				_List_Nil,
-				{
-					label: A2(
-						mdgriffith$elm_ui$Element$Input$labelLeft,
-						_List_Nil,
-						mdgriffith$elm_ui$Element$text('code hosting url*')),
-					onChange: author$project$Page$Register$UpdateCodeHostUrl,
-					placeholder: elm$core$Maybe$Nothing,
-					text: author$project$Project$codeHostUrl(project)
-				}),
-				A2(
-				mdgriffith$elm_ui$Element$Input$text,
-				_List_Nil,
-				{
-					label: A2(
-						mdgriffith$elm_ui$Element$Input$labelLeft,
-						_List_Nil,
-						mdgriffith$elm_ui$Element$text('description')),
-					onChange: author$project$Page$Register$UpdateDescription,
-					placeholder: elm$core$Maybe$Just(
-						A2(
-							mdgriffith$elm_ui$Element$Input$placeholder,
+var author$project$Page$Register$viewInfo = F2(
+	function (project, _n0) {
+		var nameError = _n0.a;
+		var codeHostError = _n0.b;
+		return A2(
+			mdgriffith$elm_ui$Element$column,
+			_List_Nil,
+			_List_fromArray(
+				[
+					author$project$Atom$Heading$section('Project information'),
+					A2(
+					mdgriffith$elm_ui$Element$Input$text,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$Events$onLoseFocus(author$project$Page$Register$BlurName)
+							]),
+						nameError ? author$project$Page$Register$errorAttrs : _List_Nil),
+					{
+						label: A2(
+							mdgriffith$elm_ui$Element$Input$labelLeft,
 							_List_Nil,
-							mdgriffith$elm_ui$Element$text('max 200 characters'))),
-					text: author$project$Project$description(project)
-				}),
-				A2(
-				mdgriffith$elm_ui$Element$Input$text,
-				_List_Nil,
-				{
-					label: A2(
-						mdgriffith$elm_ui$Element$Input$labelLeft,
-						_List_Nil,
-						mdgriffith$elm_ui$Element$text('website url')),
-					onChange: author$project$Page$Register$UpdateWebsiteUrl,
-					placeholder: elm$core$Maybe$Nothing,
-					text: author$project$Project$websiteUrl(project)
-				}),
-				A2(
-				mdgriffith$elm_ui$Element$Input$text,
-				_List_Nil,
-				{
-					label: A2(
-						mdgriffith$elm_ui$Element$Input$labelLeft,
-						_List_Nil,
-						mdgriffith$elm_ui$Element$text('image url')),
-					onChange: author$project$Page$Register$UpdateImageUrl,
-					placeholder: elm$core$Maybe$Just(
-						A2(
-							mdgriffith$elm_ui$Element$Input$placeholder,
+							mdgriffith$elm_ui$Element$text('name*')),
+						onChange: author$project$Page$Register$UpdateName,
+						placeholder: elm$core$Maybe$Nothing,
+						text: author$project$Project$name(project)
+					}),
+					A2(
+					mdgriffith$elm_ui$Element$Input$text,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$Events$onLoseFocus(author$project$Page$Register$BlurCodeHost)
+							]),
+						codeHostError ? author$project$Page$Register$errorAttrs : _List_Nil),
+					{
+						label: A2(
+							mdgriffith$elm_ui$Element$Input$labelLeft,
 							_List_Nil,
-							mdgriffith$elm_ui$Element$text('svg, png or jpg - max 400 x 400 px'))),
-					text: author$project$Project$imageUrl(project)
-				}),
-				A2(
-				mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						mdgriffith$elm_ui$Element$Events$onClick(author$project$Page$Register$MoveStepContract)
-					]),
-				author$project$Atom$Button$primary('Next'))
-			]));
-};
+							mdgriffith$elm_ui$Element$text('code hosting url*')),
+						onChange: author$project$Page$Register$UpdateCodeHostUrl,
+						placeholder: elm$core$Maybe$Nothing,
+						text: author$project$Project$codeHostUrl(project)
+					}),
+					A2(
+					mdgriffith$elm_ui$Element$Input$text,
+					_List_Nil,
+					{
+						label: A2(
+							mdgriffith$elm_ui$Element$Input$labelLeft,
+							_List_Nil,
+							mdgriffith$elm_ui$Element$text('description')),
+						onChange: author$project$Page$Register$UpdateDescription,
+						placeholder: elm$core$Maybe$Just(
+							A2(
+								mdgriffith$elm_ui$Element$Input$placeholder,
+								_List_Nil,
+								mdgriffith$elm_ui$Element$text('max 200 characters'))),
+						text: author$project$Project$description(project)
+					}),
+					A2(
+					mdgriffith$elm_ui$Element$Input$text,
+					_List_Nil,
+					{
+						label: A2(
+							mdgriffith$elm_ui$Element$Input$labelLeft,
+							_List_Nil,
+							mdgriffith$elm_ui$Element$text('website url')),
+						onChange: author$project$Page$Register$UpdateWebsiteUrl,
+						placeholder: elm$core$Maybe$Nothing,
+						text: author$project$Project$websiteUrl(project)
+					}),
+					A2(
+					mdgriffith$elm_ui$Element$Input$text,
+					_List_Nil,
+					{
+						label: A2(
+							mdgriffith$elm_ui$Element$Input$labelLeft,
+							_List_Nil,
+							mdgriffith$elm_ui$Element$text('image url')),
+						onChange: author$project$Page$Register$UpdateImageUrl,
+						placeholder: elm$core$Maybe$Just(
+							A2(
+								mdgriffith$elm_ui$Element$Input$placeholder,
+								_List_Nil,
+								mdgriffith$elm_ui$Element$text('svg, png or jpg - max 400 x 400 px'))),
+						text: author$project$Project$imageUrl(project)
+					}),
+					author$project$Page$Register$viewInfoFormError(nameError || codeHostError),
+					author$project$Page$Register$viewInfoNext(nameError || codeHostError)
+				]));
+	});
 var author$project$Page$Register$Register = function (a) {
 	return {$: 'Register', a: a};
 };
@@ -18202,10 +18275,11 @@ var author$project$Page$Register$viewPreview = function (project) {
 var author$project$Page$Register$view = function (_n0) {
 	var step = _n0.a;
 	var project = _n0.b;
+	var fieldError = _n0.c;
 	var viewStep = function () {
 		switch (step.$) {
 			case 'Info':
-				return author$project$Page$Register$viewInfo(project);
+				return A2(author$project$Page$Register$viewInfo, project, fieldError);
 			case 'Contract':
 				return author$project$Page$Register$viewContract(project);
 			default:
@@ -18607,4 +18681,4 @@ var author$project$Main$view = function (model) {
 var elm$browser$Browser$application = _Browser_application;
 var author$project$Main$main = elm$browser$Browser$application(
 	{init: author$project$Main$init, onUrlChange: author$project$Main$UrlChanged, onUrlRequest: author$project$Main$LinkClicked, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
-_Platform_export({'Main':{'init':author$project$Main$main(elm$json$Json$Decode$value)({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Project.Model":{"args":[],"type":"{ codeHostUrl : String.String, description : String.String, imageUrl : String.String, name : String.String, websiteUrl : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["Maybe.Maybe KeyPair.KeyPair"],"KeyPairFetched":["Maybe.Maybe KeyPair.KeyPair"],"WalletWebExtPresent":["()"]}},"KeyPair.KeyPair":{"args":[],"tags":{"KeyPair":["String.String"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.Register.Msg":{"args":[],"tags":{"MoveStepContract":[],"MoveStepPreview":[],"Register":["Project.Project"],"UpdateCodeHostUrl":["String.String"],"UpdateDescription":["String.String"],"UpdateImageUrl":["String.String"],"UpdateName":["String.String"],"UpdateWebsiteUrl":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"Project.Project":{"args":[],"tags":{"Project":["Project.Model"]}}}}})}});}(this));
+_Platform_export({'Main':{'init':author$project$Main$main(elm$json$Json$Decode$value)({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Project.Model":{"args":[],"type":"{ codeHostUrl : String.String, description : String.String, imageUrl : String.String, name : String.String, websiteUrl : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["Maybe.Maybe KeyPair.KeyPair"],"KeyPairFetched":["Maybe.Maybe KeyPair.KeyPair"],"WalletWebExtPresent":["()"]}},"KeyPair.KeyPair":{"args":[],"tags":{"KeyPair":["String.String"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.Register.Msg":{"args":[],"tags":{"BlurCodeHost":[],"BlurName":[],"MoveStepContract":[],"MoveStepPreview":[],"Register":["Project.Project"],"UpdateCodeHostUrl":["String.String"],"UpdateDescription":["String.String"],"UpdateImageUrl":["String.String"],"UpdateName":["String.String"],"UpdateWebsiteUrl":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"Project.Project":{"args":[],"tags":{"Project":["Project.Model"]}}}}})}});}(this));
