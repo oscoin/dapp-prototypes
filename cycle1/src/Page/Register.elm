@@ -210,7 +210,7 @@ viewInfo project (FieldError nameError codeHostError) =
             , text = Project.imageUrl project
             }
         , viewInfoFormError (nameError || codeHostError)
-        , viewInfoNext (nameError || codeHostError)
+        , viewInfoNext (nameError || codeHostError || Project.name project == "" || Project.codeHostUrl project == "")
         ]
 
 

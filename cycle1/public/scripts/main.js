@@ -18249,7 +18249,8 @@ var author$project$Page$Register$viewInfo = F2(
 						text: author$project$Project$imageUrl(project)
 					}),
 					author$project$Page$Register$viewInfoFormError(nameError || codeHostError),
-					author$project$Page$Register$viewInfoNext(nameError || codeHostError)
+					author$project$Page$Register$viewInfoNext(
+					nameError || (codeHostError || ((author$project$Project$name(project) === '') || (author$project$Project$codeHostUrl(project) === ''))))
 				]));
 	});
 var author$project$Page$Register$Register = function (a) {
