@@ -16369,8 +16369,10 @@ var mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
 			'border-radius',
 			elm$core$String$fromInt(radius) + 'px'));
 };
-var author$project$Atom$Button$style = F4(
-	function (bgColor, textColor, hoverColor, btnText) {
+var mdgriffith$elm_ui$Internal$Flag$fontAlignment = mdgriffith$elm_ui$Internal$Flag$flag(12);
+var mdgriffith$elm_ui$Element$Font$center = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$fontAlignment, mdgriffith$elm_ui$Internal$Style$classes.textCenter);
+var author$project$Atom$Button$style = F5(
+	function (customAttr, bgColor, textColor, hoverColor, btnText) {
 		return A2(
 			mdgriffith$elm_ui$Element$el,
 			_Utils_ap(
@@ -16385,16 +16387,148 @@ var author$project$Atom$Button$style = F4(
 							[
 								mdgriffith$elm_ui$Element$Background$color(hoverColor)
 							])),
-						mdgriffith$elm_ui$Element$pointer
+						mdgriffith$elm_ui$Element$pointer,
+						mdgriffith$elm_ui$Element$Font$center
 					]),
-				author$project$Style$Font$mediumBodyText(textColor)),
+				_Utils_ap(
+					author$project$Style$Font$mediumBodyText(textColor),
+					customAttr)),
 			mdgriffith$elm_ui$Element$text(btnText));
 	});
 var author$project$Style$Color$pink = A3(mdgriffith$elm_ui$Element$rgb255, 224, 116, 203);
-var author$project$Atom$Button$accent = function (btnText) {
-	return A4(author$project$Atom$Button$style, author$project$Style$Color$pink, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
+var author$project$Atom$Button$accent = F2(
+	function (attrs, btnText) {
+		return A5(author$project$Atom$Button$style, attrs, author$project$Style$Color$pink, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
+	});
+var mdgriffith$elm_ui$Element$rgba = mdgriffith$elm_ui$Internal$Model$Rgba;
+var mdgriffith$elm_ui$Element$toRgb = function (_n0) {
+	var r = _n0.a;
+	var g = _n0.b;
+	var b = _n0.c;
+	var a = _n0.d;
+	return {alpha: a, blue: b, green: g, red: r};
+};
+var author$project$Style$Color$alpha = F2(
+	function (color, transparency) {
+		var original = mdgriffith$elm_ui$Element$toRgb(color);
+		return A4(mdgriffith$elm_ui$Element$rgba, original.red, original.green, original.blue, transparency);
+	});
+var author$project$Atom$Button$transparent = F2(
+	function (attrs, btnText) {
+		return A5(
+			author$project$Atom$Button$style,
+			attrs,
+			A2(author$project$Style$Color$alpha, author$project$Style$Color$white, 0),
+			author$project$Style$Color$darkGrey,
+			A2(author$project$Style$Color$alpha, author$project$Style$Color$white, 0),
+			btnText);
+	});
+var author$project$Style$Color$toCssString = function (color) {
+	var rgb = mdgriffith$elm_ui$Element$toRgb(color);
+	var redRgb = rgb.red * 255;
+	var greenRgb = rgb.green * 255;
+	var blueRgb = rgb.blue * 255;
+	return 'rgba(' + (elm$core$String$fromFloat(redRgb) + (', ' + (elm$core$String$fromFloat(greenRgb) + (', ' + (elm$core$String$fromFloat(blueRgb) + (', ' + (elm$core$String$fromFloat(rgb.alpha) + ')')))))));
+};
+var elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var elm$svg$Svg$circle = elm$svg$Svg$trustedNode('circle');
+var elm$svg$Svg$svg = elm$svg$Svg$trustedNode('svg');
+var elm$svg$Svg$Attributes$cx = _VirtualDom_attribute('cx');
+var elm$svg$Svg$Attributes$cy = _VirtualDom_attribute('cy');
+var elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
+var elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
+var elm$svg$Svg$Attributes$r = _VirtualDom_attribute('r');
+var elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
+var elm$svg$Svg$Attributes$strokeWidth = _VirtualDom_attribute('stroke-width');
+var elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
+var elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
+var mdgriffith$elm_ui$Internal$Model$unstyled = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Unstyled, elm$core$Basics$always);
+var mdgriffith$elm_ui$Element$html = mdgriffith$elm_ui$Internal$Model$unstyled;
+var author$project$Atom$Icon$logoCircle = function (bgColor) {
+	return mdgriffith$elm_ui$Element$html(
+		A2(
+			elm$svg$Svg$svg,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$width('48'),
+					elm$svg$Svg$Attributes$height('48'),
+					elm$svg$Svg$Attributes$viewBox('0 0 48 48'),
+					elm$svg$Svg$Attributes$fill('none')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					elm$svg$Svg$circle,
+					_List_fromArray(
+						[
+							elm$svg$Svg$Attributes$cx('24'),
+							elm$svg$Svg$Attributes$cy('24'),
+							elm$svg$Svg$Attributes$r('23'),
+							elm$svg$Svg$Attributes$stroke(
+							author$project$Style$Color$toCssString(bgColor)),
+							elm$svg$Svg$Attributes$strokeWidth('2')
+						]),
+					_List_Nil)
+				])));
 };
 var author$project$Overlay$WalletSetup$MoveToPick = {$: 'MoveToPick'};
+var author$project$Overlay$WalletSetup$viewListItem = F2(
+	function (stepText, helperText) {
+		return A2(
+			mdgriffith$elm_ui$Element$column,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$paddingEach(
+								{bottom: 0, left: 10, right: 0, top: 10})
+							]),
+						author$project$Style$Font$mediumBodyText(author$project$Style$Color$black)),
+					mdgriffith$elm_ui$Element$text(stepText)),
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$paddingEach(
+								{bottom: 0, left: 20, right: 0, top: 10})
+							]),
+						author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey)),
+					mdgriffith$elm_ui$Element$text(helperText))
+				]));
+	});
+var author$project$Style$Color$almostWhite = A3(mdgriffith$elm_ui$Element$rgb255, 248, 248, 248);
+var author$project$Style$Color$purple = A3(mdgriffith$elm_ui$Element$rgb255, 120, 52, 232);
+var author$project$Style$Font$fontGTAmericaBold = mdgriffith$elm_ui$Element$Font$typeface('GT America Bold');
+var author$project$Style$Font$mediumHeader = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaBold, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(24)
+		]);
+};
+var mdgriffith$elm_ui$Internal$Flag$fontWeight = mdgriffith$elm_ui$Internal$Flag$flag(13);
+var mdgriffith$elm_ui$Element$Font$medium = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$fontWeight, mdgriffith$elm_ui$Internal$Style$classes.textMedium);
+var mdgriffith$elm_ui$Element$Font$underline = mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.underline);
+var author$project$Style$Font$smallLinkText = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaMedium, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(14),
+			mdgriffith$elm_ui$Element$Font$medium,
+			mdgriffith$elm_ui$Element$Font$underline
+		]);
+};
 var mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
 var mdgriffith$elm_ui$Element$alignRight = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$Right);
 var mdgriffith$elm_ui$Element$padding = function (x) {
@@ -16408,39 +16542,6 @@ var mdgriffith$elm_ui$Element$padding = function (x) {
 			x,
 			x,
 			x));
-};
-var mdgriffith$elm_ui$Element$Events$onClick = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Attr, elm$html$Html$Events$onClick);
-var author$project$Overlay$WalletSetup$viewInfo = A2(
-	mdgriffith$elm_ui$Element$column,
-	_List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$padding(20),
-			mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
-			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-		]),
-	_List_fromArray(
-		[
-			A2(
-			mdgriffith$elm_ui$Element$el,
-			_List_fromArray(
-				[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
-			mdgriffith$elm_ui$Element$text('Setup your oscoin wallet.')),
-			A2(
-			mdgriffith$elm_ui$Element$el,
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$alignRight,
-					mdgriffith$elm_ui$Element$Events$onClick(author$project$Overlay$WalletSetup$MoveToPick)
-				]),
-			author$project$Atom$Button$accent('Get Started'))
-		]));
-var author$project$Style$Color$lightGrey = A3(mdgriffith$elm_ui$Element$rgb255, 206, 216, 225);
-var author$project$Atom$Button$secondary = function (btnText) {
-	return A4(author$project$Atom$Button$style, author$project$Style$Color$lightGrey, author$project$Style$Color$darkGrey, author$project$Style$Color$black, btnText);
-};
-var author$project$Style$Color$green = A3(mdgriffith$elm_ui$Element$rgb255, 0, 217, 110);
-var author$project$Atom$Button$secondaryAccent = function (btnText) {
-	return A4(author$project$Atom$Button$style, author$project$Style$Color$green, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
 };
 var mdgriffith$elm_ui$Internal$Flag$spacing = mdgriffith$elm_ui$Internal$Flag$flag(3);
 var mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
@@ -16461,11 +16562,167 @@ var mdgriffith$elm_ui$Element$spacing = function (x) {
 			x,
 			x));
 };
+var mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
+var mdgriffith$elm_ui$Element$paragraph = F2(
+	function (attrs, children) {
+		return A4(
+			mdgriffith$elm_ui$Internal$Model$element,
+			mdgriffith$elm_ui$Internal$Model$asParagraph,
+			mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				elm$core$List$cons,
+				mdgriffith$elm_ui$Internal$Model$Describe(mdgriffith$elm_ui$Internal$Model$Paragraph),
+				A2(
+					elm$core$List$cons,
+					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
+					A2(
+						elm$core$List$cons,
+						mdgriffith$elm_ui$Element$spacing(5),
+						attrs))),
+			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
+var mdgriffith$elm_ui$Element$Border$roundEach = function (_n0) {
+	var topLeft = _n0.topLeft;
+	var topRight = _n0.topRight;
+	var bottomLeft = _n0.bottomLeft;
+	var bottomRight = _n0.bottomRight;
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$borderRound,
+		A3(
+			mdgriffith$elm_ui$Internal$Model$Single,
+			'br-' + (elm$core$String$fromInt(topLeft) + ('-' + (elm$core$String$fromInt(topRight) + (elm$core$String$fromInt(bottomLeft) + ('-' + elm$core$String$fromInt(bottomRight)))))),
+			'border-radius',
+			elm$core$String$fromInt(topLeft) + ('px ' + (elm$core$String$fromInt(topRight) + ('px ' + (elm$core$String$fromInt(bottomRight) + ('px ' + (elm$core$String$fromInt(bottomLeft) + 'px'))))))));
+};
+var mdgriffith$elm_ui$Element$Events$onClick = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Attr, elm$html$Html$Events$onClick);
+var author$project$Overlay$WalletSetup$viewInfo = function (backUrl) {
+	return A2(
+		mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+			]),
+		_List_fromArray(
+			[
+				A2(
+				mdgriffith$elm_ui$Element$column,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
+						mdgriffith$elm_ui$Element$paddingEach(
+						{bottom: 44, left: 64, right: 64, top: 64})
+					]),
+				_List_fromArray(
+					[
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[mdgriffith$elm_ui$Element$centerX]),
+						author$project$Atom$Icon$logoCircle(author$project$Style$Color$black)),
+						A2(
+						mdgriffith$elm_ui$Element$paragraph,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$centerX,
+									mdgriffith$elm_ui$Element$width(
+									mdgriffith$elm_ui$Element$px(195)),
+									mdgriffith$elm_ui$Element$Font$center,
+									mdgriffith$elm_ui$Element$paddingEach(
+									{bottom: 44, left: 0, right: 0, top: 24})
+								]),
+							author$project$Style$Font$mediumHeader(author$project$Style$Color$black)),
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$text('Welcome to open source coin')
+							])),
+						A2(
+						mdgriffith$elm_ui$Element$paragraph,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$width(
+									mdgriffith$elm_ui$Element$px(300))
+								]),
+							author$project$Style$Font$bodyText(author$project$Style$Color$black)),
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$text('For you to be able to register your project you\'ll need a few things:')
+							])),
+						A2(
+						mdgriffith$elm_ui$Element$paragraph,
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$paddingEach(
+								{bottom: 0, left: 0, right: 0, top: 24})
+							]),
+						_List_fromArray(
+							[
+								A2(author$project$Overlay$WalletSetup$viewListItem, '1. Install the oscoin wallet.', 'The oscoin wallet keeps trakc of your account.'),
+								A2(author$project$Overlay$WalletSetup$viewListItem, '2. Set up your oscoin wallet key pair.', 'The key pair let\'s you securely access your account.'),
+								A2(
+								mdgriffith$elm_ui$Element$el,
+								_Utils_ap(
+									_List_fromArray(
+										[
+											mdgriffith$elm_ui$Element$paddingEach(
+											{bottom: 0, left: 20, right: 0, top: 0})
+										]),
+									author$project$Style$Font$smallLinkText(author$project$Style$Color$purple)),
+								mdgriffith$elm_ui$Element$text('Already have keys'))
+							]))
+					])),
+				A2(
+				mdgriffith$elm_ui$Element$row,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$almostWhite),
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
+						mdgriffith$elm_ui$Element$Border$roundEach(
+						{bottomLeft: 4, bottomRight: 4, topLeft: 0, topRight: 0}),
+						mdgriffith$elm_ui$Element$padding(24),
+						mdgriffith$elm_ui$Element$spacing(12)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						mdgriffith$elm_ui$Element$link,
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$alignRight,
+									mdgriffith$elm_ui$Element$Events$onClick(author$project$Overlay$WalletSetup$MoveToPick)
+								]),
+							author$project$Style$Font$mediumBodyText(author$project$Style$Color$darkGrey)),
+						{
+							label: A2(author$project$Atom$Button$transparent, _List_Nil, 'Cancel'),
+							url: backUrl
+						}),
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$alignRight,
+								mdgriffith$elm_ui$Element$Events$onClick(author$project$Overlay$WalletSetup$MoveToPick)
+							]),
+						A2(author$project$Atom$Button$accent, _List_Nil, 'Get Started'))
+					]))
+			]));
+};
+var author$project$Atom$Button$custom = F3(
+	function (attrs, color, btnText) {
+		return A5(author$project$Atom$Button$style, attrs, color, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
+	});
+var author$project$Style$Color$blue = A3(mdgriffith$elm_ui$Element$rgb255, 0, 146, 210);
+var author$project$Style$Color$bordeaux = A3(mdgriffith$elm_ui$Element$rgb255, 207, 56, 107);
+var author$project$Style$Color$green = A3(mdgriffith$elm_ui$Element$rgb255, 0, 217, 110);
 var author$project$Overlay$WalletSetup$viewPick = A2(
 	mdgriffith$elm_ui$Element$column,
 	_List_fromArray(
 		[
-			mdgriffith$elm_ui$Element$padding(20),
 			mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
 			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
 		]),
@@ -16473,46 +16730,119 @@ var author$project$Overlay$WalletSetup$viewPick = A2(
 		[
 			A2(
 			mdgriffith$elm_ui$Element$el,
-			_List_fromArray(
-				[mdgriffith$elm_ui$Element$centerX]),
-			mdgriffith$elm_ui$Element$text('Choose wallet')),
+			_Utils_ap(
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$padding(32)
+					]),
+				author$project$Style$Font$mediumHeader(author$project$Style$Color$black)),
+			mdgriffith$elm_ui$Element$text('Choose your wallet')),
 			A2(
 			mdgriffith$elm_ui$Element$column,
 			_List_fromArray(
 				[
 					mdgriffith$elm_ui$Element$centerX,
-					mdgriffith$elm_ui$Element$spacing(24)
+					mdgriffith$elm_ui$Element$spacing(28),
+					mdgriffith$elm_ui$Element$width(
+					mdgriffith$elm_ui$Element$px(240)),
+					mdgriffith$elm_ui$Element$paddingEach(
+					{bottom: 32, left: 0, right: 0, top: 0})
 				]),
 			_List_fromArray(
 				[
-					author$project$Atom$Button$accent('Firefox add-on'),
-					author$project$Atom$Button$secondary('Mobile app'),
-					author$project$Atom$Button$secondaryAccent('Ledger Nano S')
+					A3(
+					author$project$Atom$Button$custom,
+					_List_fromArray(
+						[
+							mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+						]),
+					author$project$Style$Color$pink,
+					'Firefox add-on'),
+					A3(
+					author$project$Atom$Button$custom,
+					_List_fromArray(
+						[
+							mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+						]),
+					author$project$Style$Color$blue,
+					'Mobile app'),
+					A3(
+					author$project$Atom$Button$custom,
+					_List_fromArray(
+						[
+							mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+						]),
+					author$project$Style$Color$green,
+					'Ledger Nano S'),
+					A3(
+					author$project$Atom$Button$custom,
+					_List_fromArray(
+						[
+							mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+						]),
+					author$project$Style$Color$bordeaux,
+					'macOS app')
+				])),
+			A2(
+			mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$almostWhite),
+					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
+					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+					mdgriffith$elm_ui$Element$padding(32),
+					mdgriffith$elm_ui$Element$Border$roundEach(
+					{bottomLeft: 4, bottomRight: 4, topLeft: 0, topRight: 0})
+				]),
+			_List_fromArray(
+				[
+					A2(
+					mdgriffith$elm_ui$Element$paragraph,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$paddingEach(
+								{bottom: 16, left: 0, right: 0, top: 0})
+							]),
+						author$project$Style$Font$mediumBodyText(author$project$Style$Color$darkGrey)),
+					_List_fromArray(
+						[
+							mdgriffith$elm_ui$Element$text('What\'s the difference between the wallets')
+						])),
+					A2(
+					mdgriffith$elm_ui$Element$paragraph,
+					author$project$Style$Font$bodyText(author$project$Style$Color$darkGrey),
+					_List_fromArray(
+						[
+							mdgriffith$elm_ui$Element$text('The different wallets have different levels of security. If you\'re not sure which one is best for you, we recommend you start with the browser-extension. It\'s a good start and already very secure.')
+						]))
 				]))
 		]));
-var author$project$Overlay$WalletSetup$view = function (model) {
-	var viewStep = function () {
-		var _n0 = model.step;
-		if (_n0.$ === 'Info') {
-			return author$project$Overlay$WalletSetup$viewInfo;
-		} else {
-			return author$project$Overlay$WalletSetup$viewPick;
-		}
-	}();
-	return _Utils_Tuple2(
-		'wallet setup',
-		A2(
-			mdgriffith$elm_ui$Element$el,
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
-					mdgriffith$elm_ui$Element$height(
-					mdgriffith$elm_ui$Element$px(500)),
-					mdgriffith$elm_ui$Element$width(
-					mdgriffith$elm_ui$Element$px(540))
-				]),
-			viewStep));
-};
+var author$project$Overlay$WalletSetup$view = F2(
+	function (model, backUrl) {
+		var viewStep = function () {
+			var _n0 = model.step;
+			if (_n0.$ === 'Info') {
+				return author$project$Overlay$WalletSetup$viewInfo(backUrl);
+			} else {
+				return author$project$Overlay$WalletSetup$viewPick;
+			}
+		}();
+		return _Utils_Tuple2(
+			'wallet setup',
+			A2(
+				mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$Background$color(author$project$Style$Color$white),
+						mdgriffith$elm_ui$Element$Border$rounded(4),
+						mdgriffith$elm_ui$Element$height(
+						mdgriffith$elm_ui$Element$px(520)),
+						mdgriffith$elm_ui$Element$width(
+						mdgriffith$elm_ui$Element$px(540))
+					]),
+				viewStep));
+	});
 var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
 var author$project$Main$viewOverlay = F2(
 	function (maybeOverlay, url) {
@@ -16530,7 +16860,7 @@ var author$project$Main$viewOverlay = F2(
 					return author$project$Overlay$WaitForKeyPair$view;
 				} else {
 					var overlayModel = overlay.a;
-					var _n3 = author$project$Overlay$WalletSetup$view(overlayModel);
+					var _n3 = A2(author$project$Overlay$WalletSetup$view, overlayModel, backUrl);
 					var overlayTitle = _n3.a;
 					var overlayView = _n3.b;
 					return _Utils_Tuple2(
@@ -16563,10 +16893,19 @@ var author$project$Page$NotFound$view = _Utils_Tuple2(
 			[
 				mdgriffith$elm_ui$Element$text('Page Not Found')
 			])));
-var author$project$Style$Color$purple = A3(mdgriffith$elm_ui$Element$rgb255, 120, 52, 232);
-var author$project$Atom$Button$primary = function (btnText) {
-	return A4(author$project$Atom$Button$style, author$project$Style$Color$purple, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
-};
+var author$project$Atom$Button$primary = F2(
+	function (attrs, btnText) {
+		return A5(author$project$Atom$Button$style, attrs, author$project$Style$Color$purple, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
+	});
+var author$project$Style$Color$lightGrey = A3(mdgriffith$elm_ui$Element$rgb255, 206, 216, 225);
+var author$project$Atom$Button$secondary = F2(
+	function (attrs, btnText) {
+		return A5(author$project$Atom$Button$style, attrs, author$project$Style$Color$lightGrey, author$project$Style$Color$darkGrey, author$project$Style$Color$black, btnText);
+	});
+var author$project$Atom$Button$secondaryAccent = F2(
+	function (attrs, btnText) {
+		return A5(author$project$Atom$Button$style, attrs, author$project$Style$Color$green, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
+	});
 var author$project$Page$Project$Actions$view = A2(
 	mdgriffith$elm_ui$Element$row,
 	_List_fromArray(
@@ -16578,21 +16917,10 @@ var author$project$Page$Project$Actions$view = A2(
 		]),
 	_List_fromArray(
 		[
-			author$project$Atom$Button$primary('Donate'),
-			author$project$Atom$Button$secondary('Follow'),
-			author$project$Atom$Button$secondaryAccent('Make dependency')
+			A2(author$project$Atom$Button$primary, _List_Nil, 'Donate'),
+			A2(author$project$Atom$Button$secondary, _List_Nil, 'Follow'),
+			A2(author$project$Atom$Button$secondaryAccent, _List_Nil, 'Make dependency')
 		]));
-var author$project$Style$Font$fontGTAmericaBold = mdgriffith$elm_ui$Element$Font$typeface('GT America Bold');
-var author$project$Style$Font$mediumHeader = function (textColor) {
-	return _List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$Font$color(textColor),
-			mdgriffith$elm_ui$Element$Font$family(
-			_List_fromArray(
-				[author$project$Style$Font$fontGTAmericaBold, mdgriffith$elm_ui$Element$Font$sansSerif])),
-			mdgriffith$elm_ui$Element$Font$size(24)
-		]);
-};
 var mdgriffith$elm_ui$Element$paddingXY = F2(
 	function (x, y) {
 		return _Utils_eq(x, y) ? A2(
@@ -16688,23 +17016,6 @@ var author$project$Atom$Heading$section = function (title) {
 			author$project$Style$Font$mediumHeader(author$project$Style$Color$black)),
 		mdgriffith$elm_ui$Element$text(title));
 };
-var mdgriffith$elm_ui$Element$rgba = mdgriffith$elm_ui$Internal$Model$Rgba;
-var mdgriffith$elm_ui$Element$toRgb = function (_n0) {
-	var r = _n0.a;
-	var g = _n0.b;
-	var b = _n0.c;
-	var a = _n0.d;
-	return {alpha: a, blue: b, green: g, red: r};
-};
-var author$project$Style$Color$alpha = F2(
-	function (color, transparency) {
-		var original = mdgriffith$elm_ui$Element$toRgb(color);
-		return A4(mdgriffith$elm_ui$Element$rgba, original.red, original.green, original.blue, transparency);
-	});
-var author$project$Style$Color$blue = A3(mdgriffith$elm_ui$Element$rgb255, 0, 146, 210);
-var mdgriffith$elm_ui$Internal$Flag$fontWeight = mdgriffith$elm_ui$Internal$Flag$flag(13);
-var mdgriffith$elm_ui$Element$Font$medium = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$fontWeight, mdgriffith$elm_ui$Internal$Style$classes.textMedium);
-var mdgriffith$elm_ui$Element$Font$underline = mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.underline);
 var author$project$Style$Font$linkText = function (textColor) {
 	return _List_fromArray(
 		[
@@ -16717,25 +17028,6 @@ var author$project$Style$Font$linkText = function (textColor) {
 			mdgriffith$elm_ui$Element$Font$underline
 		]);
 };
-var mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
-var mdgriffith$elm_ui$Element$paragraph = F2(
-	function (attrs, children) {
-		return A4(
-			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asParagraph,
-			mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				elm$core$List$cons,
-				mdgriffith$elm_ui$Internal$Model$Describe(mdgriffith$elm_ui$Internal$Model$Paragraph),
-				A2(
-					elm$core$List$cons,
-					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
-					A2(
-						elm$core$List$cons,
-						mdgriffith$elm_ui$Element$spacing(5),
-						attrs))),
-			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
 var author$project$Page$Project$Contract$viewContract = F2(
 	function (title, contract) {
 		return A2(
@@ -17403,7 +17695,7 @@ var author$project$Page$Register$viewContract = function (_n0) {
 					[
 						mdgriffith$elm_ui$Element$Events$onClick(author$project$Page$Register$MoveStepPreview)
 					]),
-				author$project$Atom$Button$primary('Next'))
+				A2(author$project$Atom$Button$primary, _List_Nil, 'Next'))
 			]));
 };
 var author$project$Page$Register$BlurCodeHost = {$: 'BlurCodeHost'};
@@ -17443,13 +17735,13 @@ var author$project$Page$Register$viewInfoNext = function (blocked) {
 	return blocked ? A2(
 		mdgriffith$elm_ui$Element$el,
 		_List_Nil,
-		author$project$Atom$Button$secondary('Next')) : A2(
+		A2(author$project$Atom$Button$secondary, _List_Nil, 'Next')) : A2(
 		mdgriffith$elm_ui$Element$el,
 		_List_fromArray(
 			[
 				mdgriffith$elm_ui$Element$Events$onClick(author$project$Page$Register$MoveStepContract)
 			]),
-		author$project$Atom$Button$primary('Next'));
+		A2(author$project$Atom$Button$primary, _List_Nil, 'Next'));
 };
 var author$project$Project$description = function (_n0) {
 	var model = _n0.a;
@@ -17802,7 +18094,6 @@ var mdgriffith$elm_ui$Internal$Model$isContent = function (len) {
 		}
 	}
 };
-var mdgriffith$elm_ui$Internal$Model$unstyled = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Unstyled, elm$core$Basics$always);
 var mdgriffith$elm_ui$Element$Input$textHelper = F3(
 	function (textInput, attrs, textOptions) {
 		var forNearby = function (attr) {
@@ -18270,7 +18561,7 @@ var author$project$Page$Register$viewPreview = function (project) {
 						mdgriffith$elm_ui$Element$Events$onClick(
 						author$project$Page$Register$Register(project))
 					]),
-				author$project$Atom$Button$primary('Register this project'))
+				A2(author$project$Atom$Button$primary, _List_Nil, 'Register this project'))
 			]));
 };
 var author$project$Page$Register$view = function (_n0) {
@@ -18351,7 +18642,6 @@ var author$project$Main$viewWallet = function (maybeWallet) {
 		return mdgriffith$elm_ui$Element$none;
 	}
 };
-var author$project$Style$Color$almostWhite = A3(mdgriffith$elm_ui$Element$rgb255, 248, 248, 248);
 var author$project$TopBar$SearchUpdated = function (a) {
 	return {$: 'SearchUpdated', a: a};
 };
@@ -18420,7 +18710,7 @@ var author$project$TopBar$view = F2(
 					_List_fromArray(
 						[mdgriffith$elm_ui$Element$alignRight]),
 					{
-						label: author$project$Atom$Button$accent('Register a project'),
+						label: A2(author$project$Atom$Button$accent, _List_Nil, 'Register a project'),
 						url: registerUrl
 					})
 				]));
