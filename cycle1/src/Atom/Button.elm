@@ -1,48 +1,53 @@
 module Atom.Button exposing
     ( accent
+    , custom
     , primary
     , secondary
     , secondaryAccent
-    , customStretch
+    , transparent
     )
 
-import Element exposing (Element, Attribute)
+import Element exposing (Attribute, Element)
 import Element.Background as Background
 import Element.Border as Border
+import Element.Font
 import Style.Color as Color
 import Style.Font as Font
-import Element.Font
 
 
 
 -- VIEW
 
 
-primary : String -> Element msg
-primary btnText =
-    style [] Color.purple Color.white Color.black btnText
+primary : List (Attribute msg) -> String -> Element msg
+primary attrs btnText =
+    style attrs Color.purple Color.white Color.black btnText
 
 
-secondary : String -> Element msg
-secondary btnText =
-    style [] Color.lightGrey Color.darkGrey Color.black btnText
+secondary : List (Attribute msg) -> String -> Element msg
+secondary attrs btnText =
+    style attrs Color.lightGrey Color.darkGrey Color.black btnText
 
 
-accent : String -> Element msg
-accent btnText =
-    style [] Color.pink Color.white Color.black btnText
+accent : List (Attribute msg) -> String -> Element msg
+accent attrs btnText =
+    style attrs Color.pink Color.white Color.black btnText
 
 
-secondaryAccent : String -> Element msg
-secondaryAccent btnText =
-    style [] Color.green Color.white Color.black btnText
+secondaryAccent : List (Attribute msg) -> String -> Element msg
+secondaryAccent attrs btnText =
+    style attrs Color.green Color.white Color.black btnText
+
 
 custom : List (Attribute msg) -> Element.Color -> String -> Element msg
 custom attrs color btnText =
     style attrs color Color.white Color.black btnText
 
-customStretch : Element.Color -> String -> Element msg
-customStretch = custom [Element.width Element.fill]
+
+transparent : List (Attribute msg) -> String -> Element msg
+transparent attrs btnText =
+    style attrs (Color.alpha Color.white 0) Color.darkGrey (Color.alpha Color.white 0) btnText
+
 
 style : List (Attribute msg) -> Element.Color -> Element.Color -> Element.Color -> String -> Element msg
 style customAttr bgColor textColor hoverColor btnText =

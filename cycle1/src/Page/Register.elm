@@ -120,7 +120,7 @@ viewContract _ =
         , Element.el
             [ Events.onClick <| MoveStepPreview ]
           <|
-            Button.primary "Next"
+            Button.primary [] "Next"
         ]
 
 
@@ -143,14 +143,14 @@ viewInfoNext blocked =
         Element.el
             []
         <|
-            Button.secondary "Next"
+            Button.secondary [] "Next"
 
     else
         Element.el
             [ Events.onClick <| MoveStepContract
             ]
         <|
-            Button.primary "Next"
+            Button.primary [] "Next"
 
 
 viewInfo : Project -> FieldError -> Element Msg
@@ -222,7 +222,7 @@ viewPreview project =
         , Element.el
             [ Events.onClick <| Register project ]
           <|
-            Button.primary "Register this project"
+            Button.primary [] "Register this project"
         ]
 
 

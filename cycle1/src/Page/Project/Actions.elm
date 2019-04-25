@@ -15,7 +15,7 @@ view =
         , Element.paddingEach { top = 16, right = 0, bottom = 0, left = 0 }
         , Element.width Element.fill
         ]
-        [ Button.primary "Donate"
-        , Button.secondary "Follow"
-        , Button.secondaryAccent "Make dependency"
+        [ Button.primary [] "Donate"
+        , Button.secondary [] "Follow"
+        , Button.secondaryAccent [] "Make dependency"
         ]

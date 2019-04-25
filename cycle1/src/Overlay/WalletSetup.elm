@@ -27,7 +27,7 @@ type alias Model =
 
 init : Model
 init =
-    Model Pick
+    Model Info
 
 
 
@@ -125,16 +125,16 @@ viewInfo backUrl =
             , Element.width Element.fill
             , Border.roundEach { topLeft = 0, topRight = 0, bottomLeft = 4, bottomRight = 4 }
             , Element.padding 24
+            , Element.spacing 12
             ]
             [ Element.link
                 ([ Element.alignRight
                  , Events.onClick MoveToPick
-                 , Element.paddingEach { top = 0, right = 24, bottom = 0, left = 0 }
                  ]
                     ++ Font.mediumBodyText Color.darkGrey
                 )
               <|
-                { label = Element.text "Cancel"
+                { label = Button.transparent [] "Cancel"
                 , url = backUrl
                 }
             , Element.el
@@ -142,7 +142,7 @@ viewInfo backUrl =
                 , Events.onClick MoveToPick
                 ]
               <|
-                Button.accent "Get Started"
+                Button.accent [] "Get Started"
             ]
         ]
 
@@ -158,17 +158,17 @@ viewPick =
                 ++ Font.mediumHeader Color.black
             )
           <|
-            Element.text "Choose wallet"
+            Element.text "Choose your wallet"
         , Element.column
             [ Element.centerX
-            , Element.spacing 24
+            , Element.spacing 28
             , Element.width (Element.px 240)
-            , Element.paddingXY 0 32
+            , Element.paddingEach { top = 0, right = 0, bottom = 32, left = 0 }
             ]
-            [ Button.customStretch Color.pink "Firefox add-on"
-            , Button.customStretch Color.blue "Mobile app"
-            , Button.customStretch Color.green "Ledger Nano S"
-            , Button.customStretch Color.bordeaux "macOS app"
+            [ Button.custom [ Element.width Element.fill ] Color.pink "Firefox add-on"
+            , Button.custom [ Element.width Element.fill ] Color.blue "Mobile app"
+            , Button.custom [ Element.width Element.fill ] Color.green "Ledger Nano S"
+            , Button.custom [ Element.width Element.fill ] Color.bordeaux "macOS app"
             ]
         , Element.column
             [ Background.color Color.almostWhite
@@ -203,8 +203,8 @@ view model backUrl =
     , Element.el
         [ Background.color Color.white
         , Border.rounded 4
-        , Element.height <| Element.px 540
-        , Element.width <| Element.px 563
+        , Element.height <| Element.px 520
+        , Element.width <| Element.px 540
         ]
       <|
         viewStep
