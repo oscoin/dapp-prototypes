@@ -9895,11 +9895,20 @@ var author$project$Page$Register$Model = F3(
 	function (a, b, c) {
 		return {$: 'Model', a: a, b: b, c: c};
 	});
-var author$project$Project$Project = function (a) {
-	return {$: 'Project', a: a};
-};
-var author$project$Project$initModel = {codeHostUrl: '', description: '', imageUrl: '', name: '', websiteUrl: ''};
-var author$project$Project$init = author$project$Project$Project(author$project$Project$initModel);
+var author$project$Contract$Contract = F3(
+	function (a, b, c) {
+		return {$: 'Contract', a: a, b: b, c: c};
+	});
+var author$project$Contract$DonationFundSaving = {$: 'DonationFundSaving'};
+var author$project$Contract$RewardBurn = {$: 'RewardBurn'};
+var author$project$Contract$RoleMaintainerSingleSigner = {$: 'RoleMaintainerSingleSigner'};
+var author$project$Contract$default = A3(author$project$Contract$Contract, author$project$Contract$RewardBurn, author$project$Contract$DonationFundSaving, author$project$Contract$RoleMaintainerSingleSigner);
+var author$project$Project$Project = F2(
+	function (a, b) {
+		return {$: 'Project', a: a, b: b};
+	});
+var author$project$Project$initMeta = {codeHostUrl: '', description: '', imageUrl: '', name: '', websiteUrl: ''};
+var author$project$Project$init = A2(author$project$Project$Project, author$project$Project$initMeta, author$project$Contract$default);
 var author$project$Page$Register$init = A3(
 	author$project$Page$Register$Model,
 	author$project$Page$Register$Info,
@@ -10332,62 +10341,77 @@ var author$project$Overlay$WalletSetup$update = F2(
 var author$project$Page$Register$Contract = {$: 'Contract'};
 var author$project$Page$Register$Preview = {$: 'Preview'};
 var author$project$Project$codeHostUrl = function (_n0) {
-	var model = _n0.a;
-	return model.codeHostUrl;
+	var meta = _n0.a;
+	return meta.codeHostUrl;
 };
 var author$project$Project$mapCodeHostUrl = F2(
 	function (change, _n0) {
-		var model = _n0.a;
-		return author$project$Project$Project(
+		var meta = _n0.a;
+		var currentContract = _n0.b;
+		return A2(
+			author$project$Project$Project,
 			_Utils_update(
-				model,
+				meta,
 				{
-					codeHostUrl: change(model.codeHostUrl)
-				}));
+					codeHostUrl: change(meta.codeHostUrl)
+				}),
+			currentContract);
 	});
 var author$project$Project$mapDescription = F2(
 	function (change, _n0) {
-		var model = _n0.a;
-		return author$project$Project$Project(
+		var meta = _n0.a;
+		var currentContract = _n0.b;
+		return A2(
+			author$project$Project$Project,
 			_Utils_update(
-				model,
+				meta,
 				{
-					description: change(model.description)
-				}));
+					description: change(meta.description)
+				}),
+			currentContract);
 	});
 var author$project$Project$mapImageUrl = F2(
 	function (change, _n0) {
-		var model = _n0.a;
-		return author$project$Project$Project(
+		var meta = _n0.a;
+		var currentContract = _n0.b;
+		return A2(
+			author$project$Project$Project,
 			_Utils_update(
-				model,
+				meta,
 				{
-					name: change(model.imageUrl)
-				}));
+					name: change(meta.imageUrl)
+				}),
+			currentContract);
 	});
 var author$project$Project$mapName = F2(
 	function (change, _n0) {
-		var model = _n0.a;
-		return author$project$Project$Project(
+		var meta = _n0.a;
+		var currentContract = _n0.b;
+		return A2(
+			author$project$Project$Project,
 			_Utils_update(
-				model,
+				meta,
 				{
-					name: change(model.name)
-				}));
+					name: change(meta.name)
+				}),
+			currentContract);
 	});
 var author$project$Project$mapWebsiteUrl = F2(
 	function (change, _n0) {
-		var model = _n0.a;
-		return author$project$Project$Project(
+		var meta = _n0.a;
+		var currentContract = _n0.b;
+		return A2(
+			author$project$Project$Project,
 			_Utils_update(
-				model,
+				meta,
 				{
-					name: change(model.websiteUrl)
-				}));
+					name: change(meta.websiteUrl)
+				}),
+			currentContract);
 	});
 var author$project$Project$name = function (_n0) {
-	var model = _n0.a;
-	return model.name;
+	var meta = _n0.a;
+	return meta.name;
 };
 var author$project$Page$Register$update = F2(
 	function (msg, _n0) {
@@ -10495,26 +10519,102 @@ var author$project$Page$Register$update = F2(
 					elm$core$Platform$Cmd$none);
 		}
 	});
-var author$project$Project$encode = function (_n0) {
-	var model = _n0.a;
+var author$project$Contract$donationToString = function (donation) {
+	switch (donation.$) {
+		case 'DonationFundSaving':
+			return 'FundSaving';
+		case 'DonationEqualMaintainer':
+			return 'EqualMaintainer';
+		case 'DonationEqualDependency':
+			return 'EqualDependency';
+		default:
+			return 'Custom';
+	}
+};
+var author$project$Contract$encodeDonation = function (donation) {
+	return elm$json$Json$Encode$string(
+		author$project$Contract$donationToString(donation));
+};
+var author$project$Contract$rewardToString = function (reward) {
+	switch (reward.$) {
+		case 'RewardBurn':
+			return 'Burn';
+		case 'RewardFundSaving':
+			return 'FundSaving';
+		case 'RewardEqualMainatainer':
+			return 'EqualMaintainer';
+		case 'RewardEqualDependency':
+			return 'EqualDependency';
+		default:
+			return 'Custom';
+	}
+};
+var author$project$Contract$encodeReward = function (reward) {
+	return elm$json$Json$Encode$string(
+		author$project$Contract$rewardToString(reward));
+};
+var author$project$Contract$roleToString = function (role) {
+	if (role.$ === 'RoleMaintainerSingleSigner') {
+		return 'MaintainerSinglerSigner';
+	} else {
+		return 'MaintainerMultiSig';
+	}
+};
+var author$project$Contract$encodeRole = function (role) {
+	return elm$json$Json$Encode$string(
+		author$project$Contract$roleToString(role));
+};
+var author$project$Contract$encode = function (_n0) {
+	var reward = _n0.a;
+	var donation = _n0.b;
+	var role = _n0.c;
+	return elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'reward',
+				author$project$Contract$encodeReward(reward)),
+				_Utils_Tuple2(
+				'donation',
+				author$project$Contract$encodeDonation(donation)),
+				_Utils_Tuple2(
+				'role',
+				author$project$Contract$encodeRole(role))
+			]));
+};
+var author$project$Project$encodeMeta = function (meta) {
 	return elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
 				'codeHostUrl',
-				elm$json$Json$Encode$string(model.codeHostUrl)),
+				elm$json$Json$Encode$string(meta.codeHostUrl)),
 				_Utils_Tuple2(
 				'description',
-				elm$json$Json$Encode$string(model.description)),
+				elm$json$Json$Encode$string(meta.description)),
 				_Utils_Tuple2(
 				'imageUrl',
-				elm$json$Json$Encode$string(model.imageUrl)),
+				elm$json$Json$Encode$string(meta.imageUrl)),
 				_Utils_Tuple2(
 				'name',
-				elm$json$Json$Encode$string(model.name)),
+				elm$json$Json$Encode$string(meta.name)),
 				_Utils_Tuple2(
 				'websiteUrl',
-				elm$json$Json$Encode$string(model.websiteUrl))
+				elm$json$Json$Encode$string(meta.websiteUrl))
+			]));
+};
+var author$project$Project$encode = function (_n0) {
+	var meta = _n0.a;
+	var currentContract = _n0.b;
+	return elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'contract',
+				author$project$Contract$encode(currentContract)),
+				_Utils_Tuple2(
+				'meta',
+				author$project$Project$encodeMeta(meta))
 			]));
 };
 var author$project$TopBar$update = F2(
@@ -17452,16 +17552,16 @@ var author$project$Page$Register$viewInfoNext = function (blocked) {
 		author$project$Atom$Button$primary('Next'));
 };
 var author$project$Project$description = function (_n0) {
-	var model = _n0.a;
-	return model.description;
+	var meta = _n0.a;
+	return meta.description;
 };
 var author$project$Project$imageUrl = function (_n0) {
-	var model = _n0.a;
-	return model.imageUrl;
+	var meta = _n0.a;
+	return meta.imageUrl;
 };
 var author$project$Project$websiteUrl = function (_n0) {
-	var model = _n0.a;
-	return model.websiteUrl;
+	var meta = _n0.a;
+	return meta.websiteUrl;
 };
 var elm$html$Html$Events$onBlur = function (msg) {
 	return A2(
@@ -18682,4 +18782,4 @@ var author$project$Main$view = function (model) {
 var elm$browser$Browser$application = _Browser_application;
 var author$project$Main$main = elm$browser$Browser$application(
 	{init: author$project$Main$init, onUrlChange: author$project$Main$UrlChanged, onUrlRequest: author$project$Main$LinkClicked, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
-_Platform_export({'Main':{'init':author$project$Main$main(elm$json$Json$Decode$value)({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Project.Model":{"args":[],"type":"{ codeHostUrl : String.String, description : String.String, imageUrl : String.String, name : String.String, websiteUrl : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["Maybe.Maybe KeyPair.KeyPair"],"KeyPairFetched":["Maybe.Maybe KeyPair.KeyPair"],"WalletWebExtPresent":["()"]}},"KeyPair.KeyPair":{"args":[],"tags":{"KeyPair":["String.String"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.Register.Msg":{"args":[],"tags":{"BlurCodeHost":[],"BlurName":[],"MoveStepContract":[],"MoveStepPreview":[],"Register":["Project.Project"],"UpdateCodeHostUrl":["String.String"],"UpdateDescription":["String.String"],"UpdateImageUrl":["String.String"],"UpdateName":["String.String"],"UpdateWebsiteUrl":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"Project.Project":{"args":[],"tags":{"Project":["Project.Model"]}}}}})}});}(this));
+_Platform_export({'Main':{'init':author$project$Main$main(elm$json$Json$Decode$value)({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Project.Meta":{"args":[],"type":"{ codeHostUrl : String.String, description : String.String, imageUrl : String.String, name : String.String, websiteUrl : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["Maybe.Maybe KeyPair.KeyPair"],"KeyPairFetched":["Maybe.Maybe KeyPair.KeyPair"],"WalletWebExtPresent":["()"]}},"KeyPair.KeyPair":{"args":[],"tags":{"KeyPair":["String.String"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.Register.Msg":{"args":[],"tags":{"BlurCodeHost":[],"BlurName":[],"MoveStepContract":[],"MoveStepPreview":[],"Register":["Project.Project"],"UpdateCodeHostUrl":["String.String"],"UpdateDescription":["String.String"],"UpdateImageUrl":["String.String"],"UpdateName":["String.String"],"UpdateWebsiteUrl":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"Project.Project":{"args":[],"tags":{"Project":["Project.Meta","Contract.Contract"]}},"Contract.Contract":{"args":[],"tags":{"Contract":["Contract.Reward","Contract.Donation","Contract.Role"]}},"Contract.Donation":{"args":[],"tags":{"DonationFundSaving":[],"DonationEqualMaintainer":[],"DonationEqualDependency":[],"DonationCustom":["Basics.Int","Basics.Int","Basics.Int","Basics.Int"]}},"Contract.Reward":{"args":[],"tags":{"RewardBurn":[],"RewardFundSaving":[],"RewardEqualMainatainer":[],"RewardEqualDependency":[],"RewardCustom":["Basics.Int","Basics.Int","Basics.Int","Basics.Int"]}},"Contract.Role":{"args":[],"tags":{"RoleMaintainerSingleSigner":[],"RoleMaintainerMultiSig":[]}}}}})}});}(this));

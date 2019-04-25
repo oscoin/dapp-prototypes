@@ -1,11 +1,13 @@
 module Project exposing
     ( Project
     , codeHostUrl
+    , contract
     , description
     , encode
     , imageUrl
     , init
     , mapCodeHostUrl
+    , mapContract
     , mapDescription
     , mapImageUrl
     , mapName
@@ -14,14 +16,15 @@ module Project exposing
     , websiteUrl
     )
 
+import Contract exposing (Contract)
 import Json.Encode as Encode
 
 
 
--- INTERN
+-- META
 
 
-type alias Model =
+type alias Meta =
     { codeHostUrl : String
     , description : String
     , imageUrl : String
@@ -30,8 +33,8 @@ type alias Model =
     }
 
 
-initModel : Model
-initModel =
+initMeta : Meta
+initMeta =
     { codeHostUrl = ""
     , description = ""
     , imageUrl = ""
@@ -41,66 +44,76 @@ initModel =
 
 
 
--- DATA
+-- PROJECT
 
 
 type Project
-    = Project Model
+    = Project Meta Contract
 
 
 init : Project
 init =
-    Project initModel
+    Project initMeta Contract.default
 
 
 mapCodeHostUrl : (String -> String) -> Project -> Project
-mapCodeHostUrl change (Project model) =
-    Project { model | codeHostUrl = change model.codeHostUrl }
+mapCodeHostUrl change (Project meta currentContract) =
+    Project { meta | codeHostUrl = change meta.codeHostUrl } currentContract
 
 
 codeHostUrl : Project -> String
-codeHostUrl (Project model) =
-    model.codeHostUrl
+codeHostUrl (Project meta _) =
+    meta.codeHostUrl
+
+
+mapContract : (Contract -> Contract) -> Project -> Project
+mapContract change (Project meta oldContract) =
+    Project meta (change oldContract)
+
+
+contract : Project -> Contract
+contract (Project _ currentContract) =
+    currentContract
 
 
 mapDescription : (String -> String) -> Project -> Project
-mapDescription change (Project model) =
-    Project { model | description = change model.description }
+mapDescription change (Project meta currentContract) =
+    Project { meta | description = change meta.description } currentContract
 
 
 description : Project -> String
-description (Project model) =
-    model.description
+description (Project meta _) =
+    meta.description
 
 
 mapImageUrl : (String -> String) -> Project -> Project
-mapImageUrl change (Project model) =
-    Project { model | name = change model.imageUrl }
+mapImageUrl change (Project meta currentContract) =
+    Project { meta | name = change meta.imageUrl } currentContract
 
 
 imageUrl : Project -> String
-imageUrl (Project model) =
-    model.imageUrl
+imageUrl (Project meta _) =
+    meta.imageUrl
 
 
 mapName : (String -> String) -> Project -> Project
-mapName change (Project model) =
-    Project { model | name = change model.name }
+mapName change (Project meta currentContract) =
+    Project { meta | name = change meta.name } currentContract
 
 
 name : Project -> String
-name (Project model) =
-    model.name
+name (Project meta _) =
+    meta.name
 
 
 mapWebsiteUrl : (String -> String) -> Project -> Project
-mapWebsiteUrl change (Project model) =
-    Project { model | name = change model.websiteUrl }
+mapWebsiteUrl change (Project meta currentContract) =
+    Project { meta | name = change meta.websiteUrl } currentContract
 
 
 websiteUrl : Project -> String
-websiteUrl (Project model) =
-    model.websiteUrl
+websiteUrl (Project meta _) =
+    meta.websiteUrl
 
 
 
@@ -108,11 +121,19 @@ websiteUrl (Project model) =
 
 
 encode : Project -> Encode.Value
-encode (Project model) =
+encode (Project meta currentContract) =
     Encode.object
-        [ ( "codeHostUrl", Encode.string model.codeHostUrl )
-        , ( "description", Encode.string model.description )
-        , ( "imageUrl", Encode.string model.imageUrl )
-        , ( "name", Encode.string model.name )
-        , ( "websiteUrl", Encode.string model.websiteUrl )
+        [ ( "contract", Contract.encode currentContract )
+        , ( "meta", encodeMeta meta )
+        ]
+
+
+encodeMeta : Meta -> Encode.Value
+encodeMeta meta =
+    Encode.object
+        [ ( "codeHostUrl", Encode.string meta.codeHostUrl )
+        , ( "description", Encode.string meta.description )
+        , ( "imageUrl", Encode.string meta.imageUrl )
+        , ( "name", Encode.string meta.name )
+        , ( "websiteUrl", Encode.string meta.websiteUrl )
         ]
