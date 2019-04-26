@@ -1,10 +1,20 @@
-module Contract exposing (Contract, default, encode)
+module Contract exposing
+    ( Contract
+    , default
+    , donation
+    , donationString
+    , encode
+    , reward
+    , rewardString
+    , role
+    , roleString
+    )
 
 import Json.Encode as Encode
 
 
 
--- MODEL
+-- RULES
 
 
 type Donation
@@ -27,6 +37,10 @@ type Role
     | RoleMaintainerMultiSig
 
 
+
+-- CONTRACT
+
+
 type Contract
     = Contract Reward Donation Role
 
@@ -36,41 +50,56 @@ default =
     Contract RewardBurn DonationFundSaving RoleMaintainerSingleSigner
 
 
+donation : Contract -> Donation
+donation (Contract _ currentDonation _) =
+    currentDonation
+
+
+reward : Contract -> Reward
+reward (Contract currentReward _ _) =
+    currentReward
+
+
+role : Contract -> Role
+role (Contract _ _ currentRole) =
+    currentRole
+
+
 
 -- ENCODING
 
 
 encode : Contract -> Encode.Value
-encode (Contract reward donation role) =
+encode (Contract currentReward currentDonation currentRole) =
     Encode.object
-        [ ( "reward", encodeReward reward )
-        , ( "donation", encodeDonation donation )
-        , ( "role", encodeRole role )
+        [ ( "reward", encodeReward currentReward )
+        , ( "donation", encodeDonation currentDonation )
+        , ( "role", encodeRole currentRole )
         ]
 
 
 encodeDonation : Donation -> Encode.Value
-encodeDonation donation =
-    Encode.string <| donationToString donation
+encodeDonation currentDonation =
+    Encode.string <| donationString currentDonation
 
 
 encodeReward : Reward -> Encode.Value
-encodeReward reward =
-    Encode.string <| rewardToString reward
+encodeReward currentReward =
+    Encode.string <| rewardString currentReward
 
 
 encodeRole : Role -> Encode.Value
-encodeRole role =
-    Encode.string <| roleToString role
+encodeRole currentRole =
+    Encode.string <| roleString currentRole
 
 
 
 -- HELPER
 
 
-donationToString : Donation -> String
-donationToString donation =
-    case donation of
+donationString : Donation -> String
+donationString currentDonation =
+    case currentDonation of
         DonationFundSaving ->
             "FundSaving"
 
@@ -84,9 +113,9 @@ donationToString donation =
             "Custom"
 
 
-rewardToString : Reward -> String
-rewardToString reward =
-    case reward of
+rewardString : Reward -> String
+rewardString currentReward =
+    case currentReward of
         RewardBurn ->
             "Burn"
 
@@ -103,11 +132,11 @@ rewardToString reward =
             "Custom"
 
 
-roleToString : Role -> String
-roleToString role =
-    case role of
+roleString : Role -> String
+roleString currentRole =
+    case currentRole of
         RoleMaintainerSingleSigner ->
-            "MaintainerSinglerSigner"
+            "MaintainerSingleSigner"
 
         RoleMaintainerMultiSig ->
             "MaintainerMultiSig"

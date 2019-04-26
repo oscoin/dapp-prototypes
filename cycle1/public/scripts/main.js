@@ -10519,8 +10519,8 @@ var author$project$Page$Register$update = F2(
 					elm$core$Platform$Cmd$none);
 		}
 	});
-var author$project$Contract$donationToString = function (donation) {
-	switch (donation.$) {
+var author$project$Contract$donationString = function (currentDonation) {
+	switch (currentDonation.$) {
 		case 'DonationFundSaving':
 			return 'FundSaving';
 		case 'DonationEqualMaintainer':
@@ -10531,12 +10531,12 @@ var author$project$Contract$donationToString = function (donation) {
 			return 'Custom';
 	}
 };
-var author$project$Contract$encodeDonation = function (donation) {
+var author$project$Contract$encodeDonation = function (currentDonation) {
 	return elm$json$Json$Encode$string(
-		author$project$Contract$donationToString(donation));
+		author$project$Contract$donationString(currentDonation));
 };
-var author$project$Contract$rewardToString = function (reward) {
-	switch (reward.$) {
+var author$project$Contract$rewardString = function (currentReward) {
+	switch (currentReward.$) {
 		case 'RewardBurn':
 			return 'Burn';
 		case 'RewardFundSaving':
@@ -10549,37 +10549,37 @@ var author$project$Contract$rewardToString = function (reward) {
 			return 'Custom';
 	}
 };
-var author$project$Contract$encodeReward = function (reward) {
+var author$project$Contract$encodeReward = function (currentReward) {
 	return elm$json$Json$Encode$string(
-		author$project$Contract$rewardToString(reward));
+		author$project$Contract$rewardString(currentReward));
 };
-var author$project$Contract$roleToString = function (role) {
-	if (role.$ === 'RoleMaintainerSingleSigner') {
-		return 'MaintainerSinglerSigner';
+var author$project$Contract$roleString = function (currentRole) {
+	if (currentRole.$ === 'RoleMaintainerSingleSigner') {
+		return 'MaintainerSingleSigner';
 	} else {
 		return 'MaintainerMultiSig';
 	}
 };
-var author$project$Contract$encodeRole = function (role) {
+var author$project$Contract$encodeRole = function (currentRole) {
 	return elm$json$Json$Encode$string(
-		author$project$Contract$roleToString(role));
+		author$project$Contract$roleString(currentRole));
 };
 var author$project$Contract$encode = function (_n0) {
-	var reward = _n0.a;
-	var donation = _n0.b;
-	var role = _n0.c;
+	var currentReward = _n0.a;
+	var currentDonation = _n0.b;
+	var currentRole = _n0.c;
 	return elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
 				'reward',
-				author$project$Contract$encodeReward(reward)),
+				author$project$Contract$encodeReward(currentReward)),
 				_Utils_Tuple2(
 				'donation',
-				author$project$Contract$encodeDonation(donation)),
+				author$project$Contract$encodeDonation(currentDonation)),
 				_Utils_Tuple2(
 				'role',
-				author$project$Contract$encodeRole(role))
+				author$project$Contract$encodeRole(currentRole))
 			]));
 };
 var author$project$Project$encodeMeta = function (meta) {
@@ -16993,6 +16993,7 @@ var author$project$Page$NotFound$view = _Utils_Tuple2(
 			[
 				mdgriffith$elm_ui$Element$text('Page Not Found')
 			])));
+var author$project$Page$Project$radicle = author$project$Project$init;
 var author$project$Atom$Button$primary = F2(
 	function (attrs, btnText) {
 		return A5(author$project$Atom$Button$style, attrs, author$project$Style$Color$purple, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
@@ -17116,6 +17117,18 @@ var author$project$Atom$Heading$section = function (title) {
 			author$project$Style$Font$mediumHeader(author$project$Style$Color$black)),
 		mdgriffith$elm_ui$Element$text(title));
 };
+var author$project$Contract$donation = function (_n0) {
+	var currentDonation = _n0.b;
+	return currentDonation;
+};
+var author$project$Contract$reward = function (_n0) {
+	var currentReward = _n0.a;
+	return currentReward;
+};
+var author$project$Contract$role = function (_n0) {
+	var currentRole = _n0.c;
+	return currentRole;
+};
 var author$project$Style$Font$linkText = function (textColor) {
 	return _List_fromArray(
 		[
@@ -17128,7 +17141,7 @@ var author$project$Style$Font$linkText = function (textColor) {
 			mdgriffith$elm_ui$Element$Font$underline
 		]);
 };
-var author$project$Page$Project$Contract$viewContract = F2(
+var author$project$Page$Project$Contract$viewRule = F2(
 	function (title, contract) {
 		return A2(
 			mdgriffith$elm_ui$Element$column,
@@ -17186,34 +17199,48 @@ var author$project$Page$Project$Contract$viewContract = F2(
 				]));
 	});
 var mdgriffith$elm_ui$Element$fillPortion = mdgriffith$elm_ui$Internal$Model$Fill;
-var author$project$Page$Project$Contract$view = A2(
-	mdgriffith$elm_ui$Element$column,
-	_List_fromArray(
-		[
-			mdgriffith$elm_ui$Element$spacing(24),
-			mdgriffith$elm_ui$Element$paddingEach(
-			{bottom: 0, left: 0, right: 0, top: 64}),
-			mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
-		]),
-	_List_fromArray(
-		[
-			author$project$Atom$Heading$section('Project contracts'),
-			A2(
-			mdgriffith$elm_ui$Element$row,
-			_List_fromArray(
-				[
-					mdgriffith$elm_ui$Element$spacing(24),
-					mdgriffith$elm_ui$Element$width(
-					mdgriffith$elm_ui$Element$fillPortion(3)),
-					mdgriffith$elm_ui$Element$padding(0)
-				]),
-			_List_fromArray(
-				[
-					A2(author$project$Page$Project$Contract$viewContract, 'Block reward distribution', 'Equal Distribution contract'),
-					A2(author$project$Page$Project$Contract$viewContract, 'Donation distribution', 'Donation Treasury contract'),
-					A2(author$project$Page$Project$Contract$viewContract, 'Roles & responsibility', 'Maintainer Single Signer contract')
-				]))
-		]));
+var author$project$Page$Project$Contract$view = function (contract) {
+	return A2(
+		mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$spacing(24),
+				mdgriffith$elm_ui$Element$paddingEach(
+				{bottom: 0, left: 0, right: 0, top: 64}),
+				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+			]),
+		_List_fromArray(
+			[
+				author$project$Atom$Heading$section('Project contracts'),
+				A2(
+				mdgriffith$elm_ui$Element$row,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$spacing(24),
+						mdgriffith$elm_ui$Element$width(
+						mdgriffith$elm_ui$Element$fillPortion(3)),
+						mdgriffith$elm_ui$Element$padding(0)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						author$project$Page$Project$Contract$viewRule,
+						'Reward distribution',
+						author$project$Contract$rewardString(
+							author$project$Contract$reward(contract))),
+						A2(
+						author$project$Page$Project$Contract$viewRule,
+						'Donation distribution',
+						author$project$Contract$donationString(
+							author$project$Contract$donation(contract))),
+						A2(
+						author$project$Page$Project$Contract$viewRule,
+						'Roles & responsibility',
+						author$project$Contract$roleString(
+							author$project$Contract$role(contract)))
+					]))
+			]));
+};
 var author$project$Style$Color$radicleBlue = A3(mdgriffith$elm_ui$Element$rgb255, 85, 85, 255);
 var mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var mdgriffith$elm_ui$Element$alignTop = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$Top);
@@ -17770,6 +17797,10 @@ var author$project$Page$Project$People$view = A2(
 			A2(author$project$Page$Project$People$viewTopPeople, 'Maintainers', '5'),
 			A2(author$project$Page$Project$People$viewTopPeople, 'Top contributors', '30')
 		]));
+var author$project$Project$contract = function (_n0) {
+	var currentContract = _n0.b;
+	return currentContract;
+};
 var author$project$Page$Project$view = _Utils_Tuple2(
 	'project',
 	A2(
@@ -17780,7 +17811,13 @@ var author$project$Page$Project$view = _Utils_Tuple2(
 				mdgriffith$elm_ui$Element$px(1074))
 			]),
 		_List_fromArray(
-			[author$project$Page$Project$Header$view, author$project$Page$Project$Actions$view, author$project$Page$Project$People$view, author$project$Page$Project$Contract$view])));
+			[
+				author$project$Page$Project$Header$view,
+				author$project$Page$Project$Actions$view,
+				author$project$Page$Project$People$view,
+				author$project$Page$Project$Contract$view(
+				author$project$Project$contract(author$project$Page$Project$radicle))
+			])));
 var author$project$Page$Register$MoveStepPreview = {$: 'MoveStepPreview'};
 var author$project$Page$Register$viewContract = function (_n0) {
 	return A2(

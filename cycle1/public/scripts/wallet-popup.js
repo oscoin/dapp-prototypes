@@ -11424,8 +11424,10 @@ var mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
 			'border-radius',
 			elm$core$String$fromInt(radius) + 'px'));
 };
-var author$project$Atom$Button$style = F4(
-	function (bgColor, textColor, hoverColor, btnText) {
+var mdgriffith$elm_ui$Internal$Flag$fontAlignment = mdgriffith$elm_ui$Internal$Flag$flag(12);
+var mdgriffith$elm_ui$Element$Font$center = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$fontAlignment, mdgriffith$elm_ui$Internal$Style$classes.textCenter);
+var author$project$Atom$Button$style = F5(
+	function (customAttr, bgColor, textColor, hoverColor, btnText) {
 		return A2(
 			mdgriffith$elm_ui$Element$el,
 			_Utils_ap(
@@ -11440,16 +11442,20 @@ var author$project$Atom$Button$style = F4(
 							[
 								mdgriffith$elm_ui$Element$Background$color(hoverColor)
 							])),
-						mdgriffith$elm_ui$Element$pointer
+						mdgriffith$elm_ui$Element$pointer,
+						mdgriffith$elm_ui$Element$Font$center
 					]),
-				author$project$Style$Font$mediumBodyText(textColor)),
+				_Utils_ap(
+					author$project$Style$Font$mediumBodyText(textColor),
+					customAttr)),
 			mdgriffith$elm_ui$Element$text(btnText));
 	});
 var author$project$Style$Color$pink = A3(mdgriffith$elm_ui$Element$rgb255, 224, 116, 203);
 var author$project$Style$Color$white = A3(mdgriffith$elm_ui$Element$rgb255, 255, 255, 255);
-var author$project$Atom$Button$accent = function (btnText) {
-	return A4(author$project$Atom$Button$style, author$project$Style$Color$pink, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
-};
+var author$project$Atom$Button$accent = F2(
+	function (attrs, btnText) {
+		return A5(author$project$Atom$Button$style, attrs, author$project$Style$Color$pink, author$project$Style$Color$white, author$project$Style$Color$black, btnText);
+	});
 var author$project$Page$KeyPairSetup$MoveStepSetup = {$: 'MoveStepSetup'};
 var elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
