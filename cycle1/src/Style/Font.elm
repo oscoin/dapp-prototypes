@@ -5,6 +5,7 @@ module Style.Font exposing
     , bodyTextMono
     , boldBodyTextMono
     , linkText
+    , smallLinkText
     , mediumBodyText
     , mediumHeader
     , smallMediumText
@@ -68,6 +69,18 @@ linkText textColor =
         , Font.sansSerif
         ]
     , Font.size 16
+    , Font.medium
+    , Font.underline
+    ]
+
+smallLinkText : Color -> List (Attribute msg)
+smallLinkText textColor =
+    [ Font.color textColor
+    , Font.family
+        [ fontGTAmericaMedium
+        , Font.sansSerif
+        ]
+    , Font.size 14
     , Font.medium
     , Font.underline
     ]

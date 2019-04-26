@@ -1,3 +1,8 @@
+body {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
 /* GT America Bold */
 @font-face {
 	font-family: "GT America Bold";
