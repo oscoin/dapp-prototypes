@@ -16,8 +16,8 @@ module Project exposing
     , websiteUrl
     )
 
-import Contract exposing (Contract)
 import Json.Encode as Encode
+import Project.Contract as Contract exposing (Contract)
 
 
 

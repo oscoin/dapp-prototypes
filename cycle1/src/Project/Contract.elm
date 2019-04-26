@@ -1,9 +1,15 @@
-module Contract exposing
+module Project.Contract exposing
     ( Contract
+    , Donation(..)
+    , Reward(..)
+    , Role(..)
     , default
     , donation
     , donationString
     , encode
+    , mapDonation
+    , mapReward
+    , mapRole
     , reward
     , rewardString
     , role
@@ -50,14 +56,29 @@ default =
     Contract RewardBurn DonationFundSaving RoleMaintainerSingleSigner
 
 
+mapDonation : (Donation -> Donation) -> Contract -> Contract
+mapDonation change (Contract currentReward currentDonation currentRole) =
+    Contract currentReward (change currentDonation) currentRole
+
+
 donation : Contract -> Donation
 donation (Contract _ currentDonation _) =
     currentDonation
 
 
+mapReward : (Reward -> Reward) -> Contract -> Contract
+mapReward change (Contract currentReward currentDonation currentRole) =
+    Contract (change currentReward) currentDonation currentRole
+
+
 reward : Contract -> Reward
 reward (Contract currentReward _ _) =
     currentReward
+
+
+mapRole : (Role -> Role) -> Contract -> Contract
+mapRole change (Contract currentReward currentDonation currentRole) =
+    Contract currentReward currentDonation (change currentRole)
 
 
 role : Contract -> Role
