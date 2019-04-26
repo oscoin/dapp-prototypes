@@ -3,6 +3,9 @@ module Project.Contract exposing
     , Donation(..)
     , Reward(..)
     , Role(..)
+    , decodeDonation
+    , decodeReward
+    , decodeRole
     , default
     , donation
     , donationString
@@ -16,6 +19,7 @@ module Project.Contract exposing
     , roleString
     )
 
+import Json.Decode as Decode
 import Json.Encode as Encode
 
 
@@ -87,6 +91,52 @@ role (Contract _ _ currentRole) =
 
 
 
+-- DECODING
+
+
+decodeDonation : Decode.Decoder Donation
+decodeDonation =
+    Decode.string
+        |> Decode.andThen
+            (\str ->
+                case donationFromString str of
+                    Just d ->
+                        Decode.succeed d
+
+                    Nothing ->
+                        Decode.fail <| "unknown donation"
+            )
+
+
+decodeReward : Decode.Decoder Reward
+decodeReward =
+    Decode.string
+        |> Decode.andThen
+            (\str ->
+                case rewardFromString str of
+                    Just r ->
+                        Decode.succeed r
+
+                    Nothing ->
+                        Decode.fail <| "unknown donation"
+            )
+
+
+decodeRole : Decode.Decoder Role
+decodeRole =
+    Decode.string
+        |> Decode.andThen
+            (\str ->
+                case roleFromString str of
+                    Just r ->
+                        Decode.succeed r
+
+                    Nothing ->
+                        Decode.fail <| "unknown donation"
+            )
+
+
+
 -- ENCODING
 
 
@@ -134,6 +184,22 @@ donationString currentDonation =
             "Custom"
 
 
+donationFromString : String -> Maybe Donation
+donationFromString input =
+    case input of
+        "FundSaving" ->
+            Just DonationFundSaving
+
+        "EqualMaintainer" ->
+            Just DonationEqualMaintainer
+
+        "EqualDependency" ->
+            Just DonationEqualDependency
+
+        _ ->
+            Nothing
+
+
 rewardString : Reward -> String
 rewardString currentReward =
     case currentReward of
@@ -153,6 +219,25 @@ rewardString currentReward =
             "Custom"
 
 
+rewardFromString : String -> Maybe Reward
+rewardFromString currentReward =
+    case currentReward of
+        "Burn" ->
+            Just RewardBurn
+
+        "FundSaving" ->
+            Just RewardFundSaving
+
+        "EqualMaintainer" ->
+            Just RewardEqualMainatainer
+
+        "EqualDependency" ->
+            Just RewardEqualDependency
+
+        _ ->
+            Nothing
+
+
 roleString : Role -> String
 roleString currentRole =
     case currentRole of
@@ -161,3 +246,16 @@ roleString currentRole =
 
         RoleMaintainerMultiSig ->
             "MaintainerMultiSig"
+
+
+roleFromString : String -> Maybe Role
+roleFromString currentRole =
+    case currentRole of
+        "MaintainerSingleSigner" ->
+            Just RoleMaintainerSingleSigner
+
+        "MaintainerMultiSig" ->
+            Just RoleMaintainerMultiSig
+
+        _ ->
+            Nothing

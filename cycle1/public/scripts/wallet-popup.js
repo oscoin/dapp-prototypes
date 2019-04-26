@@ -4890,7 +4890,10 @@ var author$project$WalletPopup$Location = function (hash) {
 	return {hash: hash};
 };
 var author$project$WalletPopup$NotFound = {$: 'NotFound'};
-var author$project$WalletPopup$SignTransaction = {$: 'SignTransaction'};
+var author$project$WalletPopup$SignTransaction = F2(
+	function (a, b) {
+		return {$: 'SignTransaction', a: a, b: b};
+	});
 var author$project$KeyPair$KeyPair = F2(
 	function (a, b) {
 		return {$: 'KeyPair', a: a, b: b};
@@ -5378,14 +5381,208 @@ var author$project$KeyPair$decoder = A3(
 	author$project$KeyPair$KeyPair,
 	A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$string),
 	A2(elm$json$Json$Decode$field, 'pubKey', elm$json$Json$Decode$string));
+var author$project$Transaction$Transaction = F2(
+	function (a, b) {
+		return {$: 'Transaction', a: a, b: b};
+	});
+var author$project$Transaction$is = function (expected) {
+	return function (val) {
+		return _Utils_eq(val, expected);
+	};
+};
+var author$project$Transaction$ProjectRegistration = function (a) {
+	return {$: 'ProjectRegistration', a: a};
+};
 var elm$json$Json$Decode$map = _Json_map1;
+var author$project$Transaction$projectRegistrationDecoder = A2(
+	elm$json$Json$Decode$map,
+	author$project$Transaction$ProjectRegistration,
+	A2(elm$json$Json$Decode$field, 'address', elm$json$Json$Decode$string));
+var author$project$Transaction$UpdateContractRule = F2(
+	function (a, b) {
+		return {$: 'UpdateContractRule', a: a, b: b};
+	});
+var author$project$Project$Contract$DonationEqualDependency = {$: 'DonationEqualDependency'};
+var author$project$Project$Contract$DonationEqualMaintainer = {$: 'DonationEqualMaintainer'};
+var author$project$Project$Contract$DonationFundSaving = {$: 'DonationFundSaving'};
+var author$project$Project$Contract$donationFromString = function (input) {
+	switch (input) {
+		case 'FundSaving':
+			return elm$core$Maybe$Just(author$project$Project$Contract$DonationFundSaving);
+		case 'EqualMaintainer':
+			return elm$core$Maybe$Just(author$project$Project$Contract$DonationEqualMaintainer);
+		case 'EqualDependency':
+			return elm$core$Maybe$Just(author$project$Project$Contract$DonationEqualDependency);
+		default:
+			return elm$core$Maybe$Nothing;
+	}
+};
+var elm$json$Json$Decode$andThen = _Json_andThen;
+var elm$json$Json$Decode$fail = _Json_fail;
+var elm$json$Json$Decode$succeed = _Json_succeed;
+var author$project$Project$Contract$decodeDonation = A2(
+	elm$json$Json$Decode$andThen,
+	function (str) {
+		var _n0 = author$project$Project$Contract$donationFromString(str);
+		if (_n0.$ === 'Just') {
+			var d = _n0.a;
+			return elm$json$Json$Decode$succeed(d);
+		} else {
+			return elm$json$Json$Decode$fail('unknown donation');
+		}
+	},
+	elm$json$Json$Decode$string);
+var author$project$Transaction$Donation = F2(
+	function (a, b) {
+		return {$: 'Donation', a: a, b: b};
+	});
+var author$project$Transaction$ruleChangeDonationDecoder = A3(
+	elm$json$Json$Decode$map2,
+	author$project$Transaction$Donation,
+	A2(elm$json$Json$Decode$field, 'old', author$project$Project$Contract$decodeDonation),
+	A2(elm$json$Json$Decode$field, 'new', author$project$Project$Contract$decodeDonation));
+var author$project$Project$Contract$RewardBurn = {$: 'RewardBurn'};
+var author$project$Project$Contract$RewardEqualDependency = {$: 'RewardEqualDependency'};
+var author$project$Project$Contract$RewardEqualMainatainer = {$: 'RewardEqualMainatainer'};
+var author$project$Project$Contract$RewardFundSaving = {$: 'RewardFundSaving'};
+var author$project$Project$Contract$rewardFromString = function (currentReward) {
+	switch (currentReward) {
+		case 'Burn':
+			return elm$core$Maybe$Just(author$project$Project$Contract$RewardBurn);
+		case 'FundSaving':
+			return elm$core$Maybe$Just(author$project$Project$Contract$RewardFundSaving);
+		case 'EqualMaintainer':
+			return elm$core$Maybe$Just(author$project$Project$Contract$RewardEqualMainatainer);
+		case 'EqualDependency':
+			return elm$core$Maybe$Just(author$project$Project$Contract$RewardEqualDependency);
+		default:
+			return elm$core$Maybe$Nothing;
+	}
+};
+var author$project$Project$Contract$decodeReward = A2(
+	elm$json$Json$Decode$andThen,
+	function (str) {
+		var _n0 = author$project$Project$Contract$rewardFromString(str);
+		if (_n0.$ === 'Just') {
+			var r = _n0.a;
+			return elm$json$Json$Decode$succeed(r);
+		} else {
+			return elm$json$Json$Decode$fail('unknown donation');
+		}
+	},
+	elm$json$Json$Decode$string);
+var author$project$Transaction$Reward = F2(
+	function (a, b) {
+		return {$: 'Reward', a: a, b: b};
+	});
+var author$project$Transaction$ruleChangeRewardDecoder = A3(
+	elm$json$Json$Decode$map2,
+	author$project$Transaction$Reward,
+	A2(elm$json$Json$Decode$field, 'old', author$project$Project$Contract$decodeReward),
+	A2(elm$json$Json$Decode$field, 'new', author$project$Project$Contract$decodeReward));
+var author$project$Project$Contract$RoleMaintainerMultiSig = {$: 'RoleMaintainerMultiSig'};
+var author$project$Project$Contract$RoleMaintainerSingleSigner = {$: 'RoleMaintainerSingleSigner'};
+var author$project$Project$Contract$roleFromString = function (currentRole) {
+	switch (currentRole) {
+		case 'MaintainerSingleSigner':
+			return elm$core$Maybe$Just(author$project$Project$Contract$RoleMaintainerSingleSigner);
+		case 'MaintainerMultiSig':
+			return elm$core$Maybe$Just(author$project$Project$Contract$RoleMaintainerMultiSig);
+		default:
+			return elm$core$Maybe$Nothing;
+	}
+};
+var author$project$Project$Contract$decodeRole = A2(
+	elm$json$Json$Decode$andThen,
+	function (str) {
+		var _n0 = author$project$Project$Contract$roleFromString(str);
+		if (_n0.$ === 'Just') {
+			var r = _n0.a;
+			return elm$json$Json$Decode$succeed(r);
+		} else {
+			return elm$json$Json$Decode$fail('unknown donation');
+		}
+	},
+	elm$json$Json$Decode$string);
+var author$project$Transaction$Role = F2(
+	function (a, b) {
+		return {$: 'Role', a: a, b: b};
+	});
+var author$project$Transaction$ruleChangeRoleDecoder = A3(
+	elm$json$Json$Decode$map2,
+	author$project$Transaction$Role,
+	A2(elm$json$Json$Decode$field, 'old', author$project$Project$Contract$decodeRole),
+	A2(elm$json$Json$Decode$field, 'new', author$project$Project$Contract$decodeRole));
+var elm$json$Json$Decode$oneOf = _Json_oneOf;
+var elm_community$json_extra$Json$Decode$Extra$when = F3(
+	function (checkDecoder, check, passDecoder) {
+		return A2(
+			elm$json$Json$Decode$andThen,
+			function (checkVal) {
+				return check(checkVal) ? passDecoder : elm$json$Json$Decode$fail('Check failed with input');
+			},
+			checkDecoder);
+	});
+var author$project$Transaction$ruleChangeDecoder = function () {
+	var typeDecoder = A2(elm$json$Json$Decode$field, 'type', elm$json$Json$Decode$string);
+	return elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A3(
+				elm_community$json_extra$Json$Decode$Extra$when,
+				typeDecoder,
+				author$project$Transaction$is('donation'),
+				author$project$Transaction$ruleChangeDonationDecoder),
+				A3(
+				elm_community$json_extra$Json$Decode$Extra$when,
+				typeDecoder,
+				author$project$Transaction$is('reward'),
+				author$project$Transaction$ruleChangeRewardDecoder),
+				A3(
+				elm_community$json_extra$Json$Decode$Extra$when,
+				typeDecoder,
+				author$project$Transaction$is('role'),
+				author$project$Transaction$ruleChangeRoleDecoder)
+			]));
+}();
+var author$project$Transaction$updateContractRuleDecoder = A3(
+	elm$json$Json$Decode$map2,
+	author$project$Transaction$UpdateContractRule,
+	A2(elm$json$Json$Decode$field, 'address', elm$json$Json$Decode$string),
+	A2(elm$json$Json$Decode$field, 'ruleChange', author$project$Transaction$ruleChangeDecoder));
+var author$project$Transaction$messageDecoder = function () {
+	var typeDecoder = A2(elm$json$Json$Decode$field, 'type', elm$json$Json$Decode$string);
+	return elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A3(
+				elm_community$json_extra$Json$Decode$Extra$when,
+				typeDecoder,
+				author$project$Transaction$is('project-registration'),
+				author$project$Transaction$projectRegistrationDecoder),
+				A3(
+				elm_community$json_extra$Json$Decode$Extra$when,
+				typeDecoder,
+				author$project$Transaction$is('update-contract-rule'),
+				author$project$Transaction$updateContractRuleDecoder)
+			]));
+}();
+var elm$json$Json$Decode$int = _Json_decodeInt;
+var elm$json$Json$Decode$list = _Json_decodeList;
+var author$project$Transaction$decoder = A3(
+	elm$json$Json$Decode$map2,
+	author$project$Transaction$Transaction,
+	A2(elm$json$Json$Decode$field, 'fee', elm$json$Json$Decode$int),
+	A2(
+		elm$json$Json$Decode$field,
+		'messages',
+		elm$json$Json$Decode$list(author$project$Transaction$messageDecoder)));
 var author$project$WalletPopup$locationDecoder = A2(
 	elm$json$Json$Decode$map,
 	author$project$WalletPopup$Location,
 	A2(elm$json$Json$Decode$field, 'hash', elm$json$Json$Decode$string));
 var elm$json$Json$Decode$map3 = _Json_map3;
 var elm$json$Json$Decode$null = _Json_decodeNull;
-var elm$json$Json$Decode$oneOf = _Json_oneOf;
 var elm$json$Json$Decode$nullable = function (decoder) {
 	return elm$json$Json$Decode$oneOf(
 		_List_fromArray(
@@ -5404,67 +5601,72 @@ var author$project$WalletPopup$flagDecoder = A4(
 	A2(
 		elm$json$Json$Decode$field,
 		'maybeTransaction',
-		elm$json$Json$Decode$nullable(elm$json$Json$Decode$string)),
+		elm$json$Json$Decode$nullable(author$project$Transaction$decoder)),
 	A2(elm$json$Json$Decode$field, 'location', author$project$WalletPopup$locationDecoder));
+var elm$core$Debug$log = _Debug_log;
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
-var elm$core$Result$withDefault = F2(
-	function (def, result) {
-		if (result.$ === 'Ok') {
-			var a = result.a;
-			return a;
-		} else {
-			return def;
-		}
-	});
 var elm$json$Json$Decode$decodeValue = _Json_run;
 var author$project$WalletPopup$init = function (flags) {
-	var _n0 = A2(
-		elm$core$Result$withDefault,
-		A3(
-			author$project$WalletPopup$Flags,
-			elm$core$Maybe$Nothing,
-			elm$core$Maybe$Nothing,
-			author$project$WalletPopup$Location('')),
-		A2(elm$json$Json$Decode$decodeValue, author$project$WalletPopup$flagDecoder, flags));
+	var _n0 = function () {
+		var _n1 = A2(elm$json$Json$Decode$decodeValue, author$project$WalletPopup$flagDecoder, flags);
+		if (_n1.$ === 'Ok') {
+			var decodedFlags = _n1.a;
+			return decodedFlags;
+		} else {
+			var err = _n1.a;
+			var _n2 = A2(elm$core$Debug$log, 'flags decode error', err);
+			return A3(
+				author$project$WalletPopup$Flags,
+				elm$core$Maybe$Nothing,
+				elm$core$Maybe$Nothing,
+				author$project$WalletPopup$Location(''));
+		}
+	}();
 	var maybeKeyPair = _n0.maybeKeyPair;
 	var maybeTransaction = _n0.maybeTransaction;
 	var location = _n0.location;
 	var model = function () {
-		var _n1 = _Utils_Tuple3(location.hash, maybeKeyPair, maybeTransaction);
-		_n1$3:
+		var _n3 = _Utils_Tuple3(
+			A2(elm$core$Debug$log, 'WalletPopup.init.location', location.hash),
+			maybeKeyPair,
+			maybeTransaction);
+		_n3$3:
 		while (true) {
-			if (_n1.b.$ === 'Nothing') {
-				if ((_n1.a === '#keys') && (_n1.c.$ === 'Nothing')) {
-					var _n2 = _n1.b;
-					var _n3 = _n1.c;
+			if (_n3.b.$ === 'Nothing') {
+				if ((_n3.a === '#keys') && (_n3.c.$ === 'Nothing')) {
+					var _n4 = _n3.b;
+					var _n5 = _n3.c;
 					return author$project$WalletPopup$KeyPairSetup(author$project$Page$KeyPairSetup$init);
 				} else {
-					break _n1$3;
+					break _n3$3;
 				}
 			} else {
-				if (_n1.c.$ === 'Nothing') {
-					if (_n1.a === '#keys') {
-						var keyPair = _n1.b.a;
-						var _n4 = _n1.c;
+				if (_n3.c.$ === 'Nothing') {
+					if (_n3.a === '#keys') {
+						var keyPair = _n3.b.a;
+						var _n6 = _n3.c;
 						return author$project$WalletPopup$KeyPairList(keyPair);
 					} else {
-						break _n1$3;
+						break _n3$3;
 					}
 				} else {
-					if (_n1.a === '#sign') {
-						return author$project$WalletPopup$SignTransaction;
+					if (_n3.a === '#sign') {
+						var keyPair = _n3.b.a;
+						var transaction = _n3.c.a;
+						return A2(author$project$WalletPopup$SignTransaction, keyPair, transaction);
 					} else {
-						break _n1$3;
+						break _n3$3;
 					}
 				}
 			}
 		}
 		return author$project$WalletPopup$NotFound;
 	}();
-	return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+	return _Utils_Tuple2(
+		A2(elm$core$Debug$log, 'WalletPopup.init.Model', model),
+		elm$core$Platform$Cmd$none);
 };
-var elm$core$Debug$log = _Debug_log;
 var author$project$KeyPair$decode = function (json) {
 	var _n0 = A2(elm$json$Json$Decode$decodeValue, author$project$KeyPair$decoder, json);
 	if (_n0.$ === 'Ok') {
@@ -5952,7 +6154,6 @@ var elm$core$Basics$not = _Basics_not;
 var elm$core$Basics$identity = function (x) {
 	return x;
 };
-var elm$json$Json$Decode$succeed = _Json_succeed;
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
 		case 'Normal':
@@ -12403,23 +12604,314 @@ var author$project$Page$NotFound$view = _Utils_Tuple2(
 			[
 				mdgriffith$elm_ui$Element$text('Page Not Found')
 			])));
-var author$project$Page$SignTransaction$view = _Utils_Tuple2(
-	'sign transaction',
-	A2(
+var mdgriffith$elm_ui$Element$toRgb = function (_n0) {
+	var r = _n0.a;
+	var g = _n0.b;
+	var b = _n0.c;
+	var a = _n0.d;
+	return {alpha: a, blue: b, green: g, red: r};
+};
+var author$project$Style$Color$alpha = F2(
+	function (color, transparency) {
+		var original = mdgriffith$elm_ui$Element$toRgb(color);
+		return A4(mdgriffith$elm_ui$Element$rgba, original.red, original.green, original.blue, transparency);
+	});
+var author$project$Style$Color$darkGrey = A3(mdgriffith$elm_ui$Element$rgb255, 84, 100, 116);
+var author$project$Atom$Button$transparent = F2(
+	function (attrs, btnText) {
+		return A5(
+			author$project$Atom$Button$style,
+			attrs,
+			A2(author$project$Style$Color$alpha, author$project$Style$Color$white, 0),
+			author$project$Style$Color$darkGrey,
+			A2(author$project$Style$Color$alpha, author$project$Style$Color$white, 0),
+			btnText);
+	});
+var mdgriffith$elm_ui$Element$row = F2(
+	function (attrs, children) {
+		return A4(
+			mdgriffith$elm_ui$Internal$Model$element,
+			mdgriffith$elm_ui$Internal$Model$asRow,
+			mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				elm$core$List$cons,
+				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
+				A2(
+					elm$core$List$cons,
+					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
+					A2(
+						elm$core$List$cons,
+						mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
+						attrs))),
+			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
+var author$project$Page$SignTransaction$viewActions = A2(
+	mdgriffith$elm_ui$Element$row,
+	_List_Nil,
+	_List_fromArray(
+		[
+			A2(author$project$Atom$Button$transparent, _List_Nil, 'Reject'),
+			A2(author$project$Atom$Button$accent, _List_Nil, 'Authorize transaction')
+		]));
+var mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
+var mdgriffith$elm_ui$Element$alignRight = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$Right);
+var author$project$Page$SignTransaction$viewFlow = function (keyPair) {
+	return A2(
+		mdgriffith$elm_ui$Element$row,
+		_List_fromArray(
+			[
+				A2(mdgriffith$elm_ui$Element$spacingXY, 24, 0),
+				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+			]),
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$text(
+				author$project$KeyPair$toString(keyPair)),
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[mdgriffith$elm_ui$Element$centerX]),
+				mdgriffith$elm_ui$Element$text('=>')),
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[mdgriffith$elm_ui$Element$alignRight]),
+				mdgriffith$elm_ui$Element$text('oscoin-ledger'))
+			]));
+};
+var author$project$Style$Color$grey = A3(mdgriffith$elm_ui$Element$rgb255, 144, 160, 174);
+var author$project$Style$Font$fontGTAmericaRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America');
+var author$project$Style$Font$smallText = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaRegular, mdgriffith$elm_ui$Element$Font$sansSerif])),
+			mdgriffith$elm_ui$Element$Font$size(14)
+		]);
+};
+var author$project$Style$Font$fontGTAmericaMonoRegular = mdgriffith$elm_ui$Element$Font$typeface('GT America Mono');
+var mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
+var mdgriffith$elm_ui$Element$Font$monospace = mdgriffith$elm_ui$Internal$Model$Monospace;
+var author$project$Style$Font$smallTextMono = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaMonoRegular, mdgriffith$elm_ui$Element$Font$monospace])),
+			mdgriffith$elm_ui$Element$Font$size(14)
+		]);
+};
+var author$project$Page$SignTransaction$viewProjectAddress = function (address) {
+	return A2(
+		mdgriffith$elm_ui$Element$column,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				author$project$Style$Font$smallText(author$project$Style$Color$grey),
+				mdgriffith$elm_ui$Element$text('PROJECT ADDRESS')),
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				author$project$Style$Font$smallTextMono(author$project$Style$Color$black),
+				mdgriffith$elm_ui$Element$text(address))
+			]));
+};
+var author$project$Project$Contract$donationString = function (currentDonation) {
+	switch (currentDonation.$) {
+		case 'DonationFundSaving':
+			return 'FundSaving';
+		case 'DonationEqualMaintainer':
+			return 'EqualMaintainer';
+		case 'DonationEqualDependency':
+			return 'EqualDependency';
+		default:
+			return 'Custom';
+	}
+};
+var author$project$Project$Contract$rewardString = function (currentReward) {
+	switch (currentReward.$) {
+		case 'RewardBurn':
+			return 'Burn';
+		case 'RewardFundSaving':
+			return 'FundSaving';
+		case 'RewardEqualMainatainer':
+			return 'EqualMaintainer';
+		case 'RewardEqualDependency':
+			return 'EqualDependency';
+		default:
+			return 'Custom';
+	}
+};
+var author$project$Project$Contract$roleString = function (currentRole) {
+	if (currentRole.$ === 'RoleMaintainerSingleSigner') {
+		return 'MaintainerSingleSigner';
+	} else {
+		return 'MaintainerMultiSig';
+	}
+};
+var author$project$Page$SignTransaction$viewRuleChange = function (ruleChange) {
+	var _n0 = function () {
+		switch (ruleChange.$) {
+			case 'Donation':
+				var old = ruleChange.a;
+				var _new = ruleChange.b;
+				return _Utils_Tuple3(
+					'DONATION',
+					author$project$Project$Contract$donationString(old),
+					author$project$Project$Contract$donationString(_new));
+			case 'Reward':
+				var old = ruleChange.a;
+				var _new = ruleChange.b;
+				return _Utils_Tuple3(
+					'REWARD',
+					author$project$Project$Contract$rewardString(old),
+					author$project$Project$Contract$rewardString(_new));
+			default:
+				var old = ruleChange.a;
+				var _new = ruleChange.b;
+				return _Utils_Tuple3(
+					'REWARD',
+					author$project$Project$Contract$roleString(old),
+					author$project$Project$Contract$roleString(_new));
+		}
+	}();
+	var title = _n0.a;
+	var from = _n0.b;
+	var to = _n0.c;
+	return A2(
 		mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
 			[
-				mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
 				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
 			]),
 		_List_fromArray(
 			[
 				A2(
 				mdgriffith$elm_ui$Element$el,
-				_List_Nil,
-				mdgriffith$elm_ui$Element$text('sign your transaction')),
-				author$project$Atom$Button$accent('Confirm')
-			])));
+				author$project$Style$Font$smallText(author$project$Style$Color$grey),
+				mdgriffith$elm_ui$Element$text(title)),
+				A2(
+				mdgriffith$elm_ui$Element$row,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+					]),
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$text(from),
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[mdgriffith$elm_ui$Element$centerX]),
+						mdgriffith$elm_ui$Element$text('->')),
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[mdgriffith$elm_ui$Element$alignRight]),
+						mdgriffith$elm_ui$Element$text(to))
+					]))
+			]));
+};
+var author$project$Page$SignTransaction$viewUpdateContractRule = F2(
+	function (address, ruleChange) {
+		return A2(
+			mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					A2(mdgriffith$elm_ui$Element$spacingXY, 0, 16)
+				]),
+			_List_fromArray(
+				[
+					author$project$Page$SignTransaction$viewProjectAddress(address),
+					author$project$Page$SignTransaction$viewRuleChange(ruleChange)
+				]));
+	});
+var author$project$Style$Color$purple = A3(mdgriffith$elm_ui$Element$rgb255, 120, 52, 232);
+var author$project$Transaction$messageType = function (message) {
+	if (message.$ === 'ProjectRegistration') {
+		return 'project-registration';
+	} else {
+		return 'contract-update-rule';
+	}
+};
+var author$project$Page$SignTransaction$viewMessage = function (message) {
+	var viewDetail = function () {
+		if (message.$ === 'ProjectRegistration') {
+			var address = message.a;
+			return author$project$Page$SignTransaction$viewProjectAddress(address);
+		} else {
+			var address = message.a;
+			var ruleChange = message.b;
+			return A2(author$project$Page$SignTransaction$viewUpdateContractRule, address, ruleChange);
+		}
+	}();
+	return A2(
+		mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+			]),
+		_List_fromArray(
+			[
+				A2(
+				mdgriffith$elm_ui$Element$el,
+				author$project$Style$Font$mediumHeader(author$project$Style$Color$purple),
+				mdgriffith$elm_ui$Element$text(
+					author$project$Transaction$messageType(message))),
+				viewDetail
+			]));
+};
+var author$project$Style$Font$fontGTAmericaMonoBold = mdgriffith$elm_ui$Element$Font$typeface('GT America Mono Bold');
+var author$project$Style$Font$bigHeaderMono = function (textColor) {
+	return _List_fromArray(
+		[
+			mdgriffith$elm_ui$Element$Font$color(textColor),
+			mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[author$project$Style$Font$fontGTAmericaMonoBold, mdgriffith$elm_ui$Element$Font$monospace])),
+			mdgriffith$elm_ui$Element$Font$size(36)
+		]);
+};
+var author$project$Transaction$messages = function (_n0) {
+	var ms = _n0.b;
+	return ms;
+};
+var author$project$Page$SignTransaction$view = F2(
+	function (keyPair, transaction) {
+		return _Utils_Tuple2(
+			'sign transaction',
+			A2(
+				mdgriffith$elm_ui$Element$column,
+				_List_fromArray(
+					[
+						mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$fill),
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill),
+						A2(mdgriffith$elm_ui$Element$spacingXY, 0, 24)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						mdgriffith$elm_ui$Element$el,
+						author$project$Style$Font$bigHeaderMono(author$project$Style$Color$black),
+						mdgriffith$elm_ui$Element$text('Authorize transaction')),
+						author$project$Page$SignTransaction$viewFlow(keyPair),
+						A2(
+						mdgriffith$elm_ui$Element$column,
+						_List_fromArray(
+							[
+								A2(mdgriffith$elm_ui$Element$spacingXY, 0, 48)
+							]),
+						A2(
+							elm$core$List$map,
+							author$project$Page$SignTransaction$viewMessage,
+							author$project$Transaction$messages(transaction))),
+						author$project$Page$SignTransaction$viewActions
+					])));
+	});
 var author$project$Style$Font$bigHeader = function (textColor) {
 	return _List_fromArray(
 		[
@@ -12665,7 +13157,9 @@ var author$project$WalletPopup$view = function (model) {
 					pageTitle,
 					A2(mdgriffith$elm_ui$Element$map, author$project$WalletPopup$PageKeyPairSetup, pageView));
 			case 'SignTransaction':
-				return author$project$Page$SignTransaction$view;
+				var keyPair = model.a;
+				var transaction = model.b;
+				return A2(author$project$Page$SignTransaction$view, keyPair, transaction);
 			default:
 				return author$project$Page$NotFound$view;
 		}
@@ -14624,7 +15118,6 @@ var elm$browser$Debugger$Metadata$Alias = F2(
 	function (args, tipe) {
 		return {args: args, tipe: tipe};
 	});
-var elm$json$Json$Decode$list = _Json_decodeList;
 var elm$browser$Debugger$Metadata$decodeAlias = A3(
 	elm$json$Json$Decode$map2,
 	elm$browser$Debugger$Metadata$Alias,

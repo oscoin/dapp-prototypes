@@ -10,6 +10,7 @@ import Page.NotFound
 import Page.SignTransaction
 import Style.Color as Color
 import Style.Font as Font
+import Transaction exposing (Transaction)
 
 
 
@@ -29,7 +30,7 @@ locationDecoder =
 
 type alias Flags =
     { maybeKeyPair : Maybe KeyPair
-    , maybeTransaction : Maybe String
+    , maybeTransaction : Maybe Transaction
     , location : Location
     }
 
@@ -38,14 +39,14 @@ flagDecoder : Decode.Decoder Flags
 flagDecoder =
     Decode.map3 Flags
         (Decode.field "maybeKeyPair" (Decode.nullable KeyPair.decoder))
-        (Decode.field "maybeTransaction" (Decode.nullable Decode.string))
+        (Decode.field "maybeTransaction" (Decode.nullable Transaction.decoder))
         (Decode.field "location" locationDecoder)
 
 
 type Model
     = KeyPairList KeyPair
     | KeyPairSetup Page.KeyPairSetup.Model
-    | SignTransaction
+    | SignTransaction KeyPair Transaction
     | NotFound
 
 
@@ -53,26 +54,32 @@ init : Decode.Value -> ( Model, Cmd Msg )
 init flags =
     let
         { maybeKeyPair, maybeTransaction, location } =
-            flags
-                |> Decode.decodeValue flagDecoder
-                |> Result.withDefault
-                    (Flags Nothing Nothing (Location ""))
+            case Decode.decodeValue flagDecoder flags of
+                Ok decodedFlags ->
+                    decodedFlags
+
+                Err err ->
+                    let
+                        _ =
+                            Debug.log "flags decode error" err
+                    in
+                    Flags Nothing Nothing (Location "")
 
         model =
-            case ( location.hash, maybeKeyPair, maybeTransaction ) of
+            case ( Debug.log "WalletPopup.init.location" location.hash, maybeKeyPair, maybeTransaction ) of
                 ( "#keys", Nothing, Nothing ) ->
                     KeyPairSetup Page.KeyPairSetup.init
 
                 ( "#keys", Just keyPair, Nothing ) ->
                     KeyPairList keyPair
 
-                ( "#sign", Just _, Just _ ) ->
-                    SignTransaction
+                ( "#sign", Just keyPair, Just transaction ) ->
+                    SignTransaction keyPair transaction
 
                 ( _, _, _ ) ->
                     NotFound
     in
-    ( model, Cmd.none )
+    ( Debug.log "WalletPopup.init.Model" model, Cmd.none )
 
 
 
@@ -197,8 +204,8 @@ view model =
                     , Element.map PageKeyPairSetup <| pageView
                     )
 
-                SignTransaction ->
-                    Page.SignTransaction.view
+                SignTransaction keyPair transaction ->
+                    Page.SignTransaction.view keyPair transaction
 
                 NotFound ->
                     Page.NotFound.view
