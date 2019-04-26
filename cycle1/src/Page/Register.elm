@@ -33,7 +33,7 @@ type Model
 
 init : Model
 init =
-    Model Contract Project.init (FieldError False False)
+    Model Info Project.init (FieldError False False)
 
 
 

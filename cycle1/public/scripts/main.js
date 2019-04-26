@@ -9886,11 +9886,11 @@ var author$project$Main$Project = {$: 'Project'};
 var author$project$Main$Register = function (a) {
 	return {$: 'Register', a: a};
 };
-var author$project$Page$Register$Contract = {$: 'Contract'};
 var author$project$Page$Register$FieldError = F2(
 	function (a, b) {
 		return {$: 'FieldError', a: a, b: b};
 	});
+var author$project$Page$Register$Info = {$: 'Info'};
 var author$project$Page$Register$Model = F3(
 	function (a, b, c) {
 		return {$: 'Model', a: a, b: b, c: c};
@@ -9911,7 +9911,7 @@ var author$project$Project$Contract$default = A3(author$project$Project$Contract
 var author$project$Project$init = A2(author$project$Project$Project, author$project$Project$initMeta, author$project$Project$Contract$default);
 var author$project$Page$Register$init = A3(
 	author$project$Page$Register$Model,
-	author$project$Page$Register$Contract,
+	author$project$Page$Register$Info,
 	author$project$Project$init,
 	A2(author$project$Page$Register$FieldError, false, false));
 var author$project$Main$pageFromRoute = function (maybeRoute) {
@@ -10338,6 +10338,7 @@ var author$project$Overlay$WalletSetup$update = F2(
 				{step: author$project$Overlay$WalletSetup$Pick}),
 			elm$core$Platform$Cmd$none);
 	});
+var author$project$Page$Register$Contract = {$: 'Contract'};
 var author$project$Page$Register$ContractMsg = function (a) {
 	return {$: 'ContractMsg', a: a};
 };
