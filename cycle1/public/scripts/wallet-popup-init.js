@@ -1,12 +1,12 @@
 (function() {
-  console.log('oscoin wallet | popup | init', window.location)
+  console.log('oscoin wallet | popup | init')
 
   // Get background object to call API on it and current key pair if exists.
   let background = browser.extension.getBackgroundPage()
-  let maybeKeyPair = background.getKeyPair() || null
-  let maybeTransaction = background.getTransaction() || null
+  let maybeKeyPair = background.getKeyPair()
+  let maybeTransaction = background.getTransaction()
 
-  // Init elm ui.
+  // Init elm uid#1z1qqm6d5yb3wqngb9pfhjwf6yuhjj6x3f89prxepuinae18mr85.
   var popup = Elm.WalletPopup.init({
     flags: {
       maybeKeyPair,

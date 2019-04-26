@@ -4870,35 +4870,36 @@ function _Browser_load(url)
 		}
 	}));
 }
-var author$project$Page$KeyPairList$init = function (keyPair) {
-	return keyPair;
-};
 var author$project$Page$KeyPairSetup$Initial = {$: 'Initial'};
 var author$project$Page$KeyPairSetup$Model = F2(
 	function (keyPairId, step) {
 		return {keyPairId: keyPairId, step: step};
 	});
 var author$project$Page$KeyPairSetup$init = A2(author$project$Page$KeyPairSetup$Model, '', author$project$Page$KeyPairSetup$Initial);
+var author$project$WalletPopup$Flags = F3(
+	function (maybeKeyPair, maybeTransaction, location) {
+		return {location: location, maybeKeyPair: maybeKeyPair, maybeTransaction: maybeTransaction};
+	});
 var author$project$WalletPopup$KeyPairList = function (a) {
 	return {$: 'KeyPairList', a: a};
 };
 var author$project$WalletPopup$KeyPairSetup = function (a) {
 	return {$: 'KeyPairSetup', a: a};
 };
-var author$project$WalletPopup$SignTransaction = {$: 'SignTransaction'};
-var elm$core$Basics$apL = F2(
-	function (f, x) {
-		return f(x);
-	});
-var elm$core$Basics$False = {$: 'False'};
-var elm$core$Basics$True = {$: 'True'};
-var elm$core$Result$isOk = function (result) {
-	if (result.$ === 'Ok') {
-		return true;
-	} else {
-		return false;
-	}
+var author$project$WalletPopup$Location = function (hash) {
+	return {hash: hash};
 };
+var author$project$WalletPopup$NotFound = {$: 'NotFound'};
+var author$project$WalletPopup$SignTransaction = {$: 'SignTransaction'};
+var author$project$KeyPair$KeyPair = F2(
+	function (a, b) {
+		return {$: 'KeyPair', a: a, b: b};
+	});
+var elm$core$Array$branchFactor = 32;
+var elm$core$Array$Array_elm_builtin = F4(
+	function (a, b, c, d) {
+		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
+	});
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$GT = {$: 'GT'};
 var elm$core$Basics$LT = {$: 'LT'};
@@ -4979,11 +4980,6 @@ var elm$core$Array$foldr = F3(
 var elm$core$Array$toList = function (array) {
 	return A3(elm$core$Array$foldr, elm$core$List$cons, _List_Nil, array);
 };
-var elm$core$Array$branchFactor = 32;
-var elm$core$Array$Array_elm_builtin = F4(
-	function (a, b, c, d) {
-		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
-	});
 var elm$core$Basics$ceiling = _Basics_ceiling;
 var elm$core$Basics$fdiv = _Basics_fdiv;
 var elm$core$Basics$logBase = F2(
@@ -5072,6 +5068,10 @@ var elm$core$Array$treeFromBuilder = F2(
 		}
 	});
 var elm$core$Basics$add = _Basics_add;
+var elm$core$Basics$apL = F2(
+	function (f, x) {
+		return f(x);
+	});
 var elm$core$Basics$floor = _Basics_floor;
 var elm$core$Basics$gt = _Utils_gt;
 var elm$core$Basics$max = F2(
@@ -5104,6 +5104,7 @@ var elm$core$Array$builderToArray = F2(
 				builder.tail);
 		}
 	});
+var elm$core$Basics$False = {$: 'False'};
 var elm$core$Basics$idiv = _Basics_idiv;
 var elm$core$Basics$lt = _Utils_lt;
 var elm$core$Elm$JsArray$initialize = _JsArray_initialize;
@@ -5155,6 +5156,14 @@ var elm$core$Result$Err = function (a) {
 };
 var elm$core$Result$Ok = function (a) {
 	return {$: 'Ok', a: a};
+};
+var elm$core$Basics$True = {$: 'True'};
+var elm$core$Result$isOk = function (result) {
+	if (result.$ === 'Ok') {
+		return true;
+	} else {
+		return false;
+	}
 };
 var elm$json$Json$Decode$Failure = F2(
 	function (a, b) {
@@ -5361,68 +5370,101 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 			}
 		}
 	});
+var elm$json$Json$Decode$field = _Json_decodeField;
+var elm$json$Json$Decode$map2 = _Json_map2;
+var elm$json$Json$Decode$string = _Json_decodeString;
+var author$project$KeyPair$decoder = A3(
+	elm$json$Json$Decode$map2,
+	author$project$KeyPair$KeyPair,
+	A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$string),
+	A2(elm$json$Json$Decode$field, 'pubKey', elm$json$Json$Decode$string));
+var elm$json$Json$Decode$map = _Json_map1;
+var author$project$WalletPopup$locationDecoder = A2(
+	elm$json$Json$Decode$map,
+	author$project$WalletPopup$Location,
+	A2(elm$json$Json$Decode$field, 'hash', elm$json$Json$Decode$string));
+var elm$json$Json$Decode$map3 = _Json_map3;
+var elm$json$Json$Decode$null = _Json_decodeNull;
+var elm$json$Json$Decode$oneOf = _Json_oneOf;
+var elm$json$Json$Decode$nullable = function (decoder) {
+	return elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
+				A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, decoder)
+			]));
+};
+var author$project$WalletPopup$flagDecoder = A4(
+	elm$json$Json$Decode$map3,
+	author$project$WalletPopup$Flags,
+	A2(
+		elm$json$Json$Decode$field,
+		'maybeKeyPair',
+		elm$json$Json$Decode$nullable(author$project$KeyPair$decoder)),
+	A2(
+		elm$json$Json$Decode$field,
+		'maybeTransaction',
+		elm$json$Json$Decode$nullable(elm$json$Json$Decode$string)),
+	A2(elm$json$Json$Decode$field, 'location', author$project$WalletPopup$locationDecoder));
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
+var elm$core$Result$withDefault = F2(
+	function (def, result) {
+		if (result.$ === 'Ok') {
+			var a = result.a;
+			return a;
+		} else {
+			return def;
+		}
+	});
+var elm$json$Json$Decode$decodeValue = _Json_run;
 var author$project$WalletPopup$init = function (flags) {
+	var _n0 = A2(
+		elm$core$Result$withDefault,
+		A3(
+			author$project$WalletPopup$Flags,
+			elm$core$Maybe$Nothing,
+			elm$core$Maybe$Nothing,
+			author$project$WalletPopup$Location('')),
+		A2(elm$json$Json$Decode$decodeValue, author$project$WalletPopup$flagDecoder, flags));
+	var maybeKeyPair = _n0.maybeKeyPair;
+	var maybeTransaction = _n0.maybeTransaction;
+	var location = _n0.location;
 	var model = function () {
-		var _n0 = _Utils_Tuple3(flags.location.hash, flags.maybeKeyPair, flags.maybeTransaction);
-		_n0$3:
+		var _n1 = _Utils_Tuple3(location.hash, maybeKeyPair, maybeTransaction);
+		_n1$3:
 		while (true) {
-			if (_n0.b.$ === 'Nothing') {
-				if ((_n0.a === '#keys') && (_n0.c.$ === 'Nothing')) {
-					var _n1 = _n0.b;
-					var _n2 = _n0.c;
+			if (_n1.b.$ === 'Nothing') {
+				if ((_n1.a === '#keys') && (_n1.c.$ === 'Nothing')) {
+					var _n2 = _n1.b;
+					var _n3 = _n1.c;
 					return author$project$WalletPopup$KeyPairSetup(author$project$Page$KeyPairSetup$init);
 				} else {
-					break _n0$3;
+					break _n1$3;
 				}
 			} else {
-				if (_n0.c.$ === 'Nothing') {
-					if (_n0.a === '#keys') {
-						var keyPair = _n0.b.a;
-						var _n3 = _n0.c;
-						return author$project$WalletPopup$KeyPairList(
-							author$project$Page$KeyPairList$init(keyPair));
+				if (_n1.c.$ === 'Nothing') {
+					if (_n1.a === '#keys') {
+						var keyPair = _n1.b.a;
+						var _n4 = _n1.c;
+						return author$project$WalletPopup$KeyPairList(keyPair);
 					} else {
-						break _n0$3;
+						break _n1$3;
 					}
 				} else {
-					if (_n0.a === '#sign') {
+					if (_n1.a === '#sign') {
 						return author$project$WalletPopup$SignTransaction;
 					} else {
-						break _n0$3;
+						break _n1$3;
 					}
 				}
 			}
 		}
-		return author$project$WalletPopup$KeyPairSetup(author$project$Page$KeyPairSetup$init);
+		return author$project$WalletPopup$NotFound;
 	}();
 	return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 };
-var author$project$KeyPair$KeyPair = function (a) {
-	return {$: 'KeyPair', a: a};
-};
-var elm$core$Basics$identity = function (x) {
-	return x;
-};
-var elm$json$Json$Decode$andThen = _Json_andThen;
-var elm$json$Json$Decode$fail = _Json_fail;
-var elm$json$Json$Decode$string = _Json_decodeString;
-var elm$json$Json$Decode$succeed = _Json_succeed;
-var author$project$KeyPair$decoder = A2(
-	elm$json$Json$Decode$andThen,
-	function (str) {
-		if (str === '') {
-			return elm$json$Json$Decode$fail('empty key pair');
-		} else {
-			var keyPair = str;
-			return elm$json$Json$Decode$succeed(
-				author$project$KeyPair$KeyPair(keyPair));
-		}
-	},
-	elm$json$Json$Decode$string);
 var elm$core$Debug$log = _Debug_log;
-var elm$json$Json$Decode$decodeValue = _Json_run;
 var author$project$KeyPair$decode = function (json) {
 	var _n0 = A2(elm$json$Json$Decode$decodeValue, author$project$KeyPair$decoder, json);
 	if (_n0.$ === 'Ok') {
@@ -5554,11 +5596,23 @@ var author$project$WalletPopup$update = F2(
 								portCmd
 							])));
 			} else {
-				var subCmd = _n0.a.a;
 				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 			}
 		}
 	});
+var elm$core$String$slice = _String_slice;
+var author$project$KeyPair$toString = function (keyPair) {
+	var id = keyPair.a;
+	var pk = keyPair.b;
+	return A2(
+		elm$core$String$join,
+		'#',
+		_List_fromArray(
+			[
+				id,
+				A3(elm$core$String$slice, 0, 6, pk)
+			]));
+};
 var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
 	function (a, b, c, d) {
 		return {$: 'Rgba', a: a, b: b, c: c, d: d};
@@ -5895,8 +5949,10 @@ var mdgriffith$elm_ui$Internal$Model$asEl = mdgriffith$elm_ui$Internal$Model$AsE
 var mdgriffith$elm_ui$Internal$Model$AsParagraph = {$: 'AsParagraph'};
 var mdgriffith$elm_ui$Internal$Model$asParagraph = mdgriffith$elm_ui$Internal$Model$AsParagraph;
 var elm$core$Basics$not = _Basics_not;
-var elm$json$Json$Decode$map = _Json_map1;
-var elm$json$Json$Decode$map2 = _Json_map2;
+var elm$core$Basics$identity = function (x) {
+	return x;
+};
+var elm$json$Json$Decode$succeed = _Json_succeed;
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
 		case 'Normal':
@@ -11189,7 +11245,8 @@ var author$project$Page$KeyPairList$view = function (keyPair) {
 					A2(
 					mdgriffith$elm_ui$Element$el,
 					_List_Nil,
-					mdgriffith$elm_ui$Element$text(keyPair))
+					mdgriffith$elm_ui$Element$text(
+						author$project$KeyPair$toString(keyPair)))
 				])));
 };
 var author$project$Style$Font$fontGTAmericaMedium = mdgriffith$elm_ui$Element$Font$typeface('GT America Medium');
@@ -11482,7 +11539,7 @@ var author$project$Page$KeyPairSetup$viewInitial = A2(
 			mdgriffith$elm_ui$Element$centerX,
 			mdgriffith$elm_ui$Element$Events$onClick(author$project$Page$KeyPairSetup$MoveStepSetup)
 		]),
-	author$project$Atom$Button$accent('Set up key pair'));
+	A2(author$project$Atom$Button$accent, _List_Nil, 'Set up key pair'));
 var author$project$Page$KeyPairSetup$Complete = {$: 'Complete'};
 var author$project$Page$KeyPairSetup$viewPassphrase = A2(
 	mdgriffith$elm_ui$Element$el,
@@ -11491,7 +11548,7 @@ var author$project$Page$KeyPairSetup$viewPassphrase = A2(
 			mdgriffith$elm_ui$Element$centerX,
 			mdgriffith$elm_ui$Element$Events$onClick(author$project$Page$KeyPairSetup$Complete)
 		]),
-	author$project$Atom$Button$accent('All done!'));
+	A2(author$project$Atom$Button$accent, _List_Nil, 'All done!'));
 var author$project$Page$KeyPairSetup$Create = function (a) {
 	return {$: 'Create', a: a};
 };
@@ -11521,7 +11578,6 @@ var elm$html$Html$Events$stopPropagationOn = F2(
 			event,
 			elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
 	});
-var elm$json$Json$Decode$field = _Json_decodeField;
 var elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3(elm$core$List$foldr, elm$json$Json$Decode$field, decoder, fields);
@@ -12301,7 +12357,7 @@ var author$project$Page$KeyPairSetup$viewSetup = function (id) {
 						mdgriffith$elm_ui$Element$Events$onClick(
 						author$project$Page$KeyPairSetup$Create(id))
 					]),
-				author$project$Atom$Button$accent('Create'))
+				A2(author$project$Atom$Button$accent, _List_Nil, 'Create'))
 			]));
 };
 var author$project$Page$KeyPairSetup$view = function (model) {
@@ -13470,7 +13526,6 @@ var elm$browser$Debugger$Expando$seqTypeToString = F2(
 				return 'Array(' + (elm$core$String$fromInt(n) + ')');
 		}
 	});
-var elm$core$String$slice = _String_slice;
 var elm$core$String$left = F2(
 	function (n, string) {
 		return (n < 1) ? '' : A3(elm$core$String$slice, 0, n, string);
@@ -14613,7 +14668,6 @@ var elm$browser$Debugger$Metadata$decodeUnion = A3(
 		'tags',
 		elm$json$Json$Decode$dict(
 			elm$json$Json$Decode$list(elm$json$Json$Decode$string))));
-var elm$json$Json$Decode$map3 = _Json_map3;
 var elm$browser$Debugger$Metadata$decodeTypes = A4(
 	elm$json$Json$Decode$map3,
 	elm$browser$Debugger$Metadata$Types,
@@ -16580,50 +16634,6 @@ var elm$url$Url$fromString = function (str) {
 		A2(elm$core$String$dropLeft, 8, str)) : elm$core$Maybe$Nothing);
 };
 var elm$browser$Browser$document = _Browser_document;
-var elm$json$Json$Decode$null = _Json_decodeNull;
-var elm$json$Json$Decode$oneOf = _Json_oneOf;
 var author$project$WalletPopup$main = elm$browser$Browser$document(
 	{init: author$project$WalletPopup$init, subscriptions: author$project$WalletPopup$subscriptions, update: author$project$WalletPopup$update, view: author$project$WalletPopup$view});
-_Platform_export({'WalletPopup':{'init':author$project$WalletPopup$main(
-	A2(
-		elm$json$Json$Decode$andThen,
-		function (maybeTransaction) {
-			return A2(
-				elm$json$Json$Decode$andThen,
-				function (maybeKeyPair) {
-					return A2(
-						elm$json$Json$Decode$andThen,
-						function (location) {
-							return elm$json$Json$Decode$succeed(
-								{location: location, maybeKeyPair: maybeKeyPair, maybeTransaction: maybeTransaction});
-						},
-						A2(
-							elm$json$Json$Decode$field,
-							'location',
-							A2(
-								elm$json$Json$Decode$andThen,
-								function (hash) {
-									return elm$json$Json$Decode$succeed(
-										{hash: hash});
-								},
-								A2(elm$json$Json$Decode$field, 'hash', elm$json$Json$Decode$string))));
-				},
-				A2(
-					elm$json$Json$Decode$field,
-					'maybeKeyPair',
-					elm$json$Json$Decode$oneOf(
-						_List_fromArray(
-							[
-								elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
-								A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
-							]))));
-		},
-		A2(
-			elm$json$Json$Decode$field,
-			'maybeTransaction',
-			elm$json$Json$Decode$oneOf(
-				_List_fromArray(
-					[
-						elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
-						A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, elm$json$Json$Decode$string)
-					])))))({"versions":{"elm":"0.19.0"},"types":{"message":"WalletPopup.Msg","aliases":{},"unions":{"WalletPopup.Msg":{"args":[],"tags":{"KeyPairCreated":["Maybe.Maybe KeyPair.KeyPair"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"]}},"KeyPair.KeyPair":{"args":[],"tags":{"KeyPair":["String.String"]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));
+_Platform_export({'WalletPopup':{'init':author$project$WalletPopup$main(elm$json$Json$Decode$value)({"versions":{"elm":"0.19.0"},"types":{"message":"WalletPopup.Msg","aliases":{"KeyPair.ID":{"args":[],"type":"String.String"},"KeyPair.PubKey":{"args":[],"type":"String.String"}},"unions":{"WalletPopup.Msg":{"args":[],"tags":{"KeyPairCreated":["Maybe.Maybe KeyPair.KeyPair"],"PageKeyPairSetup":["Page.KeyPairSetup.Msg"]}},"KeyPair.KeyPair":{"args":[],"tags":{"KeyPair":["KeyPair.ID","KeyPair.PubKey"]}},"Page.KeyPairSetup.Msg":{"args":[],"tags":{"Complete":[],"Create":["String.String"],"MoveStepSetup":[],"MoveStepPassphrase":[],"UpdateId":["String.String"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}}}}})}});}(this));

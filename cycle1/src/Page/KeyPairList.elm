@@ -1,28 +1,16 @@
-module Page.KeyPairList exposing (Model, init, view)
+module Page.KeyPairList exposing (view)
 
 import Element exposing (Element)
+import KeyPair exposing (KeyPair)
 import Style.Color as Color
 import Style.Font as Font
-
-
-
--- MODEL
-
-
-type alias Model =
-    String
-
-
-init : String -> Model
-init keyPair =
-    keyPair
 
 
 
 -- VIEW
 
 
-view : Model -> ( String, Element msg )
+view : KeyPair -> ( String, Element msg )
 view keyPair =
     ( "key pair list"
     , Element.column
@@ -37,6 +25,6 @@ view keyPair =
             )
           <|
             Element.text "Key pair list"
-        , Element.el [] <| Element.text keyPair
+        , Element.el [] <| Element.text <| KeyPair.toString keyPair
         ]
     )
