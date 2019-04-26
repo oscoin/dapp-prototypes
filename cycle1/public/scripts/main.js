@@ -16516,31 +16516,34 @@ var elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
 var elm$svg$Svg$Attributes$strokeWidth = _VirtualDom_attribute('stroke-width');
 var elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
 var elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
+var mdgriffith$elm_ui$Internal$Model$unstyled = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Unstyled, elm$core$Basics$always);
+var mdgriffith$elm_ui$Element$html = mdgriffith$elm_ui$Internal$Model$unstyled;
 var author$project$Atom$Currency$largeCircle = function (bgColor) {
-	return A2(
-		elm$svg$Svg$svg,
-		_List_fromArray(
-			[
-				elm$svg$Svg$Attributes$width('20'),
-				elm$svg$Svg$Attributes$height('20'),
-				elm$svg$Svg$Attributes$viewBox('0 0 20 20'),
-				elm$svg$Svg$Attributes$fill('none')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				elm$svg$Svg$circle,
-				_List_fromArray(
-					[
-						elm$svg$Svg$Attributes$cx('10'),
-						elm$svg$Svg$Attributes$cy('10'),
-						elm$svg$Svg$Attributes$r('8.5'),
-						elm$svg$Svg$Attributes$stroke(
-						author$project$Style$Color$toCssString(bgColor)),
-						elm$svg$Svg$Attributes$strokeWidth('3')
-					]),
-				_List_Nil)
-			]));
+	return mdgriffith$elm_ui$Element$html(
+		A2(
+			elm$svg$Svg$svg,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$width('20'),
+					elm$svg$Svg$Attributes$height('20'),
+					elm$svg$Svg$Attributes$viewBox('0 0 20 20'),
+					elm$svg$Svg$Attributes$fill('none')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					elm$svg$Svg$circle,
+					_List_fromArray(
+						[
+							elm$svg$Svg$Attributes$cx('10'),
+							elm$svg$Svg$Attributes$cy('10'),
+							elm$svg$Svg$Attributes$r('8.5'),
+							elm$svg$Svg$Attributes$stroke(
+							author$project$Style$Color$toCssString(bgColor)),
+							elm$svg$Svg$Attributes$strokeWidth('3')
+						]),
+					_List_Nil)
+				])));
 };
 var author$project$Style$Font$fontGTAmericaMonoBold = mdgriffith$elm_ui$Element$Font$typeface('GT America Mono Bold');
 var author$project$Style$Font$mediumHeaderMono = function (textColor) {
@@ -16553,8 +16556,6 @@ var author$project$Style$Font$mediumHeaderMono = function (textColor) {
 			mdgriffith$elm_ui$Element$Font$size(22)
 		]);
 };
-var mdgriffith$elm_ui$Internal$Model$unstyled = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Unstyled, elm$core$Basics$always);
-var mdgriffith$elm_ui$Element$html = mdgriffith$elm_ui$Internal$Model$unstyled;
 var author$project$Atom$Currency$large = F2(
 	function (amount, bgColor) {
 		return A2(
@@ -16562,11 +16563,7 @@ var author$project$Atom$Currency$large = F2(
 			_List_Nil,
 			_List_fromArray(
 				[
-					A2(
-					mdgriffith$elm_ui$Element$el,
-					_List_Nil,
-					mdgriffith$elm_ui$Element$html(
-						author$project$Atom$Currency$largeCircle(bgColor))),
+					author$project$Atom$Currency$largeCircle(bgColor),
 					A2(
 					mdgriffith$elm_ui$Element$el,
 					_Utils_ap(
@@ -16609,30 +16606,31 @@ var author$project$Atom$Heading$sectionWithInfo = F2(
 				]));
 	});
 var author$project$Atom$Currency$smallCircle = function (bgColor) {
-	return A2(
-		elm$svg$Svg$svg,
-		_List_fromArray(
-			[
-				elm$svg$Svg$Attributes$width('14'),
-				elm$svg$Svg$Attributes$height('14'),
-				elm$svg$Svg$Attributes$viewBox('0 0 14 14'),
-				elm$svg$Svg$Attributes$fill('none')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				elm$svg$Svg$circle,
-				_List_fromArray(
-					[
-						elm$svg$Svg$Attributes$cx('7'),
-						elm$svg$Svg$Attributes$cy('7'),
-						elm$svg$Svg$Attributes$r('6'),
-						elm$svg$Svg$Attributes$stroke(
-						author$project$Style$Color$toCssString(bgColor)),
-						elm$svg$Svg$Attributes$strokeWidth('2')
-					]),
-				_List_Nil)
-			]));
+	return mdgriffith$elm_ui$Element$html(
+		A2(
+			elm$svg$Svg$svg,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$width('14'),
+					elm$svg$Svg$Attributes$height('14'),
+					elm$svg$Svg$Attributes$viewBox('0 0 14 14'),
+					elm$svg$Svg$Attributes$fill('none')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					elm$svg$Svg$circle,
+					_List_fromArray(
+						[
+							elm$svg$Svg$Attributes$cx('7'),
+							elm$svg$Svg$Attributes$cy('7'),
+							elm$svg$Svg$Attributes$r('6'),
+							elm$svg$Svg$Attributes$stroke(
+							author$project$Style$Color$toCssString(bgColor)),
+							elm$svg$Svg$Attributes$strokeWidth('2')
+						]),
+					_List_Nil)
+				])));
 };
 var author$project$Style$Font$mediumBodyTextMono = function (textColor) {
 	return _List_fromArray(
@@ -16651,11 +16649,7 @@ var author$project$Atom$Currency$small = F2(
 			_List_Nil,
 			_List_fromArray(
 				[
-					A2(
-					mdgriffith$elm_ui$Element$el,
-					_List_Nil,
-					mdgriffith$elm_ui$Element$html(
-						author$project$Atom$Currency$smallCircle(bgColor))),
+					author$project$Atom$Currency$smallCircle(bgColor),
 					A2(
 					mdgriffith$elm_ui$Element$el,
 					_Utils_ap(
