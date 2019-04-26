@@ -10338,7 +10338,78 @@ var author$project$Overlay$WalletSetup$update = F2(
 				{step: author$project$Overlay$WalletSetup$Pick}),
 			elm$core$Platform$Cmd$none);
 	});
+var author$project$Page$Register$ContractMsg = function (a) {
+	return {$: 'ContractMsg', a: a};
+};
 var author$project$Page$Register$Preview = {$: 'Preview'};
+var author$project$Project$Contract$mapDonation = F2(
+	function (change, _n0) {
+		var currentReward = _n0.a;
+		var currentDonation = _n0.b;
+		var currentRole = _n0.c;
+		return A3(
+			author$project$Project$Contract$Contract,
+			currentReward,
+			change(currentDonation),
+			currentRole);
+	});
+var author$project$Project$Contract$mapReward = F2(
+	function (change, _n0) {
+		var currentReward = _n0.a;
+		var currentDonation = _n0.b;
+		var currentRole = _n0.c;
+		return A3(
+			author$project$Project$Contract$Contract,
+			change(currentReward),
+			currentDonation,
+			currentRole);
+	});
+var author$project$Project$Contract$mapRole = F2(
+	function (change, _n0) {
+		var currentReward = _n0.a;
+		var currentDonation = _n0.b;
+		var currentRole = _n0.c;
+		return A3(
+			author$project$Project$Contract$Contract,
+			currentReward,
+			currentDonation,
+			change(currentRole));
+	});
+var author$project$Page$Register$Contract$update = F2(
+	function (msg, contract) {
+		switch (msg.$) {
+			case 'SetDonationRule':
+				var donation = msg.a;
+				return _Utils_Tuple2(
+					A2(
+						author$project$Project$Contract$mapDonation,
+						function (_n1) {
+							return donation;
+						},
+						contract),
+					elm$core$Platform$Cmd$none);
+			case 'SetRewardRule':
+				var reward = msg.a;
+				return _Utils_Tuple2(
+					A2(
+						author$project$Project$Contract$mapReward,
+						function (_n2) {
+							return reward;
+						},
+						contract),
+					elm$core$Platform$Cmd$none);
+			default:
+				var role = msg.a;
+				return _Utils_Tuple2(
+					A2(
+						author$project$Project$Contract$mapRole,
+						function (_n3) {
+							return role;
+						},
+						contract),
+					elm$core$Platform$Cmd$none);
+		}
+	});
 var author$project$Project$codeHostUrl = function (_n0) {
 	var meta = _n0.a;
 	return meta.codeHostUrl;
@@ -10425,39 +10496,6 @@ var author$project$Project$name = function (_n0) {
 	var meta = _n0.a;
 	return meta.name;
 };
-var author$project$Project$Contract$mapDonation = F2(
-	function (change, _n0) {
-		var currentReward = _n0.a;
-		var currentDonation = _n0.b;
-		var currentRole = _n0.c;
-		return A3(
-			author$project$Project$Contract$Contract,
-			currentReward,
-			change(currentDonation),
-			currentRole);
-	});
-var author$project$Project$Contract$mapReward = F2(
-	function (change, _n0) {
-		var currentReward = _n0.a;
-		var currentDonation = _n0.b;
-		var currentRole = _n0.c;
-		return A3(
-			author$project$Project$Contract$Contract,
-			change(currentReward),
-			currentDonation,
-			currentRole);
-	});
-var author$project$Project$Contract$mapRole = F2(
-	function (change, _n0) {
-		var currentReward = _n0.a;
-		var currentDonation = _n0.b;
-		var currentRole = _n0.c;
-		return A3(
-			author$project$Project$Contract$Contract,
-			currentReward,
-			currentDonation,
-			change(currentRole));
-	});
 var author$project$Page$Register$update = F2(
 	function (msg, _n0) {
 		var oldStep = _n0.a;
@@ -10479,6 +10517,21 @@ var author$project$Page$Register$update = F2(
 				return _Utils_Tuple2(
 					A3(author$project$Page$Register$Model, oldStep, oldProject, errors),
 					elm$core$Platform$Cmd$none);
+			case 'ContractMsg':
+				var subMsg = _n1.a;
+				var currentContract = author$project$Project$contract(oldProject);
+				var _n4 = A2(author$project$Page$Register$Contract$update, subMsg, currentContract);
+				var newContract = _n4.a;
+				var contractCmd = _n4.b;
+				var newProject = A2(
+					author$project$Project$mapContract,
+					function (_n5) {
+						return newContract;
+					},
+					oldProject);
+				return _Utils_Tuple2(
+					A3(author$project$Page$Register$Model, oldStep, newProject, fieldError),
+					A2(elm$core$Platform$Cmd$map, author$project$Page$Register$ContractMsg, contractCmd));
 			case 'MoveStepContract':
 				return _Utils_Tuple2(
 					A3(author$project$Page$Register$Model, author$project$Page$Register$Contract, oldProject, fieldError),
@@ -10492,60 +10545,6 @@ var author$project$Page$Register$update = F2(
 				return _Utils_Tuple2(
 					A3(author$project$Page$Register$Model, oldStep, project, fieldError),
 					elm$core$Platform$Cmd$none);
-			case 'SetDonationRule':
-				var donation = _n1.a;
-				var currentContract = author$project$Project$contract(oldProject);
-				var newContract = A2(
-					author$project$Project$Contract$mapDonation,
-					function (_n5) {
-						return donation;
-					},
-					currentContract);
-				var newProject = A2(
-					author$project$Project$mapContract,
-					function (_n4) {
-						return newContract;
-					},
-					oldProject);
-				return _Utils_Tuple2(
-					A3(author$project$Page$Register$Model, oldStep, newProject, fieldError),
-					elm$core$Platform$Cmd$none);
-			case 'SetRewardRule':
-				var reward = _n1.a;
-				var currentContract = author$project$Project$contract(oldProject);
-				var newContract = A2(
-					author$project$Project$Contract$mapReward,
-					function (_n7) {
-						return reward;
-					},
-					currentContract);
-				var newProject = A2(
-					author$project$Project$mapContract,
-					function (_n6) {
-						return newContract;
-					},
-					oldProject);
-				return _Utils_Tuple2(
-					A3(author$project$Page$Register$Model, oldStep, newProject, fieldError),
-					elm$core$Platform$Cmd$none);
-			case 'SetRoleRule':
-				var role = _n1.a;
-				var currentContract = author$project$Project$contract(oldProject);
-				var newContract = A2(
-					author$project$Project$Contract$mapRole,
-					function (_n9) {
-						return role;
-					},
-					currentContract);
-				var newProject = A2(
-					author$project$Project$mapContract,
-					function (_n8) {
-						return newContract;
-					},
-					oldProject);
-				return _Utils_Tuple2(
-					A3(author$project$Page$Register$Model, oldStep, newProject, fieldError),
-					elm$core$Platform$Cmd$none);
 			case 'UpdateCodeHostUrl':
 				var url = _n1.a;
 				return _Utils_Tuple2(
@@ -10554,7 +10553,7 @@ var author$project$Page$Register$update = F2(
 						oldStep,
 						A2(
 							author$project$Project$mapCodeHostUrl,
-							function (_n10) {
+							function (_n6) {
 								return url;
 							},
 							oldProject),
@@ -10568,7 +10567,7 @@ var author$project$Page$Register$update = F2(
 						oldStep,
 						A2(
 							author$project$Project$mapDescription,
-							function (_n11) {
+							function (_n7) {
 								return description;
 							},
 							oldProject),
@@ -10582,7 +10581,7 @@ var author$project$Page$Register$update = F2(
 						oldStep,
 						A2(
 							author$project$Project$mapImageUrl,
-							function (_n12) {
+							function (_n8) {
 								return url;
 							},
 							oldProject),
@@ -10596,7 +10595,7 @@ var author$project$Page$Register$update = F2(
 						oldStep,
 						A2(
 							author$project$Project$mapName,
-							function (_n13) {
+							function (_n9) {
 								return name;
 							},
 							oldProject),
@@ -10610,7 +10609,7 @@ var author$project$Page$Register$update = F2(
 						oldStep,
 						A2(
 							author$project$Project$mapWebsiteUrl,
-							function (_n14) {
+							function (_n10) {
 								return url;
 							},
 							oldProject),
@@ -17914,125 +17913,6 @@ var author$project$Page$Project$view = _Utils_Tuple2(
 				author$project$Project$contract(author$project$Page$Project$radicle))
 			])));
 var author$project$Page$Register$MoveStepPreview = {$: 'MoveStepPreview'};
-var author$project$Page$Register$SetDonationRule = function (a) {
-	return {$: 'SetDonationRule', a: a};
-};
-var author$project$Page$Register$SetRewardRule = function (a) {
-	return {$: 'SetRewardRule', a: a};
-};
-var author$project$Page$Register$SetRoleRule = function (a) {
-	return {$: 'SetRoleRule', a: a};
-};
-var author$project$Project$Contract$DonationCustom = F4(
-	function (a, b, c, d) {
-		return {$: 'DonationCustom', a: a, b: b, c: c, d: d};
-	});
-var author$project$Project$Contract$DonationEqualDependency = {$: 'DonationEqualDependency'};
-var author$project$Project$Contract$DonationEqualMaintainer = {$: 'DonationEqualMaintainer'};
-var author$project$Project$Contract$RewardCustom = F4(
-	function (a, b, c, d) {
-		return {$: 'RewardCustom', a: a, b: b, c: c, d: d};
-	});
-var author$project$Project$Contract$RewardEqualDependency = {$: 'RewardEqualDependency'};
-var author$project$Project$Contract$RewardEqualMainatainer = {$: 'RewardEqualMainatainer'};
-var author$project$Project$Contract$RewardFundSaving = {$: 'RewardFundSaving'};
-var author$project$Project$Contract$RoleMaintainerMultiSig = {$: 'RoleMaintainerMultiSig'};
-var author$project$Page$Register$viewContract = function (contract) {
-	var viewRoleOption = F2(
-		function (current, role) {
-			var button = _Utils_eq(current, role) ? author$project$Atom$Button$secondaryAccent(_List_Nil) : author$project$Atom$Button$secondary(_List_Nil);
-			return A2(
-				mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						mdgriffith$elm_ui$Element$Events$onClick(
-						author$project$Page$Register$SetRoleRule(role))
-					]),
-				button(
-					author$project$Project$Contract$roleString(role)));
-		});
-	var viewRewardOption = F2(
-		function (current, reward) {
-			var button = _Utils_eq(current, reward) ? author$project$Atom$Button$secondaryAccent(_List_Nil) : author$project$Atom$Button$secondary(_List_Nil);
-			return A2(
-				mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						mdgriffith$elm_ui$Element$Events$onClick(
-						author$project$Page$Register$SetRewardRule(reward))
-					]),
-				button(
-					author$project$Project$Contract$rewardString(reward)));
-		});
-	var viewDonationOption = F2(
-		function (current, donation) {
-			var button = _Utils_eq(current, donation) ? author$project$Atom$Button$secondaryAccent(_List_Nil) : author$project$Atom$Button$secondary(_List_Nil);
-			return A2(
-				mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						mdgriffith$elm_ui$Element$Events$onClick(
-						author$project$Page$Register$SetDonationRule(donation))
-					]),
-				button(
-					author$project$Project$Contract$donationString(donation)));
-		});
-	var roles = _List_fromArray(
-		[author$project$Project$Contract$RoleMaintainerSingleSigner, author$project$Project$Contract$RoleMaintainerMultiSig]);
-	var rewards = _List_fromArray(
-		[
-			author$project$Project$Contract$RewardBurn,
-			author$project$Project$Contract$RewardFundSaving,
-			author$project$Project$Contract$RewardEqualMainatainer,
-			author$project$Project$Contract$RewardEqualDependency,
-			A4(author$project$Project$Contract$RewardCustom, 10, 10, 10, 10)
-		]);
-	var donations = _List_fromArray(
-		[
-			author$project$Project$Contract$DonationFundSaving,
-			author$project$Project$Contract$DonationEqualMaintainer,
-			author$project$Project$Contract$DonationEqualDependency,
-			A4(author$project$Project$Contract$DonationCustom, 10, 10, 10, 10)
-		]);
-	var currentRole = author$project$Project$Contract$role(contract);
-	var currentReward = author$project$Project$Contract$reward(contract);
-	var currentDonation = author$project$Project$Contract$donation(contract);
-	return A2(
-		mdgriffith$elm_ui$Element$column,
-		_List_Nil,
-		_List_fromArray(
-			[
-				author$project$Atom$Heading$section('Project contract'),
-				A2(
-				mdgriffith$elm_ui$Element$row,
-				_List_Nil,
-				A2(
-					elm$core$List$map,
-					viewRewardOption(currentReward),
-					rewards)),
-				A2(
-				mdgriffith$elm_ui$Element$row,
-				_List_Nil,
-				A2(
-					elm$core$List$map,
-					viewDonationOption(currentDonation),
-					donations)),
-				A2(
-				mdgriffith$elm_ui$Element$row,
-				_List_Nil,
-				A2(
-					elm$core$List$map,
-					viewRoleOption(currentRole),
-					roles)),
-				A2(
-				mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						mdgriffith$elm_ui$Element$Events$onClick(author$project$Page$Register$MoveStepPreview)
-					]),
-				A2(author$project$Atom$Button$primary, _List_Nil, 'Next'))
-			]));
-};
 var author$project$Page$Register$BlurCodeHost = {$: 'BlurCodeHost'};
 var author$project$Page$Register$BlurName = {$: 'BlurName'};
 var author$project$Page$Register$UpdateCodeHostUrl = function (a) {
@@ -18899,6 +18779,118 @@ var author$project$Page$Register$viewPreview = function (project) {
 				A2(author$project$Atom$Button$primary, _List_Nil, 'Register this project'))
 			]));
 };
+var author$project$Project$Contract$DonationCustom = F4(
+	function (a, b, c, d) {
+		return {$: 'DonationCustom', a: a, b: b, c: c, d: d};
+	});
+var author$project$Project$Contract$DonationEqualDependency = {$: 'DonationEqualDependency'};
+var author$project$Project$Contract$DonationEqualMaintainer = {$: 'DonationEqualMaintainer'};
+var author$project$Page$Register$Contract$donations = _List_fromArray(
+	[
+		author$project$Project$Contract$DonationFundSaving,
+		author$project$Project$Contract$DonationEqualMaintainer,
+		author$project$Project$Contract$DonationEqualDependency,
+		A4(author$project$Project$Contract$DonationCustom, 10, 10, 10, 10)
+	]);
+var author$project$Project$Contract$RewardCustom = F4(
+	function (a, b, c, d) {
+		return {$: 'RewardCustom', a: a, b: b, c: c, d: d};
+	});
+var author$project$Project$Contract$RewardEqualDependency = {$: 'RewardEqualDependency'};
+var author$project$Project$Contract$RewardEqualMainatainer = {$: 'RewardEqualMainatainer'};
+var author$project$Project$Contract$RewardFundSaving = {$: 'RewardFundSaving'};
+var author$project$Page$Register$Contract$rewards = _List_fromArray(
+	[
+		author$project$Project$Contract$RewardBurn,
+		author$project$Project$Contract$RewardFundSaving,
+		author$project$Project$Contract$RewardEqualMainatainer,
+		author$project$Project$Contract$RewardEqualDependency,
+		A4(author$project$Project$Contract$RewardCustom, 10, 10, 10, 10)
+	]);
+var author$project$Project$Contract$RoleMaintainerMultiSig = {$: 'RoleMaintainerMultiSig'};
+var author$project$Page$Register$Contract$roles = _List_fromArray(
+	[author$project$Project$Contract$RoleMaintainerSingleSigner, author$project$Project$Contract$RoleMaintainerMultiSig]);
+var author$project$Page$Register$Contract$SetDonationRule = function (a) {
+	return {$: 'SetDonationRule', a: a};
+};
+var author$project$Page$Register$Contract$viewDonationOption = F2(
+	function (current, donation) {
+		var button = _Utils_eq(current, donation) ? author$project$Atom$Button$secondaryAccent(_List_Nil) : author$project$Atom$Button$secondary(_List_Nil);
+		return A2(
+			mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Events$onClick(
+					author$project$Page$Register$Contract$SetDonationRule(donation))
+				]),
+			button(
+				author$project$Project$Contract$donationString(donation)));
+	});
+var author$project$Page$Register$Contract$SetRewardRule = function (a) {
+	return {$: 'SetRewardRule', a: a};
+};
+var author$project$Page$Register$Contract$viewRewardOption = F2(
+	function (current, reward) {
+		var button = _Utils_eq(current, reward) ? author$project$Atom$Button$secondaryAccent(_List_Nil) : author$project$Atom$Button$secondary(_List_Nil);
+		return A2(
+			mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Events$onClick(
+					author$project$Page$Register$Contract$SetRewardRule(reward))
+				]),
+			button(
+				author$project$Project$Contract$rewardString(reward)));
+	});
+var author$project$Page$Register$Contract$SetRoleRule = function (a) {
+	return {$: 'SetRoleRule', a: a};
+};
+var author$project$Page$Register$Contract$viewRoleOption = F2(
+	function (current, role) {
+		var button = _Utils_eq(current, role) ? author$project$Atom$Button$secondaryAccent(_List_Nil) : author$project$Atom$Button$secondary(_List_Nil);
+		return A2(
+			mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Events$onClick(
+					author$project$Page$Register$Contract$SetRoleRule(role))
+				]),
+			button(
+				author$project$Project$Contract$roleString(role)));
+	});
+var author$project$Page$Register$Contract$view = function (contract) {
+	var currentRole = author$project$Project$Contract$role(contract);
+	var currentReward = author$project$Project$Contract$reward(contract);
+	var currentDonation = author$project$Project$Contract$donation(contract);
+	return A2(
+		mdgriffith$elm_ui$Element$column,
+		_List_Nil,
+		_List_fromArray(
+			[
+				author$project$Atom$Heading$section('Project contract'),
+				A2(
+				mdgriffith$elm_ui$Element$row,
+				_List_Nil,
+				A2(
+					elm$core$List$map,
+					author$project$Page$Register$Contract$viewRewardOption(currentReward),
+					author$project$Page$Register$Contract$rewards)),
+				A2(
+				mdgriffith$elm_ui$Element$row,
+				_List_Nil,
+				A2(
+					elm$core$List$map,
+					author$project$Page$Register$Contract$viewDonationOption(currentDonation),
+					author$project$Page$Register$Contract$donations)),
+				A2(
+				mdgriffith$elm_ui$Element$row,
+				_List_Nil,
+				A2(
+					elm$core$List$map,
+					author$project$Page$Register$Contract$viewRoleOption(currentRole),
+					author$project$Page$Register$Contract$roles))
+			]));
+};
 var author$project$Page$Register$view = function (_n0) {
 	var step = _n0.a;
 	var project = _n0.b;
@@ -18908,8 +18900,24 @@ var author$project$Page$Register$view = function (_n0) {
 			case 'Info':
 				return A2(author$project$Page$Register$viewInfo, project, fieldError);
 			case 'Contract':
-				return author$project$Page$Register$viewContract(
-					author$project$Project$contract(project));
+				return A2(
+					mdgriffith$elm_ui$Element$column,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							mdgriffith$elm_ui$Element$map,
+							author$project$Page$Register$ContractMsg,
+							author$project$Page$Register$Contract$view(
+								author$project$Project$contract(project))),
+							A2(
+							mdgriffith$elm_ui$Element$el,
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Element$Events$onClick(author$project$Page$Register$MoveStepPreview)
+								]),
+							A2(author$project$Atom$Button$primary, _List_Nil, 'Next'))
+						]));
 			default:
 				return author$project$Page$Register$viewPreview(project);
 		}
@@ -19308,4 +19316,4 @@ var author$project$Main$view = function (model) {
 var elm$browser$Browser$application = _Browser_application;
 var author$project$Main$main = elm$browser$Browser$application(
 	{init: author$project$Main$init, onUrlChange: author$project$Main$UrlChanged, onUrlRequest: author$project$Main$LinkClicked, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
-_Platform_export({'Main':{'init':author$project$Main$main(elm$json$Json$Decode$value)({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Project.Meta":{"args":[],"type":"{ codeHostUrl : String.String, description : String.String, imageUrl : String.String, name : String.String, websiteUrl : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["Maybe.Maybe KeyPair.KeyPair"],"KeyPairFetched":["Maybe.Maybe KeyPair.KeyPair"],"WalletWebExtPresent":["()"]}},"KeyPair.KeyPair":{"args":[],"tags":{"KeyPair":["String.String"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.Register.Msg":{"args":[],"tags":{"BlurCodeHost":[],"BlurName":[],"MoveStepContract":[],"MoveStepPreview":[],"Register":["Project.Project"],"SetDonationRule":["Project.Contract.Donation"],"SetRewardRule":["Project.Contract.Reward"],"SetRoleRule":["Project.Contract.Role"],"UpdateCodeHostUrl":["String.String"],"UpdateDescription":["String.String"],"UpdateImageUrl":["String.String"],"UpdateName":["String.String"],"UpdateWebsiteUrl":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"Project.Project":{"args":[],"tags":{"Project":["Project.Meta","Project.Contract.Contract"]}},"Project.Contract.Donation":{"args":[],"tags":{"DonationFundSaving":[],"DonationEqualMaintainer":[],"DonationEqualDependency":[],"DonationCustom":["Basics.Int","Basics.Int","Basics.Int","Basics.Int"]}},"Project.Contract.Reward":{"args":[],"tags":{"RewardBurn":[],"RewardFundSaving":[],"RewardEqualMainatainer":[],"RewardEqualDependency":[],"RewardCustom":["Basics.Int","Basics.Int","Basics.Int","Basics.Int"]}},"Project.Contract.Role":{"args":[],"tags":{"RoleMaintainerSingleSigner":[],"RoleMaintainerMultiSig":[]}},"Project.Contract.Contract":{"args":[],"tags":{"Contract":["Project.Contract.Reward","Project.Contract.Donation","Project.Contract.Role"]}}}}})}});}(this));
+_Platform_export({'Main':{'init':author$project$Main$main(elm$json$Json$Decode$value)({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Project.Meta":{"args":[],"type":"{ codeHostUrl : String.String, description : String.String, imageUrl : String.String, name : String.String, websiteUrl : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["Maybe.Maybe KeyPair.KeyPair"],"KeyPairFetched":["Maybe.Maybe KeyPair.KeyPair"],"WalletWebExtPresent":["()"]}},"KeyPair.KeyPair":{"args":[],"tags":{"KeyPair":["String.String"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.Register.Msg":{"args":[],"tags":{"BlurCodeHost":[],"BlurName":[],"ContractMsg":["Page.Register.Contract.Msg"],"MoveStepContract":[],"MoveStepPreview":[],"Register":["Project.Project"],"UpdateCodeHostUrl":["String.String"],"UpdateDescription":["String.String"],"UpdateImageUrl":["String.String"],"UpdateName":["String.String"],"UpdateWebsiteUrl":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"Page.Register.Contract.Msg":{"args":[],"tags":{"SetDonationRule":["Project.Contract.Donation"],"SetRewardRule":["Project.Contract.Reward"],"SetRoleRule":["Project.Contract.Role"]}},"Project.Project":{"args":[],"tags":{"Project":["Project.Meta","Project.Contract.Contract"]}},"Project.Contract.Contract":{"args":[],"tags":{"Contract":["Project.Contract.Reward","Project.Contract.Donation","Project.Contract.Role"]}},"Project.Contract.Donation":{"args":[],"tags":{"DonationFundSaving":[],"DonationEqualMaintainer":[],"DonationEqualDependency":[],"DonationCustom":["Basics.Int","Basics.Int","Basics.Int","Basics.Int"]}},"Project.Contract.Reward":{"args":[],"tags":{"RewardBurn":[],"RewardFundSaving":[],"RewardEqualMainatainer":[],"RewardEqualDependency":[],"RewardCustom":["Basics.Int","Basics.Int","Basics.Int","Basics.Int"]}},"Project.Contract.Role":{"args":[],"tags":{"RoleMaintainerSingleSigner":[],"RoleMaintainerMultiSig":[]}}}}})}});}(this));
