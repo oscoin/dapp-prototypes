@@ -3,8 +3,10 @@ window.addEventListener('DOMContentLoaded', (_) => {
 
   var app = Elm.Main.init({
     flags: {
-      keyPair: null,
-      wallet: document.getElementById('wallet') ? 'webext' : null
+      // keyPair: null,
+      // wallet: document.getElementById('wallet') ? 'webext' : null
+      keyPair: 'fakeID',
+      wallet: 'webext'
     },
     node: document.getElementById('app')
   });

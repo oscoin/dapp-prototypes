@@ -8,6 +8,7 @@ import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
 import Project exposing (Project)
+import Project.Contract as Contract exposing (Contract)
 import Style.Color as Color
 import Style.Font as Font
 
@@ -32,7 +33,7 @@ type Model
 
 init : Model
 init =
-    Model Info Project.init (FieldError False False)
+    Model Contract Project.init (FieldError False False)
 
 
 
@@ -45,6 +46,9 @@ type Msg
     | MoveStepContract
     | MoveStepPreview
     | Register Project
+    | SetDonationRule Contract.Donation
+    | SetRewardRule Contract.Reward
+    | SetRoleRule Contract.Role
     | UpdateCodeHostUrl String
     | UpdateDescription String
     | UpdateImageUrl String
@@ -92,6 +96,45 @@ update msg (Model oldStep oldProject fieldError) =
         Register project ->
             ( Model oldStep project fieldError, Cmd.none )
 
+        SetDonationRule donation ->
+            let
+                currentContract =
+                    Project.contract oldProject
+
+                newContract =
+                    Contract.mapDonation (\_ -> donation) currentContract
+
+                newProject =
+                    Project.mapContract (\_ -> newContract) oldProject
+            in
+            ( Model oldStep newProject fieldError, Cmd.none )
+
+        SetRewardRule reward ->
+            let
+                currentContract =
+                    Project.contract oldProject
+
+                newContract =
+                    Contract.mapReward (\_ -> reward) currentContract
+
+                newProject =
+                    Project.mapContract (\_ -> newContract) oldProject
+            in
+            ( Model oldStep newProject fieldError, Cmd.none )
+
+        SetRoleRule role ->
+            let
+                currentContract =
+                    Project.contract oldProject
+
+                newContract =
+                    Contract.mapRole (\_ -> role) currentContract
+
+                newProject =
+                    Project.mapContract (\_ -> newContract) oldProject
+            in
+            ( Model oldStep newProject fieldError, Cmd.none )
+
         UpdateCodeHostUrl url ->
             ( Model oldStep (Project.mapCodeHostUrl (\_ -> url) oldProject) fieldError, Cmd.none )
 
@@ -112,11 +155,92 @@ update msg (Model oldStep oldProject fieldError) =
 -- VIEW
 
 
-viewContract : Project -> Element Msg
-viewContract _ =
+viewContract : Contract -> Element Msg
+viewContract contract =
+    let
+        currentDonation =
+            Contract.donation contract
+
+        donations =
+            [ Contract.DonationFundSaving
+            , Contract.DonationEqualMaintainer
+            , Contract.DonationEqualDependency
+            , Contract.DonationCustom 10 10 10 10
+            ]
+
+        currentReward =
+            Contract.reward contract
+
+        rewards =
+            [ Contract.RewardBurn
+            , Contract.RewardFundSaving
+            , Contract.RewardEqualMainatainer
+            , Contract.RewardEqualDependency
+            , Contract.RewardCustom 10 10 10 10
+            ]
+
+        currentRole =
+            Contract.role contract
+
+        roles =
+            [ Contract.RoleMaintainerSingleSigner
+            , Contract.RoleMaintainerMultiSig
+            ]
+
+        viewDonationOption current donation =
+            let
+                button =
+                    if current == donation then
+                        Button.secondaryAccent []
+
+                    else
+                        Button.secondary []
+            in
+            Element.el
+                [ Events.onClick <| SetDonationRule donation
+                ]
+            <|
+                button <|
+                    Contract.donationString donation
+
+        viewRewardOption current reward =
+            let
+                button =
+                    if current == reward then
+                        Button.secondaryAccent []
+
+                    else
+                        Button.secondary []
+            in
+            Element.el
+                [ Events.onClick <| SetRewardRule reward
+                ]
+            <|
+                button <|
+                    Contract.rewardString reward
+
+        viewRoleOption current role =
+            let
+                button =
+                    if current == role then
+                        Button.secondaryAccent []
+
+                    else
+                        Button.secondary []
+            in
+            Element.el
+                [ Events.onClick <| SetRoleRule role
+                ]
+            <|
+                button <|
+                    Contract.roleString role
+    in
     Element.column
         []
         [ Heading.section "Project contract"
+        , Element.row [] <| List.map (viewRewardOption currentReward) rewards
+        , Element.row [] <| List.map (viewDonationOption currentDonation) donations
+        , Element.row [] <| List.map (viewRoleOption currentRole) roles
         , Element.el
             [ Events.onClick <| MoveStepPreview ]
           <|
@@ -235,7 +359,7 @@ view (Model step project fieldError) =
                     viewInfo project fieldError
 
                 Contract ->
-                    viewContract project
+                    viewContract <| Project.contract project
 
                 Preview ->
                     viewPreview project

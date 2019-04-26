@@ -1,10 +1,10 @@
 module Page.Project.Contract exposing (view)
 
 import Atom.Heading as Heading
-import Contract exposing (Contract)
 import Element exposing (Element)
 import Element.Background as Background
 import Element.Border as Border
+import Project.Contract as Contract exposing (Contract)
 import Style.Color as Color
 import Style.Font as Font
 
