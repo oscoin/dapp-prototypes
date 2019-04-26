@@ -7,6 +7,7 @@ import Element.Border as Border
 import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
+import Page.Register.Contract as Contract
 import Project exposing (Project)
 import Style.Color as Color
 import Style.Font as Font
@@ -42,6 +43,7 @@ init =
 type Msg
     = BlurCodeHost
     | BlurName
+    | ContractMsg Contract.Msg
     | MoveStepContract
     | MoveStepPreview
     | Register Project
@@ -83,6 +85,19 @@ update msg (Model oldStep oldProject fieldError) =
             in
             ( Model oldStep oldProject errors, Cmd.none )
 
+        ContractMsg subMsg ->
+            let
+                currentContract =
+                    Project.contract oldProject
+
+                ( newContract, contractCmd ) =
+                    Contract.update subMsg currentContract
+
+                newProject =
+                    Project.mapContract (\_ -> newContract) oldProject
+            in
+            ( Model oldStep newProject fieldError, Cmd.map ContractMsg contractCmd )
+
         MoveStepContract ->
             ( Model Contract oldProject fieldError, Cmd.none )
 
@@ -110,18 +125,6 @@ update msg (Model oldStep oldProject fieldError) =
 
 
 -- VIEW
-
-
-viewContract : Project -> Element Msg
-viewContract _ =
-    Element.column
-        []
-        [ Heading.section "Project contract"
-        , Element.el
-            [ Events.onClick <| MoveStepPreview ]
-          <|
-            Button.primary [] "Next"
-        ]
 
 
 viewInfoFormError : Bool -> Element Msg
@@ -235,7 +238,14 @@ view (Model step project fieldError) =
                     viewInfo project fieldError
 
                 Contract ->
-                    viewContract project
+                    Element.column
+                        []
+                        [ Element.map ContractMsg <| Contract.view <| Project.contract project
+                        , Element.el
+                            [ Events.onClick <| MoveStepPreview ]
+                          <|
+                            Button.primary [] "Next"
+                        ]
 
                 Preview ->
                     viewPreview project
