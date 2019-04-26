@@ -4893,20 +4893,10 @@ var author$project$Main$LinkClicked = function (a) {
 var author$project$Main$UrlChanged = function (a) {
 	return {$: 'UrlChanged', a: a};
 };
-var author$project$KeyPair$KeyPair = function (a) {
-	return {$: 'KeyPair', a: a};
-};
-var elm$core$Basics$apL = F2(
-	function (f, x) {
-		return f(x);
+var author$project$KeyPair$KeyPair = F2(
+	function (a, b) {
+		return {$: 'KeyPair', a: a, b: b};
 	});
-var elm$core$Basics$apR = F2(
-	function (x, f) {
-		return f(x);
-	});
-var elm$core$Basics$identity = function (x) {
-	return x;
-};
 var elm$core$Array$branchFactor = 32;
 var elm$core$Array$Array_elm_builtin = F4(
 	function (a, b, c, d) {
@@ -5054,6 +5044,10 @@ var elm$core$Array$compressNodes = F2(
 			}
 		}
 	});
+var elm$core$Basics$apR = F2(
+	function (x, f) {
+		return f(x);
+	});
 var elm$core$Basics$eq = _Utils_equal;
 var elm$core$Tuple$first = function (_n0) {
 	var x = _n0.a;
@@ -5076,6 +5070,10 @@ var elm$core$Array$treeFromBuilder = F2(
 		}
 	});
 var elm$core$Basics$add = _Basics_add;
+var elm$core$Basics$apL = F2(
+	function (f, x) {
+		return f(x);
+	});
 var elm$core$Basics$floor = _Basics_floor;
 var elm$core$Basics$gt = _Utils_gt;
 var elm$core$Basics$max = F2(
@@ -5374,27 +5372,22 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 			}
 		}
 	});
-var elm$json$Json$Decode$andThen = _Json_andThen;
-var elm$json$Json$Decode$fail = _Json_fail;
+var elm$json$Json$Decode$field = _Json_decodeField;
+var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$string = _Json_decodeString;
-var elm$json$Json$Decode$succeed = _Json_succeed;
-var author$project$KeyPair$decoder = A2(
-	elm$json$Json$Decode$andThen,
-	function (str) {
-		if (str === '') {
-			return elm$json$Json$Decode$fail('empty key pair');
-		} else {
-			var keyPair = str;
-			return elm$json$Json$Decode$succeed(
-				author$project$KeyPair$KeyPair(keyPair));
-		}
-	},
-	elm$json$Json$Decode$string);
+var author$project$KeyPair$decoder = A3(
+	elm$json$Json$Decode$map2,
+	author$project$KeyPair$KeyPair,
+	A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$string),
+	A2(elm$json$Json$Decode$field, 'pubKey', elm$json$Json$Decode$string));
 var author$project$Main$Flags = F2(
 	function (maybeKeyPair, maybeWallet) {
 		return {maybeKeyPair: maybeKeyPair, maybeWallet: maybeWallet};
 	});
 var author$project$Wallet$WebExt = {$: 'WebExt'};
+var elm$json$Json$Decode$andThen = _Json_andThen;
+var elm$json$Json$Decode$fail = _Json_fail;
+var elm$json$Json$Decode$succeed = _Json_succeed;
 var author$project$Wallet$decoder = A2(
 	elm$json$Json$Decode$andThen,
 	function (str) {
@@ -5408,8 +5401,6 @@ var author$project$Wallet$decoder = A2(
 		}
 	},
 	elm$json$Json$Decode$string);
-var elm$json$Json$Decode$field = _Json_decodeField;
-var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$null = _Json_decodeNull;
 var elm$json$Json$Decode$oneOf = _Json_oneOf;
@@ -5648,6 +5639,9 @@ var elm$core$Basics$never = function (_n0) {
 		_n0 = $temp$_n0;
 		continue never;
 	}
+};
+var elm$core$Basics$identity = function (x) {
+	return x;
 };
 var elm$core$Task$Perform = function (a) {
 	return {$: 'Perform', a: a};
@@ -10903,8 +10897,16 @@ var author$project$Main$update = F2(
 		}
 	});
 var author$project$KeyPair$toString = function (keyPair) {
-	var key = keyPair.a;
-	return key;
+	var id = keyPair.a;
+	var pk = keyPair.b;
+	return A2(
+		elm$core$String$join,
+		'#',
+		_List_fromArray(
+			[
+				id,
+				A3(elm$core$String$slice, 0, 6, pk)
+			]));
 };
 var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
 	return {$: 'AlignX', a: a};
@@ -19317,4 +19319,4 @@ var author$project$Main$view = function (model) {
 var elm$browser$Browser$application = _Browser_application;
 var author$project$Main$main = elm$browser$Browser$application(
 	{init: author$project$Main$init, onUrlChange: author$project$Main$UrlChanged, onUrlRequest: author$project$Main$LinkClicked, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
-_Platform_export({'Main':{'init':author$project$Main$main(elm$json$Json$Decode$value)({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Project.Meta":{"args":[],"type":"{ codeHostUrl : String.String, description : String.String, imageUrl : String.String, name : String.String, websiteUrl : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["Maybe.Maybe KeyPair.KeyPair"],"KeyPairFetched":["Maybe.Maybe KeyPair.KeyPair"],"WalletWebExtPresent":["()"]}},"KeyPair.KeyPair":{"args":[],"tags":{"KeyPair":["String.String"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.Register.Msg":{"args":[],"tags":{"BlurCodeHost":[],"BlurName":[],"ContractMsg":["Page.Register.Contract.Msg"],"MoveStepContract":[],"MoveStepPreview":[],"Register":["Project.Project"],"UpdateCodeHostUrl":["String.String"],"UpdateDescription":["String.String"],"UpdateImageUrl":["String.String"],"UpdateName":["String.String"],"UpdateWebsiteUrl":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"Page.Register.Contract.Msg":{"args":[],"tags":{"SetDonationRule":["Project.Contract.Donation"],"SetRewardRule":["Project.Contract.Reward"],"SetRoleRule":["Project.Contract.Role"]}},"Project.Project":{"args":[],"tags":{"Project":["Project.Meta","Project.Contract.Contract"]}},"Project.Contract.Contract":{"args":[],"tags":{"Contract":["Project.Contract.Reward","Project.Contract.Donation","Project.Contract.Role"]}},"Project.Contract.Donation":{"args":[],"tags":{"DonationFundSaving":[],"DonationEqualMaintainer":[],"DonationEqualDependency":[],"DonationCustom":["Basics.Int","Basics.Int","Basics.Int","Basics.Int"]}},"Project.Contract.Reward":{"args":[],"tags":{"RewardBurn":[],"RewardFundSaving":[],"RewardEqualMainatainer":[],"RewardEqualDependency":[],"RewardCustom":["Basics.Int","Basics.Int","Basics.Int","Basics.Int"]}},"Project.Contract.Role":{"args":[],"tags":{"RoleMaintainerSingleSigner":[],"RoleMaintainerMultiSig":[]}}}}})}});}(this));
+_Platform_export({'Main':{'init':author$project$Main$main(elm$json$Json$Decode$value)({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"KeyPair.ID":{"args":[],"type":"String.String"},"KeyPair.PubKey":{"args":[],"type":"String.String"},"Project.Meta":{"args":[],"type":"{ codeHostUrl : String.String, description : String.String, imageUrl : String.String, name : String.String, websiteUrl : String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"UrlChanged":["Url.Url"],"LinkClicked":["Browser.UrlRequest"],"OverlayWalletSetup":["Overlay.WalletSetup.Msg"],"PageRegister":["Page.Register.Msg"],"TopBarMsg":["TopBar.Msg"],"KeyPairCreated":["Maybe.Maybe KeyPair.KeyPair"],"KeyPairFetched":["Maybe.Maybe KeyPair.KeyPair"],"WalletWebExtPresent":["()"]}},"KeyPair.KeyPair":{"args":[],"tags":{"KeyPair":["KeyPair.ID","KeyPair.PubKey"]}},"Overlay.WalletSetup.Msg":{"args":[],"tags":{"MoveToPick":[]}},"Page.Register.Msg":{"args":[],"tags":{"BlurCodeHost":[],"BlurName":[],"ContractMsg":["Page.Register.Contract.Msg"],"MoveStepContract":[],"MoveStepPreview":[],"Register":["Project.Project"],"UpdateCodeHostUrl":["String.String"],"UpdateDescription":["String.String"],"UpdateImageUrl":["String.String"],"UpdateName":["String.String"],"UpdateWebsiteUrl":["String.String"]}},"TopBar.Msg":{"args":[],"tags":{"SearchUpdated":["String.String"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"Page.Register.Contract.Msg":{"args":[],"tags":{"SetDonationRule":["Project.Contract.Donation"],"SetRewardRule":["Project.Contract.Reward"],"SetRoleRule":["Project.Contract.Role"]}},"Project.Project":{"args":[],"tags":{"Project":["Project.Meta","Project.Contract.Contract"]}},"Project.Contract.Contract":{"args":[],"tags":{"Contract":["Project.Contract.Reward","Project.Contract.Donation","Project.Contract.Role"]}},"Project.Contract.Donation":{"args":[],"tags":{"DonationFundSaving":[],"DonationEqualMaintainer":[],"DonationEqualDependency":[],"DonationCustom":["Basics.Int","Basics.Int","Basics.Int","Basics.Int"]}},"Project.Contract.Reward":{"args":[],"tags":{"RewardBurn":[],"RewardFundSaving":[],"RewardEqualMainatainer":[],"RewardEqualDependency":[],"RewardCustom":["Basics.Int","Basics.Int","Basics.Int","Basics.Int"]}},"Project.Contract.Role":{"args":[],"tags":{"RoleMaintainerSingleSigner":[],"RoleMaintainerMultiSig":[]}}}}})}});}(this));

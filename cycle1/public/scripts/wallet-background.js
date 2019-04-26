@@ -1,4 +1,9 @@
+import { encode } from './base32.js'
+
 console.log('oscoin wallet | background | init')
+
+console.log(nacl.sign.keyPair())
+console.log(encode(nacl.sign.keyPair().publicKey))
 
 // Set the wallet icon dynamically.
 browser.browserAction.setIcon({ path: "icons/wallet-error.svg" })
@@ -75,9 +80,14 @@ function getCurrentTab() {
 }
 
 function createKeyPair(id) {
-  keyPair = id
+  let keys = nacl.sign.keyPair().publicKey
 
-  return id
+  keyPair = {
+    id: id,
+    pubKey: encode(nacl.sign.keyPair().publicKey),
+  }
+
+  return keyPair
 }
 
 function getKeyPair() {
@@ -95,3 +105,9 @@ function keyPairSetupComplete() {
 function getTransaction() {
   return transaction
 }
+
+// Public API for popup script.
+window.createKeyPair = createKeyPair
+window.getKeyPair = getKeyPair
+window.keyPairSetupComplete = keyPairSetupComplete;
+window.getTransaction = getTransaction

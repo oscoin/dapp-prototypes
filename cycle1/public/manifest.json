@@ -13,13 +13,11 @@
     "*://localhost:8000/*"
   ],
   "browser_action": {
-    "default_popup": "wallet-popup.html",
+    "default_popup": "wallet-popup.html#keys",
     "default_title": "oscoin wallet"
   },
   "background": {
-    "scripts": [
-      "scripts/wallet-background.js"
-    ],
+    "page": "wallet-background.html",
     "persistent": true
   },
   "content_scripts": [
