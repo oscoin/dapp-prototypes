@@ -4,39 +4,7 @@ import nacl from 'tweetnacl'
 
 console.log('oscoin wallet | background | init')
 
-let projectAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd'
-let tx = {
-  hash: '',
-  fee: 1038,
-  messages: [
-    { type: 'project-registration', address: projectAddr },
-    {
-      type: 'update-contract-rule',
-      address: projectAddr,
-      ruleChange: { type: 'reward', old: 'EqualDependency', new: 'Burn' },
-    },
-    {
-      type: 'update-contract-rule',
-      address: projectAddr,
-      ruleChange: {
-        type: 'donation',
-        old: 'FundSaving',
-        new: 'EqualMaintainer',
-      },
-    },
-    {
-      type: 'update-contract-rule',
-      address: projectAddr,
-      ruleChange: {
-        type: 'role',
-        old: 'MaintainerSingleSigner',
-        new: 'MaintainerMultiSig',
-      },
-    },
-  ],
-}
-
-console.log('TX HASH', blake.blake2sHex(JSON.stringify(tx)))
+console.log('TX HASH')
 
 // Set the wallet icon dynamically.
 browser.browserAction
@@ -46,7 +14,7 @@ browser.browserAction
       console.log('icon success')
     },
     () => {
-      cosnole.log('icon fail')
+      console.log('icon fail')
     }
   )
   .catch(err => {
@@ -55,7 +23,11 @@ browser.browserAction
 
 let currentTab = undefined
 // Non-present value must be `null` for Elm to accept it as a Maybe.
-let keyPair = null
+// let keyPair = null
+let keyPair = {
+  id: 'fakeId',
+  pubKey: encode(nacl.sign.keyPair().publicKey),
+}
 let transaction = null
 
 browser.runtime.onMessage.addListener((msg, sender) => {
@@ -83,7 +55,7 @@ browser.runtime.onMessage.addListener((msg, sender) => {
     // and be prompted to sign with the current key.
     if (msg.type === 'registerProject') {
       currentTab = sender.tab
-      transaction = 'fake'
+      transaction = fakeTransaction()
 
       browser.windows
         .create({
@@ -145,8 +117,54 @@ function getTransaction() {
   return transaction
 }
 
+function signTransaction(hash, keyPairId) {
+  browser.tabs.sendMessage(getCurrentTab().id, {
+    direction: 'wallet-to-page',
+    type: 'transactionAuthorized',
+    hash: hash,
+  })
+}
+
 // Public API for popup script.
 window.createKeyPair = createKeyPair
 window.getKeyPair = getKeyPair
 window.keyPairSetupComplete = keyPairSetupComplete
 window.getTransaction = getTransaction
+window.signTransaction = signTransaction
+
+function fakeTransaction() {
+  let projectAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd'
+  let tx = {
+    fee: 1038,
+    messages: [
+      { type: 'project-registration', address: projectAddr },
+      {
+        type: 'update-contract-rule',
+        address: projectAddr,
+        ruleChange: { type: 'reward', old: 'EqualDependency', new: 'Burn' },
+      },
+      {
+        type: 'update-contract-rule',
+        address: projectAddr,
+        ruleChange: {
+          type: 'donation',
+          old: 'FundSaving',
+          new: 'EqualMaintainer',
+        },
+      },
+      {
+        type: 'update-contract-rule',
+        address: projectAddr,
+        ruleChange: {
+          type: 'role',
+          old: 'MaintainerSingleSigner',
+          new: 'MaintainerMultiSig',
+        },
+      },
+    ],
+  }
+
+  tx.hash = blake.blake2sHex(JSON.stringify(tx))
+
+  return tx
+}

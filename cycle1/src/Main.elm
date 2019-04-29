@@ -9,6 +9,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import KeyPair exposing (KeyPair)
 import Overlay.WaitForKeyPair
+import Overlay.WaitForTransaction
 import Overlay.WalletSetup
 import Page.Home
 import Page.NotFound
@@ -18,6 +19,7 @@ import Project exposing (Project)
 import Route exposing (Route)
 import Style.Color as Color
 import TopBar
+import Transaction
 import Url
 import Url.Builder
 import Wallet exposing (Wallet(..))
@@ -35,6 +37,7 @@ type alias Flags =
 
 type Overlay
     = WaitForKeyPair
+    | WaitForTransaction
     | WalletSetup Overlay.WalletSetup.Model
 
 
@@ -118,6 +121,9 @@ port keyPairCreated : (Decode.Value -> msg) -> Sub msg
 port keyPairFetched : (Decode.Value -> msg) -> Sub msg
 
 
+port transactionAuthorized : (Transaction.Hash -> msg) -> Sub msg
+
+
 port walletWebExtPresent : (() -> msg) -> Sub msg
 
 
@@ -130,6 +136,7 @@ subscriptions _ =
     Sub.batch
         [ keyPairCreated (KeyPair.decode >> KeyPairCreated)
         , keyPairFetched (KeyPair.decode >> KeyPairFetched)
+        , transactionAuthorized TransactionAuthorized
         , walletWebExtPresent WalletWebExtPresent
         ]
 
@@ -144,6 +151,7 @@ type Msg
     | OverlayWalletSetup Overlay.WalletSetup.Msg
     | PageRegister Page.Register.Msg
     | TopBarMsg TopBar.Msg
+    | TransactionAuthorized Transaction.Hash
     | KeyPairCreated (Maybe KeyPair)
     | KeyPairFetched (Maybe KeyPair)
     | WalletWebExtPresent ()
@@ -207,22 +215,23 @@ update msg model =
                         ( pageModel, pageCmd ) =
                             Page.Register.update subCmd oldModel
 
-                        portCmd =
+                        portCmds =
                             case subCmd of
                                 -- Call out to our port to register the project.
                                 Page.Register.Register project ->
-                                    registerProject <| Project.encode project
+                                    [ registerProject <| Project.encode project
+                                    , Navigation.pushUrl
+                                        model.navKey
+                                        (Route.toString (Route.Register <| Just Route.WaitForTransaction))
+                                    ]
 
                                 -- Ignore all other sub commands as they should
                                 -- be handled by the page.
                                 _ ->
-                                    Cmd.none
+                                    []
                     in
                     ( { model | page = Register pageModel }
-                    , Cmd.batch
-                        [ Cmd.map PageRegister <| pageCmd
-                        , portCmd
-                        ]
+                    , Cmd.batch <| portCmds ++ [ Cmd.map PageRegister <| pageCmd ]
                     )
 
                 _ ->
@@ -248,6 +257,9 @@ update msg model =
                     TopBar.update subMsg model.topBarModel
             in
             ( { model | topBarModel = topBarModel }, Cmd.map TopBarMsg topBarMsg )
+
+        TransactionAuthorized hash ->
+            ( model, Cmd.none )
 
         WalletWebExtPresent _ ->
             ( { model | wallet = Just WebExt }, Cmd.none )
@@ -292,10 +304,14 @@ viewOverlay maybeOverlay url =
             let
                 backUrl =
                     Url.Builder.relative [ url.path ] []
+
                 ( title, content ) =
                     case overlay of
                         WaitForKeyPair ->
                             Overlay.WaitForKeyPair.view
+
+                        WaitForTransaction ->
+                            Overlay.WaitForTransaction.view
 
                         WalletSetup overlayModel ->
                             let
@@ -305,7 +321,6 @@ viewOverlay maybeOverlay url =
                             ( overlayTitle
                             , Element.map OverlayWalletSetup <| overlayView
                             )
-
             in
             ( Just title, overlayAttrs content backUrl )
 
@@ -450,6 +465,9 @@ overlayFromRoute maybeRoute =
             case maybeOverlay of
                 Just Route.WaitForKeyPair ->
                     Just WaitForKeyPair
+
+                Just Route.WaitForTransaction ->
+                    Just WaitForTransaction
 
                 Just Route.WalletSetup ->
                     Just <| WalletSetup Overlay.WalletSetup.init
