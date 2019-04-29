@@ -1,2 +1,6 @@
 main.js
 wallet-popup.js
+
+node_modules
+
+*-bundle.js
