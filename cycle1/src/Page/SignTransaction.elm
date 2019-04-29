@@ -2,6 +2,7 @@ module Page.SignTransaction exposing (view)
 
 import Atom.Button as Button
 import Element exposing (Element)
+import Element.Events as Events
 import KeyPair exposing (KeyPair)
 import Project.Contract as Contract
 import Style.Color as Color
@@ -13,8 +14,8 @@ import Transaction exposing (Message(..), RuleChange(..), Transaction)
 -- VIEW
 
 
-view : KeyPair -> Transaction -> ( String, Element msg )
-view keyPair transaction =
+view : msg -> KeyPair -> Transaction -> ( String, Element msg )
+view signedMsg keyPair transaction =
     ( "sign transaction"
     , Element.column
         [ Element.height Element.fill
@@ -32,17 +33,20 @@ view keyPair transaction =
           <|
             List.map viewMessage <|
                 Transaction.messages transaction
-        , viewActions
+        , viewActions signedMsg
         ]
     )
 
 
-viewActions : Element msg
-viewActions =
+viewActions : msg -> Element msg
+viewActions signedMsg =
     Element.row
         []
         [ Button.transparent [] "Reject"
-        , Button.accent [] "Authorize transaction"
+        , Element.el
+            [ Events.onClick signedMsg ]
+          <|
+            Button.accent [] "Authorize transaction"
         ]
 
 
@@ -104,7 +108,7 @@ viewRuleChange ruleChange =
                     )
 
                 Role old new ->
-                    ( "REWARD"
+                    ( "ROLE"
                     , Contract.roleString old
                     , Contract.roleString new
                     )

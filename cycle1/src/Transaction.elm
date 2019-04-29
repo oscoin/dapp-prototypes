@@ -1,8 +1,10 @@
 module Transaction exposing
-    ( Message(..)
+    ( Hash
+    , Message(..)
     , RuleChange(..)
     , Transaction
     , decoder
+    , hash
     , messageType
     , messages
     )
@@ -20,12 +22,21 @@ type alias Fee =
     Int
 
 
+type alias Hash =
+    String
+
+
 type Transaction
-    = Transaction Fee (List Message)
+    = Transaction Hash Fee (List Message)
+
+
+hash : Transaction -> Hash
+hash (Transaction h _ _) =
+    h
 
 
 messages : Transaction -> List Message
-messages (Transaction _ ms) =
+messages (Transaction _ _ ms) =
     ms
 
 
@@ -35,7 +46,8 @@ messages (Transaction _ ms) =
 
 decoder : Decode.Decoder Transaction
 decoder =
-    Decode.map2 Transaction
+    Decode.map3 Transaction
+        (Decode.field "hash" Decode.string)
         (Decode.field "fee" Decode.int)
         (Decode.field "messages" <| Decode.list messageDecoder)
 

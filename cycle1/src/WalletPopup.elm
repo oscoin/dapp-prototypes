@@ -10,7 +10,7 @@ import Page.NotFound
 import Page.SignTransaction
 import Style.Color as Color
 import Style.Font as Font
-import Transaction exposing (Transaction)
+import Transaction exposing (Hash, Transaction)
 
 
 
@@ -46,7 +46,7 @@ flagDecoder =
 type Model
     = KeyPairList KeyPair
     | KeyPairSetup Page.KeyPairSetup.Model
-    | SignTransaction KeyPair Transaction
+    | ShowTransaction KeyPair Transaction
     | NotFound
 
 
@@ -74,7 +74,7 @@ init flags =
                     KeyPairList keyPair
 
                 ( "#sign", Just keyPair, Just transaction ) ->
-                    SignTransaction keyPair transaction
+                    ShowTransaction keyPair transaction
 
                 ( _, _, _ ) ->
                     NotFound
@@ -84,6 +84,9 @@ init flags =
 
 
 -- PORTS - OUTBOUND
+
+
+port authorizeTransaction : { keyPairId : KeyPair.ID, hash : Hash } -> Cmd msg
 
 
 port keyPairCreate : String -> Cmd msg
@@ -117,6 +120,7 @@ subscriptions _ =
 type Msg
     = KeyPairCreated (Maybe KeyPair)
     | PageKeyPairSetup Page.KeyPairSetup.Msg
+    | TransactionAuthorized
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -172,6 +176,19 @@ update msg model =
         ( PageKeyPairSetup _, _ ) ->
             ( model, Cmd.none )
 
+        -- Communicate back when the transaction is authorized.
+        ( TransactionAuthorized, ShowTransaction keyPair transaction ) ->
+            ( model
+            , authorizeTransaction
+                { keyPairId = KeyPair.id keyPair
+                , hash = Transaction.hash transaction
+                }
+            )
+
+        -- Ignore transaction signing on other pages.
+        ( TransactionAuthorized, _ ) ->
+            ( model, Cmd.none )
+
 
 
 -- VIEW
@@ -204,8 +221,8 @@ view model =
                     , Element.map PageKeyPairSetup <| pageView
                     )
 
-                SignTransaction keyPair transaction ->
-                    Page.SignTransaction.view keyPair transaction
+                ShowTransaction keyPair transaction ->
+                    Page.SignTransaction.view TransactionAuthorized keyPair transaction
 
                 NotFound ->
                     Page.NotFound.view
