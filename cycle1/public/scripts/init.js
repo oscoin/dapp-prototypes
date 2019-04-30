@@ -1,13 +1,18 @@
-(function() {
+window.addEventListener('DOMContentLoaded', (_) => {
+  console.log(document.getElementById('wallet') ? 'webext' : null)
+
   var app = Elm.Main.init({
-    flags: null,
+    flags: {
+      keyPair: null,
+      wallet: document.getElementById('wallet') ? 'webext' : null
+    },
     node: document.getElementById('app')
   });
 
   // Check if wallet is installed.
   window.postMessage({
     direction: 'page-to-wallet',
-    type: 'getWallet'
+    type: 'getKeyPair'
   });
 
   // Listen to project register messages that we hand off to the wallet for
@@ -61,4 +66,4 @@
       }
     }
   })
-})();
+});

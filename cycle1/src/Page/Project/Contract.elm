@@ -4,6 +4,7 @@ import Atom.Heading as Heading
 import Element exposing (Element)
 import Element.Background as Background
 import Element.Border as Border
+import Project.Contract as Contract exposing (Contract)
 import Style.Color as Color
 import Style.Font as Font
 
@@ -12,8 +13,8 @@ import Style.Font as Font
 -- VIEW
 
 
-view : Element msg
-view =
+view : Contract -> Element msg
+view contract =
     Element.column
         [ Element.spacing 24
         , Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
@@ -25,15 +26,15 @@ view =
             , Element.width <| Element.fillPortion 3
             , Element.padding 0
             ]
-            [ viewContract "Block reward distribution" "Equal Distribution rule"
-            , viewContract "Donation distribution" "Donation Treasury rule"
-            , viewContract "Roles & responsibility" "Maintainer Single Signer rule"
+            [ viewRule "Reward distribution" <| Contract.rewardString <| Contract.reward contract
+            , viewRule "Donation distribution" <| Contract.donationString <| Contract.donation contract
+            , viewRule "Roles & responsibility" <| Contract.roleString <| Contract.role contract
             ]
         ]
 
 
-viewContract : String -> String -> Element msg
-viewContract title contract =
+viewRule : String -> String -> Element msg
+viewRule title contract =
     Element.column
         [ Element.spacing 18, Element.width Element.fill ]
         [ Element.el

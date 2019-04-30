@@ -4,7 +4,6 @@ import Browser
 import Element
 import Json.Decode as Decode
 import KeyPair exposing (KeyPair)
-import Msg exposing (Msg)
 import Page.KeyPairList
 import Page.KeyPairSetup
 import Page.NotFound
@@ -22,30 +21,50 @@ type alias Location =
     }
 
 
+locationDecoder : Decode.Decoder Location
+locationDecoder =
+    Decode.map Location
+        (Decode.field "hash" Decode.string)
+
+
 type alias Flags =
-    { maybeKeyPair : Maybe String
+    { maybeKeyPair : Maybe KeyPair
     , maybeTransaction : Maybe String
     , location : Location
     }
 
 
+flagDecoder : Decode.Decoder Flags
+flagDecoder =
+    Decode.map3 Flags
+        (Decode.field "maybeKeyPair" (Decode.nullable KeyPair.decoder))
+        (Decode.field "maybeTransaction" (Decode.nullable Decode.string))
+        (Decode.field "location" locationDecoder)
+
+
 type Model
-    = KeyPairList Page.KeyPairList.Model
+    = KeyPairList KeyPair
     | KeyPairSetup Page.KeyPairSetup.Model
     | SignTransaction
     | NotFound
 
 
-init : Flags -> ( Model, Cmd Msg )
+init : Decode.Value -> ( Model, Cmd Msg )
 init flags =
     let
+        { maybeKeyPair, maybeTransaction, location } =
+            flags
+                |> Decode.decodeValue flagDecoder
+                |> Result.withDefault
+                    (Flags Nothing Nothing (Location ""))
+
         model =
-            case ( flags.location.hash, flags.maybeKeyPair, flags.maybeTransaction ) of
+            case ( location.hash, maybeKeyPair, maybeTransaction ) of
                 ( "#keys", Nothing, Nothing ) ->
                     KeyPairSetup Page.KeyPairSetup.init
 
                 ( "#keys", Just keyPair, Nothing ) ->
-                    KeyPairList <| Page.KeyPairList.init keyPair
+                    KeyPairList keyPair
 
                 ( "#sign", Just _, Just _ ) ->
                     SignTransaction
@@ -111,7 +130,7 @@ update msg model =
                     , Cmd.map PageKeyPairSetup <| pageCmd
                     )
 
-        -- Ignore key apir create events for all other pages.
+        -- Ignore key pair create events for all other pages.
         ( KeyPairCreated _, _ ) ->
             ( model, Cmd.none )
 
@@ -143,7 +162,7 @@ update msg model =
             )
 
         -- Ignore page specific messages if it's not our current page.
-        ( PageKeyPairSetup subCmd, _ ) ->
+        ( PageKeyPairSetup _, _ ) ->
             ( model, Cmd.none )
 
 
@@ -204,7 +223,7 @@ view model =
     }
 
 
-main : Program Flags Model Msg
+main : Program Decode.Value Model Msg
 main =
     Browser.document
         { init = init

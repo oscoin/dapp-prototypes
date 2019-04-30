@@ -1,10 +1,25 @@
-module KeyPair exposing (KeyPair, decode)
+module KeyPair exposing (KeyPair, decode, decoder, toString)
 
 import Json.Decode as Decode
 
 
+type alias ID =
+    String
+
+
+type alias PubKey =
+    String
+
+
 type KeyPair
-    = KeyPair String
+    = KeyPair ID PubKey
+
+
+toString : KeyPair -> String
+toString keyPair =
+    case keyPair of
+        KeyPair id pk ->
+            String.join "#" [ id, String.slice 0 6 pk ]
 
 
 
@@ -15,7 +30,7 @@ decode : Decode.Value -> Maybe KeyPair
 decode json =
     case Decode.decodeValue decoder json of
         Ok keyPair ->
-            keyPair
+            Just keyPair
 
         Err err ->
             let
@@ -25,15 +40,8 @@ decode json =
             Nothing
 
 
-decoder : Decode.Decoder (Maybe KeyPair)
+decoder : Decode.Decoder KeyPair
 decoder =
-    Decode.string
-        |> Decode.andThen
-            (\str ->
-                case str of
-                    "" ->
-                        Decode.succeed Nothing
-
-                    keyPair ->
-                        Decode.succeed <| Just (KeyPair keyPair)
-            )
+    Decode.map2 KeyPair
+        (Decode.field "id" Decode.string)
+        (Decode.field "pubKey" Decode.string)

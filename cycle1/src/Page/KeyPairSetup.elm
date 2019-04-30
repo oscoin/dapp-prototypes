@@ -80,7 +80,7 @@ viewInitial =
         , Events.onClick MoveStepSetup
         ]
     <|
-        Button.accent "Set up key pair"
+        Button.accent [] "Set up key pair"
 
 
 viewSetup : String -> Element Msg
@@ -99,7 +99,7 @@ viewSetup id =
             , Events.onClick <| Create id
             ]
           <|
-            Button.accent "Create"
+            Button.accent [] "Create"
         ]
 
 
@@ -110,7 +110,7 @@ viewPassphrase =
         , Events.onClick Complete
         ]
     <|
-        Button.accent "All done!"
+        Button.accent [] "All done!"
 
 
 view : Model -> ( String, Element Msg )

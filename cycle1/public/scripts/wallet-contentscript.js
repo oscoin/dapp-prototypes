@@ -1,5 +1,15 @@
-(function () {
+
+(function (window) {
   console.log('oscoin wallet | contentscript | init')
+
+  window.addEventListener('DOMContentLoaded', (event) => {
+    let app = document.getElementById('app')
+
+    let marker = document.createElement('div')
+    marker.setAttribute('id', 'wallet')
+
+    document.body.insertBefore(marker, app)
+  });
 
   // Send messages from the extension to the page.
   browser.runtime.onMessage.addListener((msg) => {
@@ -25,4 +35,4 @@
         })
     }
   })
-})();
+})(window);

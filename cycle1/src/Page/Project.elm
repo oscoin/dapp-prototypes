@@ -6,6 +6,16 @@ import Page.Project.Contract as Contract
 import Page.Project.Funds as Funds
 import Page.Project.Header as Header
 import Page.Project.People as People
+import Project exposing (Project)
+
+
+
+-- TEST DATA
+
+
+radicle : Project
+radicle =
+    Project.init
 
 
 
@@ -21,7 +31,7 @@ view =
         ]
         [ Header.view
         , Actions.view
-        , Contract.view
+        , Contract.view <| Project.contract radicle
         , People.view
         , Funds.view
         ]
