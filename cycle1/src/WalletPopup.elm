@@ -70,7 +70,7 @@ init flags =
                 ( "#keys", Nothing, Nothing ) ->
                     KeyPairSetup Page.KeyPairSetup.init
 
-                ( "#keys", Just keyPair, Nothing ) ->
+                ( "#keys", Just keyPair, _ ) ->
                     KeyPairList keyPair
 
                 ( "#sign", Just keyPair, Just transaction ) ->
