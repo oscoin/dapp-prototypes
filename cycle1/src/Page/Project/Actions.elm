@@ -17,5 +17,5 @@ view =
         ]
         [ Button.primary [] "Donate"
         , Button.secondary [] "Follow"
-        , Button.secondaryAccent [] "Make dependency"
+        , Button.secondaryAccent [] "Support"
         ]

@@ -47,7 +47,7 @@ rewards : List Contract.Reward
 rewards =
     [ RewardBurn
     , RewardFundSaving
-    , RewardEqualMainatainer
+    , RewardEqualMaintainer
     , RewardEqualDependency
     , RewardCustom 10 10 10 10
     ]

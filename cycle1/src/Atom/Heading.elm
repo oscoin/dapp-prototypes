@@ -1,4 +1,7 @@
-module Atom.Heading exposing (section)
+module Atom.Heading exposing
+    ( section
+    , sectionWithInfo
+    )
 
 import Element exposing (Element)
 import Element.Border as Border
@@ -23,3 +26,22 @@ section title =
         )
     <|
         Element.text title
+
+
+sectionWithInfo : String -> Element msg -> Element msg
+sectionWithInfo title component =
+    Element.row
+        [ Element.width <| Element.fillPortion 2
+        , Element.paddingXY 24 16
+        , Element.width Element.fill
+        , Element.height (Element.px 60)
+        ]
+        [ Element.el
+            (Font.mediumHeader Color.black)
+          <|
+            Element.text title
+        , Element.el
+            [ Element.alignRight ]
+          <|
+            component
+        ]

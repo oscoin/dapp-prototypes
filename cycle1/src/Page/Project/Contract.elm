@@ -20,7 +20,7 @@ view contract =
         , Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
         , Element.width Element.fill
         ]
-        [ Heading.section "Project contracts"
+        [ Heading.section "Project contract"
         , Element.row
             [ Element.spacing 24
             , Element.width <| Element.fillPortion 3
@@ -28,7 +28,7 @@ view contract =
             ]
             [ viewRule "Reward distribution" <| Contract.rewardString <| Contract.reward contract
             , viewRule "Donation distribution" <| Contract.donationString <| Contract.donation contract
-            , viewRule "Roles & responsibility" <| Contract.roleString <| Contract.role contract
+            , viewRule "Roles & abilities" <| Contract.roleString <| Contract.role contract
             ]
         ]
 
@@ -42,8 +42,7 @@ viewRule title contract =
           <|
             Element.text title
         , Element.column
-            [ Background.color <| Color.alpha Color.blue 0.1
-            , Element.padding 24
+            [ Element.padding 24
             , Border.color Color.purple
             , Border.rounded 2
             , Border.width 1
@@ -53,11 +52,12 @@ viewRule title contract =
                 (Font.mediumBodyText Color.purple)
                 (Element.text contract)
             , Element.paragraph
-                ([ Element.spacing 8 ] ++ Font.bodyText Color.purple)
+                ([ Element.spacing 8
+                 , Element.paddingEach { top = 0, right = 0, bottom = 8, left = 0 }
+                 ]
+                    ++ Font.bodyText Color.purple
+                )
                 [ Element.text "Some more text about this all, explaining what it’s about and how it should be interpreted. I mean I’m just writing sentences to have enough copy."
                 ]
-            , Element.el
-                (Font.linkText Color.purple)
-                (Element.text "Read more")
             ]
         ]
