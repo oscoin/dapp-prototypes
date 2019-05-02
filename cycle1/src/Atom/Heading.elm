@@ -32,8 +32,6 @@ sectionWithInfo : String -> Element msg -> Element msg
 sectionWithInfo title component =
     Element.row
         [ Element.width <| Element.fillPortion 2
-        , Border.color Color.lightGrey
-        , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
         , Element.paddingXY 24 16
         , Element.width Element.fill
         , Element.height (Element.px 60)
