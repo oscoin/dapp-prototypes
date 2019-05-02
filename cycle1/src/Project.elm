@@ -89,18 +89,8 @@ decoder : Decode.Decoder Project
 decoder =
     Decode.map3 Project
         (Decode.field "address" Decode.string)
-        (Decode.field "meta" metaDecoder)
+        (Decode.field "meta" Meta.decoder)
         (Decode.field "contract" Contract.decoder)
-
-
-metaDecoder : Decode.Decoder Meta
-metaDecoder =
-    Decode.map5 Meta
-        (Decode.field "codeHostUrl" Decode.string)
-        (Decode.field "description" Decode.string)
-        (Decode.field "imageUrl" Decode.string)
-        (Decode.field "name" Decode.string)
-        (Decode.field "websiteUrl" Decode.string)
 
 
 

@@ -1,6 +1,7 @@
 module Project.Meta exposing
     ( Meta
     , codeHostUrl
+    , decoder
     , description
     , empty
     , encode
@@ -14,6 +15,7 @@ module Project.Meta exposing
     , websiteUrl
     )
 
+import Json.Decode as Decode
 import Json.Encode as Encode
 
 
@@ -84,6 +86,20 @@ mapWebsiteUrl change meta =
 websiteUrl : Meta -> String
 websiteUrl meta =
     meta.websiteUrl
+
+
+
+-- DECODING
+
+
+decoder : Decode.Decoder Meta
+decoder =
+    Decode.map5 Meta
+        (Decode.field "codeHostUrl" Decode.string)
+        (Decode.field "description" Decode.string)
+        (Decode.field "imageUrl" Decode.string)
+        (Decode.field "name" Decode.string)
+        (Decode.field "websiteUrl" Decode.string)
 
 
 
