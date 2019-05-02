@@ -6,19 +6,27 @@ console.log(nacl.sign.keyPair())
 console.log(encode(nacl.sign.keyPair().publicKey))
 
 // Set the wallet icon dynamically.
-browser.browserAction.setIcon({ path: "icons/wallet-error.svg" })
-  .then(() => {
-    console.log('icon success')
-  }, () => {
-    cosnole.log('icon fail')
-  })
+browser.browserAction
+  .setIcon({ path: 'icons/wallet-error.svg' })
+  .then(
+    () => {
+      console.log('icon success')
+    },
+    () => {
+      cosnole.log('icon fail')
+    }
+  )
   .catch(err => {
     console.error(err)
   })
 
 let currentTab = undefined
 // Non-present value must be `null` for Elm to accept it as a Maybe.
-let keyPair = null
+// let keyPair = null
+let keyPair = {
+  id: 'fakeid',
+  pubKey: encode(nacl.sign.keyPair().publicKey),
+}
 let transaction = null
 
 browser.runtime.onMessage.addListener((msg, sender) => {
@@ -42,35 +50,46 @@ browser.runtime.onMessage.addListener((msg, sender) => {
       })
     }
 
-    // A new project registration, this needs to be packed into a transaction
-    // and be prompted to sign with the current key.
-    if (msg.type === 'registerProject') {
+    // Present the transaction to sign to the user.
+    if (msg.type === 'signTransaction') {
       currentTab = sender.tab
-      transaction = "fake"
+      // transaction = testTransaction()
 
-      browser.windows.create({
-        type: 'popup',
-        url: 'wallet-popup.html#sign',
-        height: 534,
-        width: 420
-      }).then(windowInfo => {
-        console.log('popup window info', windowInfo)
-      })
+      let tx = msg.transaction
+      let enc = new TextEncoder()
+      tx.hash = new TextDecoder().decode(
+        nacl.hash(enc.encode(JSON.stringify(tx)))
+      )
+
+      transaction = tx
+
+      browser.windows
+        .create({
+          type: 'popup',
+          url: 'wallet-popup.html#sign',
+          height: 534,
+          width: 420,
+        })
+        .then(windowInfo => {
+          console.log('popup window info', windowInfo)
+        })
     }
 
     // A key pair is required to continue with the current operation on the
     // page.
     if (msg.type === 'requireKeyPair') {
-      currentTab = sender.tab;
+      currentTab = sender.tab
 
-      browser.windows.create({
-        type: 'popup',
-        url: 'wallet-popup.html#keys',
-        height: 534,
-        width: 420
-      }).then(windowInfo => {
-        console.log('popup window info', windowInfo)
-      })
+      browser.windows
+        .create({
+          type: 'popup',
+          url: 'wallet-popup.html#keys',
+          height: 534,
+          width: 420,
+        })
+        .then(windowInfo => {
+          console.log('popup window info', windowInfo)
+        })
     }
   }
 })
@@ -80,8 +99,6 @@ function getCurrentTab() {
 }
 
 function createKeyPair(id) {
-  let keys = nacl.sign.keyPair().publicKey
-
   keyPair = {
     id: id,
     pubKey: encode(nacl.sign.keyPair().publicKey),
@@ -95,19 +112,72 @@ function getKeyPair() {
 }
 
 function keyPairSetupComplete() {
-    browser.tabs.sendMessage(getCurrentTab().id, {
-      direction: 'wallet-to-page',
-      type: 'keyPairCreated',
-      id: getKeyPair(),
-    })
+  browser.tabs.sendMessage(getCurrentTab().id, {
+    direction: 'wallet-to-page',
+    type: 'keyPairCreated',
+    id: getKeyPair(),
+  })
 }
 
 function getTransaction() {
   return transaction
 }
 
+function signTransaction(hash, keyPairId) {
+  console.log('signTransaction.hash', hash)
+  console.log('signTransaction.keyPairId', keyPairId)
+
+  browser.tabs.sendMessage(getCurrentTab().id, {
+    direction: 'wallet-to-page',
+    type: 'transactionAuthorized',
+    hash: hash,
+    keyPairId: getKeyPair(),
+  })
+}
+
 // Public API for popup script.
 window.createKeyPair = createKeyPair
 window.getKeyPair = getKeyPair
-window.keyPairSetupComplete = keyPairSetupComplete;
+window.keyPairSetupComplete = keyPairSetupComplete
 window.getTransaction = getTransaction
+window.signTransaction = signTransaction
+
+// Helpers
+
+function testTransaction() {
+  let projectAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd'
+  let tx = {
+    fee: 1038,
+    messages: [
+      { type: 'project-registration', address: projectAddr },
+      {
+        type: 'update-contract-rule',
+        address: projectAddr,
+        ruleChange: { type: 'reward', old: 'EqualDependency', new: 'Burn' },
+      },
+      {
+        type: 'update-contract-rule',
+        address: projectAddr,
+        ruleChange: {
+          type: 'donation',
+          old: 'FundSaving',
+          new: 'EqualMaintainer',
+        },
+      },
+      {
+        type: 'update-contract-rule',
+        address: projectAddr,
+        ruleChange: {
+          type: 'role',
+          old: 'MaintainerSingleSigner',
+          new: 'MaintainerMultiSig',
+        },
+      },
+    ],
+  }
+
+  let enc = new TextEncoder()
+  tx.hash = new TextDecoder().decode(nacl.hash(enc.encode(JSON.stringify(tx))))
+
+  return tx
+}

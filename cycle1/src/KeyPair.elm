@@ -1,4 +1,4 @@
-module KeyPair exposing (KeyPair, decode, decoder, toString)
+module KeyPair exposing (ID, KeyPair, decode, decoder, id, toString)
 
 import Json.Decode as Decode
 
@@ -15,11 +15,16 @@ type KeyPair
     = KeyPair ID PubKey
 
 
+id : KeyPair -> ID
+id (KeyPair i _) =
+    i
+
+
 toString : KeyPair -> String
 toString keyPair =
     case keyPair of
-        KeyPair id pk ->
-            String.join "#" [ id, String.slice 0 6 pk ]
+        KeyPair i pk ->
+            String.join "#" [ i, String.slice 0 6 pk ]
 
 
 
