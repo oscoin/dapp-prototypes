@@ -39,9 +39,9 @@ secondaryAccent attrs btnText =
     style attrs Color.green Color.white Color.black btnText
 
 
-custom : List (Attribute msg) -> Element.Color -> String -> Element msg
-custom attrs color btnText =
-    style attrs color Color.white Color.black btnText
+custom : List (Attribute msg) -> Element.Color -> Element.Color -> String -> Element msg
+custom attrs color textColor btnText =
+    style attrs color textColor Color.black btnText
 
 
 transparent : List (Attribute msg) -> String -> Element msg
