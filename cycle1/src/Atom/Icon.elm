@@ -1,4 +1,4 @@
-module Atom.Icon exposing (initialCircle, logoCircle)
+module Atom.Icon exposing (initialCircle, largeLogoCircle)
 
 import Element exposing (Element)
 import Html exposing (..)
@@ -8,8 +8,8 @@ import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
 
-logoCircle : Element.Color -> Element msg
-logoCircle bgColor =
+largeLogoCircle : Element.Color -> Element msg
+largeLogoCircle bgColor =
     Element.html <|
         svg
             [ width "48"

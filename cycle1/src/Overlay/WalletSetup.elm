@@ -85,7 +85,7 @@ viewInfo backUrl =
                 [ Element.centerX
                 ]
               <|
-                Icon.logoCircle Color.black
+                Icon.largeLogoCircle Color.black
             , Element.paragraph
                 ([ Element.centerX
                  , Element.width <| Element.px 195
