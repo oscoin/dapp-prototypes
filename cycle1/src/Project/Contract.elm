@@ -5,14 +5,20 @@ module Project.Contract exposing
     , Role(..)
     , default
     , donation
+    , donationIcon
+    , donationName
     , donationString
     , encode
     , mapDonation
     , mapReward
     , mapRole
     , reward
+    , rewardIcon
+    , rewardName
     , rewardString
     , role
+    , roleIcon
+    , roleName
     , roleString
     )
 
@@ -30,17 +36,107 @@ type Donation
     | DonationCustom Int Int Int Int
 
 
+donationIcon : Donation -> String
+donationIcon don =
+    case don of
+        DonationFundSaving ->
+            "FS"
+
+        DonationEqualMaintainer ->
+            "EM"
+
+        DonationEqualDependency ->
+            "ED"
+
+        DonationCustom _ _ _ _ ->
+            "CD"
+
+
+donationName : Donation -> String
+donationName don =
+    case don of
+        DonationFundSaving ->
+            "Save to fund"
+
+        DonationEqualMaintainer ->
+            "Distribute to maintainers"
+
+        DonationEqualDependency ->
+            "Distribute to dependencies"
+
+        DonationCustom _ _ _ _ ->
+            "Custom distribution"
+
+
 type Reward
     = RewardBurn
     | RewardFundSaving
-    | RewardEqualMainatainer
+    | RewardEqualMaintainer
     | RewardEqualDependency
     | RewardCustom Int Int Int Int
+
+
+rewardIcon : Reward -> String
+rewardIcon rew =
+    case rew of
+        RewardBurn ->
+            "RB"
+
+        RewardFundSaving ->
+            "FS"
+
+        RewardEqualMaintainer ->
+            "EM"
+
+        RewardEqualDependency ->
+            "ED"
+
+        RewardCustom _ _ _ _ ->
+            "CD"
+
+
+rewardName : Reward -> String
+rewardName rew =
+    case rew of
+        RewardBurn ->
+            "Burn Reward"
+
+        RewardFundSaving ->
+            "Save to fund"
+
+        RewardEqualMaintainer ->
+            "Distribute to maintainers"
+
+        RewardEqualDependency ->
+            "Distribute to dependencies"
+
+        RewardCustom _ _ _ _ ->
+            "Custom distribution"
 
 
 type Role
     = RoleMaintainerSingleSigner
     | RoleMaintainerMultiSig
+
+
+roleIcon : Role -> String
+roleIcon rol =
+    case rol of
+        RoleMaintainerSingleSigner ->
+            "SS"
+
+        RoleMaintainerMultiSig ->
+            "MS"
+
+
+roleName : Role -> String
+roleName rol =
+    case rol of
+        RoleMaintainerSingleSigner ->
+            "Any maintainer can sign"
+
+        RoleMaintainerMultiSig ->
+            "Multiple maintainers need to sign"
 
 
 
@@ -143,7 +239,7 @@ rewardString currentReward =
         RewardFundSaving ->
             "FundSaving"
 
-        RewardEqualMainatainer ->
+        RewardEqualMaintainer ->
             "EqualMaintainer"
 
         RewardEqualDependency ->
