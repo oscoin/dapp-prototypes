@@ -6,6 +6,7 @@ import Element exposing (Element)
 import Element.Background as Background
 import Element.Border as Border
 import Page.Project.Actions as Actions
+import Project.Meta as Meta exposing (Meta)
 import Style.Color as Color
 import Style.Font as Font
 
@@ -14,8 +15,8 @@ import Style.Font as Font
 -- VIEW
 
 
-view : Element msg
-view =
+view : Meta -> Element msg
+view meta =
     Element.el
         [ Background.color Color.almostWhite
         , Element.width Element.fill
@@ -32,7 +33,7 @@ view =
                 , Element.width <| Element.px 1074
                 ]
                 [ viewLogo
-                , viewMeta
+                , viewMeta (Meta.name meta) (Meta.description meta)
                 , viewStats
                 ]
             , Actions.view
@@ -52,8 +53,8 @@ viewLogo =
             Element.text "rad"
 
 
-viewMeta : Element msg
-viewMeta =
+viewMeta : String -> String -> Element msg
+viewMeta name description =
     Element.column
         [ Element.spacing 8
         , Element.width
@@ -64,7 +65,7 @@ viewMeta =
         [ Element.el
             (Font.bigHeader Color.black)
           <|
-            Element.text "Radicle"
+            Element.text name
 
         -- Description
         , Element.paragraph
@@ -73,7 +74,7 @@ viewMeta =
              ]
                 ++ Font.bodyText Color.black
             )
-            [ Element.text "A peer-to-peer stack for code collaboration and some more text here to show how it is on 2 lines"
+            [ Element.text description
             ]
         ]
 

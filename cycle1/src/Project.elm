@@ -2,24 +2,21 @@ module Project exposing
     ( Address
     , Project
     , address
-    , codeHostUrl
     , contract
-    , description
+    , decoder
     , encode
-    , imageUrl
+    , findByAddr
     , init
-    , mapCodeHostUrl
     , mapContract
-    , mapDescription
-    , mapImageUrl
-    , mapName
-    , mapWebsiteUrl
-    , name
-    , websiteUrl
+    , mapMeta
+    , meta
     )
 
+import Dict
+import Json.Decode as Decode
 import Json.Encode as Encode
 import Project.Contract as Contract exposing (Contract)
+import Project.Meta as Meta exposing (Meta)
 
 
 
@@ -28,29 +25,6 @@ import Project.Contract as Contract exposing (Contract)
 
 type alias Address =
     String
-
-
-
--- META
-
-
-type alias Meta =
-    { codeHostUrl : String
-    , description : String
-    , imageUrl : String
-    , name : String
-    , websiteUrl : String
-    }
-
-
-initMeta : Meta
-initMeta =
-    { codeHostUrl = ""
-    , description = ""
-    , imageUrl = ""
-    , name = ""
-    , websiteUrl = ""
-    }
 
 
 
@@ -63,7 +37,7 @@ type Project
 
 init : Project
 init =
-    Project "" initMeta Contract.default
+    Project "" Meta.empty Contract.default
 
 
 address : Project -> Address
@@ -71,19 +45,9 @@ address (Project addr _ _) =
     addr
 
 
-mapCodeHostUrl : (String -> String) -> Project -> Project
-mapCodeHostUrl change (Project addr meta currentContract) =
-    Project addr { meta | codeHostUrl = change meta.codeHostUrl } currentContract
-
-
-codeHostUrl : Project -> String
-codeHostUrl (Project _ meta _) =
-    meta.codeHostUrl
-
-
 mapContract : (Contract -> Contract) -> Project -> Project
-mapContract change (Project addr meta oldContract) =
-    Project addr meta (change oldContract)
+mapContract change (Project addr currentMeta oldContract) =
+    Project addr currentMeta (change oldContract)
 
 
 contract : Project -> Contract
@@ -91,44 +55,52 @@ contract (Project _ _ currentContract) =
     currentContract
 
 
-mapDescription : (String -> String) -> Project -> Project
-mapDescription change (Project addr meta currentContract) =
-    Project addr { meta | description = change meta.description } currentContract
+mapMeta : (Meta -> Meta) -> Project -> Project
+mapMeta change (Project addr oldMeta currentContract) =
+    Project addr (change oldMeta) currentContract
 
 
-description : Project -> String
-description (Project _ meta _) =
-    meta.description
+meta : Project -> Meta
+meta (Project _ currentMeta _) =
+    currentMeta
 
 
-mapImageUrl : (String -> String) -> Project -> Project
-mapImageUrl change (Project addr meta currentContract) =
-    Project addr { meta | name = change meta.imageUrl } currentContract
+
+-- PROJECT QUERY
 
 
-imageUrl : Project -> String
-imageUrl (Project _ meta _) =
-    meta.imageUrl
+findByAddr : List Project -> Address -> Maybe Project
+findByAddr projects addr =
+    let
+        addrList =
+            List.map (\p -> ( address p, p )) projects
+
+        projectMap =
+            Dict.fromList addrList
+    in
+    Dict.get addr projectMap
 
 
-mapName : (String -> String) -> Project -> Project
-mapName change (Project addr meta currentContract) =
-    Project addr { meta | name = change meta.name } currentContract
+
+-- DECODING
 
 
-name : Project -> String
-name (Project _ meta _) =
-    meta.name
+decoder : Decode.Decoder Project
+decoder =
+    Decode.map3 Project
+        (Decode.field "address" Decode.string)
+        (Decode.field "meta" metaDecoder)
+        (Decode.field "contract" Contract.decoder)
 
 
-mapWebsiteUrl : (String -> String) -> Project -> Project
-mapWebsiteUrl change (Project addr meta currentContract) =
-    Project addr { meta | name = change meta.websiteUrl } currentContract
-
-
-websiteUrl : Project -> String
-websiteUrl (Project _ meta _) =
-    meta.websiteUrl
+metaDecoder : Decode.Decoder Meta
+metaDecoder =
+    Decode.map5 Meta
+        (Decode.field "codeHostUrl" Decode.string)
+        (Decode.field "description" Decode.string)
+        (Decode.field "imageUrl" Decode.string)
+        (Decode.field "name" Decode.string)
+        (Decode.field "websiteUrl" Decode.string)
 
 
 
@@ -136,19 +108,8 @@ websiteUrl (Project _ meta _) =
 
 
 encode : Project -> Encode.Value
-encode (Project _ meta currentContract) =
+encode (Project _ currentMeta currentContract) =
     Encode.object
         [ ( "contract", Contract.encode currentContract )
-        , ( "meta", encodeMeta meta )
-        ]
-
-
-encodeMeta : Meta -> Encode.Value
-encodeMeta meta =
-    Encode.object
-        [ ( "codeHostUrl", Encode.string meta.codeHostUrl )
-        , ( "description", Encode.string meta.description )
-        , ( "imageUrl", Encode.string meta.imageUrl )
-        , ( "name", Encode.string meta.name )
-        , ( "websiteUrl", Encode.string meta.websiteUrl )
+        , ( "meta", Meta.encode currentMeta )
         ]

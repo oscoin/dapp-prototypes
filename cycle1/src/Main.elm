@@ -32,14 +32,16 @@ import Wallet exposing (Wallet(..))
 type alias Flags =
     { maybeKeyPair : Maybe KeyPair
     , maybeWallet : Maybe Wallet
+    , projects : List Project
     }
 
 
 flagDecoder : Decode.Decoder Flags
 flagDecoder =
-    Decode.map2 Flags
-        (Decode.field "keyPair" (Decode.nullable KeyPair.decoder))
-        (Decode.field "wallet" (Decode.nullable Wallet.decoder))
+    Decode.map3 Flags
+        (Decode.field "maybeKeyPair" (Decode.nullable KeyPair.decoder))
+        (Decode.field "maybeWallet" (Decode.nullable Wallet.decoder))
+        (Decode.field "projects" (Decode.list Project.decoder))
 
 
 
@@ -59,7 +61,7 @@ type Overlay
 type Page
     = Home
     | NotFound
-    | Project
+    | Project Project
     | Register Page.Register.Model
 
 
@@ -72,6 +74,7 @@ type alias Model =
     , navKey : Navigation.Key
     , overlay : Maybe Overlay
     , page : Page
+    , projects : List Project
     , topBarModel : TopBar.Model
     , url : Url.Url
     , wallet : Maybe Wallet
@@ -81,19 +84,26 @@ type alias Model =
 init : Decode.Value -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
-        { maybeKeyPair, maybeWallet } =
-            flags
-                |> Decode.decodeValue flagDecoder
-                |> Result.withDefault
+        { maybeKeyPair, maybeWallet, projects } =
+            case Decode.decodeValue flagDecoder flags of
+                Ok parsedFlags ->
+                    parsedFlags
+
+                Err err ->
+                    let
+                        _ =
+                            Debug.log "Main.Flags.decode" err
+                    in
                     { maybeKeyPair = Nothing
                     , maybeWallet = Nothing
+                    , projects = []
                     }
 
         maybeRoute =
             Route.fromUrl url
 
         page =
-            pageFromRoute maybeRoute
+            pageFromRoute projects maybeRoute
 
         maybeOverlay =
             overlayFromRoute maybeRoute
@@ -105,6 +115,7 @@ init flags url navKey =
       , navKey = navKey
       , overlay = maybeOverlay
       , page = page
+      , projects = projects
       , topBarModel = TopBar.init
       , url = url
       , wallet = maybeWallet
@@ -205,7 +216,7 @@ update msg model =
                     Route.fromUrl url
 
                 page =
-                    pageFromRoute maybeRoute
+                    pageFromRoute model.projects maybeRoute
 
                 overlay =
                     overlayFromRoute maybeRoute
@@ -293,7 +304,7 @@ update msg model =
                     ( model
                     , Navigation.pushUrl
                         model.navKey
-                        (Route.toString Route.Project)
+                        (Route.toString <| Route.Project "")
                     )
 
                 _ ->
@@ -376,8 +387,8 @@ viewPage page =
         NotFound ->
             Page.NotFound.view
 
-        Project ->
-            Page.Project.view
+        Project project ->
+            Page.Project.view project
 
         Register pageModel ->
             let
@@ -520,14 +531,19 @@ overlayFromRoute maybeRoute =
             Nothing
 
 
-pageFromRoute : Maybe Route -> Page
-pageFromRoute maybeRoute =
-    case maybeRoute of
+pageFromRoute : List Project -> Maybe Route -> Page
+pageFromRoute projects maybeRoute =
+    case Debug.log "Main.pageFromRoute" maybeRoute of
         Just Route.Home ->
             Home
 
-        Just Route.Project ->
-            Project
+        Just (Route.Project addr) ->
+            case Project.findByAddr projects addr of
+                Nothing ->
+                    NotFound
+
+                Just project ->
+                    Project project
 
         Just (Route.Register _) ->
             Register Page.Register.init

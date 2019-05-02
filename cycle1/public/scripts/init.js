@@ -1,10 +1,29 @@
+const initialProjects = [
+  {
+    address: '1b4atzir794d11ckjtk7xawsqjizgwwabx9bun7qmw5ic7uxr1mj',
+    meta: {
+      codeHostUrl: 'github.com/radicle-dev/radicle',
+      description: 'A peer-to-peer stack for code collaboration',
+      imageUrl: '',
+      name: 'Radicle',
+      websiteUrl: 'https://radicle.xyz',
+    },
+    contract: {
+      reward: 'Burn',
+      donation: 'FundSaving',
+      role: 'MaintainerSingleSigner',
+    },
+  },
+]
+
 window.addEventListener('DOMContentLoaded', _ => {
   console.log(document.getElementById('wallet') ? 'webext' : null)
 
   var app = Elm.Main.init({
     flags: {
-      keyPair: null,
-      wallet: document.getElementById('wallet') ? 'webext' : null,
+      maybeKeyPair: null,
+      maybeWallet: document.getElementById('wallet') ? 'webext' : null,
+      projects: initialProjects,
     },
     node: document.getElementById('app'),
   })
