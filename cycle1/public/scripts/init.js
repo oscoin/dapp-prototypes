@@ -43,6 +43,14 @@ window.addEventListener('DOMContentLoaded', _ => {
     console.log('window.message.msg', msg)
 
     if (msg.direction === 'wallet-to-page') {
+      // A transaction has been authorized.
+      if (msg.type === 'transactionAuthorized') {
+        app.ports.transactionAuthorized.send({
+          hash: msg.hash,
+          keyPairId: msg.keyPairId,
+        })
+      }
+
       // Web extension wallet is signaling presence.
       if (msg.type === 'walletPresent') {
         app.ports.walletWebExtPresent.send(null)

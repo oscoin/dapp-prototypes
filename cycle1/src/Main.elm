@@ -26,7 +26,7 @@ import Wallet exposing (Wallet(..))
 
 
 
--- MODEL
+-- FLAGS
 
 
 type alias Flags =
@@ -35,10 +35,25 @@ type alias Flags =
     }
 
 
+flagDecoder : Decode.Decoder Flags
+flagDecoder =
+    Decode.map2 Flags
+        (Decode.field "keyPair" (Decode.nullable KeyPair.decoder))
+        (Decode.field "wallet" (Decode.nullable Wallet.decoder))
+
+
+
+-- OVERLAY
+
+
 type Overlay
     = WaitForKeyPair
     | WaitForTransaction
     | WalletSetup Overlay.WalletSetup.Model
+
+
+
+-- PAGE
 
 
 type Page
@@ -46,6 +61,10 @@ type Page
     | NotFound
     | Project
     | Register Page.Register.Model
+
+
+
+-- MODEL
 
 
 type alias Model =
@@ -57,13 +76,6 @@ type alias Model =
     , url : Url.Url
     , wallet : Maybe Wallet
     }
-
-
-flagDecoder : Decode.Decoder Flags
-flagDecoder =
-    Decode.map2 Flags
-        (Decode.field "keyPair" (Decode.nullable KeyPair.decoder))
-        (Decode.field "wallet" (Decode.nullable Wallet.decoder))
 
 
 init : Decode.Value -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
@@ -121,10 +133,27 @@ port keyPairCreated : (Decode.Value -> msg) -> Sub msg
 port keyPairFetched : (Decode.Value -> msg) -> Sub msg
 
 
-port transactionAuthorized : (Transaction.Hash -> msg) -> Sub msg
+port transactionAuthorized : (Decode.Value -> msg) -> Sub msg
 
 
 port walletWebExtPresent : (() -> msg) -> Sub msg
+
+
+
+-- WALLET RESPONSES
+
+
+type alias TransactionAuthorizedResponse =
+    { hash : Transaction.Hash
+    , keyPairId : KeyPair.ID
+    }
+
+
+authorizeResponseDecoder : Decode.Decoder TransactionAuthorizedResponse
+authorizeResponseDecoder =
+    Decode.map2 TransactionAuthorizedResponse
+        (Decode.field "hash" Decode.string)
+        (Decode.field "keyPairId" Decode.string)
 
 
 
@@ -136,7 +165,7 @@ subscriptions _ =
     Sub.batch
         [ keyPairCreated (KeyPair.decode >> KeyPairCreated)
         , keyPairFetched (KeyPair.decode >> KeyPairFetched)
-        , transactionAuthorized TransactionAuthorized
+        , transactionAuthorized (Decode.decodeValue authorizeResponseDecoder >> TransactionAuthorized)
         , walletWebExtPresent WalletWebExtPresent
         ]
 
@@ -151,7 +180,7 @@ type Msg
     | OverlayWalletSetup Overlay.WalletSetup.Msg
     | PageRegister Page.Register.Msg
     | TopBarMsg TopBar.Msg
-    | TransactionAuthorized Transaction.Hash
+    | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
     | KeyPairCreated (Maybe KeyPair)
     | KeyPairFetched (Maybe KeyPair)
     | WalletWebExtPresent ()
@@ -258,7 +287,20 @@ update msg model =
             in
             ( { model | topBarModel = topBarModel }, Cmd.map TopBarMsg topBarMsg )
 
-        TransactionAuthorized hash ->
+        TransactionAuthorized (Ok _) ->
+            case model.overlay of
+                Just WaitForTransaction ->
+                    ( model
+                    , Navigation.pushUrl
+                        model.navKey
+                        (Route.toString Route.Project)
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        -- TODO(xla): Surface conversion errors properly and show them in the UI.
+        TransactionAuthorized (Err _) ->
             ( model, Cmd.none )
 
         WalletWebExtPresent _ ->

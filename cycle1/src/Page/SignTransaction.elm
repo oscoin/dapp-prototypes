@@ -39,12 +39,12 @@ view signedMsg keyPair transaction =
 
 
 viewActions : msg -> Element msg
-viewActions signedMsg =
+viewActions authorizeMsg =
     Element.row
         []
         [ Button.transparent [] "Reject"
         , Element.el
-            [ Events.onClick signedMsg ]
+            [ Events.onClick authorizeMsg ]
           <|
             Button.accent [] "Authorize transaction"
         ]

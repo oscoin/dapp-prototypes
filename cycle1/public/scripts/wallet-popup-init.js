@@ -25,8 +25,8 @@
     console.log('ports.authorizeTransaction', payload)
 
     // Signal to sign the transaction and close.
-    background.signTransaction(payload.hash, payload.id)
-    window.cloe()
+    background.signTransaction(payload.hash, payload.keyPairId)
+    window.close()
   })
 
   // Listen to keyPairCreate events and signal the wallet to create one with the

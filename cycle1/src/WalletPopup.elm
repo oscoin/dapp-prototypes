@@ -118,14 +118,27 @@ subscriptions _ =
 
 
 type Msg
-    = KeyPairCreated (Maybe KeyPair)
+    = AuthorizeTransaction
+    | KeyPairCreated (Maybe KeyPair)
     | PageKeyPairSetup Page.KeyPairSetup.Msg
-    | TransactionAuthorized
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case ( Debug.log "WalletPopup.Msg" msg, Debug.log "WalletPopup.Model" model ) of
+        -- Communicate back when the transaction is authorized.
+        ( AuthorizeTransaction, ShowTransaction keyPair transaction ) ->
+            ( model
+            , authorizeTransaction
+                { keyPairId = KeyPair.id keyPair
+                , hash = Transaction.hash transaction
+                }
+            )
+
+        -- Ignore transaction authorization on other pages.
+        ( AuthorizeTransaction, _ ) ->
+            ( model, Cmd.none )
+
         -- Relay created key pair event to the KeyPairSetup page.
         ( KeyPairCreated maybeKeyPair, KeyPairSetup oldModel ) ->
             case maybeKeyPair of
@@ -176,19 +189,6 @@ update msg model =
         ( PageKeyPairSetup _, _ ) ->
             ( model, Cmd.none )
 
-        -- Communicate back when the transaction is authorized.
-        ( TransactionAuthorized, ShowTransaction keyPair transaction ) ->
-            ( model
-            , authorizeTransaction
-                { keyPairId = KeyPair.id keyPair
-                , hash = Transaction.hash transaction
-                }
-            )
-
-        -- Ignore transaction signing on other pages.
-        ( TransactionAuthorized, _ ) ->
-            ( model, Cmd.none )
-
 
 
 -- VIEW
@@ -222,7 +222,7 @@ view model =
                     )
 
                 ShowTransaction keyPair transaction ->
-                    Page.SignTransaction.view TransactionAuthorized keyPair transaction
+                    Page.SignTransaction.view AuthorizeTransaction keyPair transaction
 
                 NotFound ->
                     Page.NotFound.view

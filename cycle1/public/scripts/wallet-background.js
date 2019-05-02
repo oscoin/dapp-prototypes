@@ -123,11 +123,24 @@ function getTransaction() {
   return transaction
 }
 
+function signTransaction(hash, keyPairId) {
+  console.log('signTransaction.hash', hash)
+  console.log('signTransaction.keyPairId', keyPairId)
+
+  browser.tabs.sendMessage(getCurrentTab().id, {
+    direction: 'wallet-to-page',
+    type: 'transactionAuthorized',
+    hash: hash,
+    keyPairId: getKeyPair(),
+  })
+}
+
 // Public API for popup script.
 window.createKeyPair = createKeyPair
 window.getKeyPair = getKeyPair
 window.keyPairSetupComplete = keyPairSetupComplete
 window.getTransaction = getTransaction
+window.signTransaction = signTransaction
 
 // Helpers
 
