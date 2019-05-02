@@ -16,7 +16,7 @@ view =
     Element.row
         [ Element.spacing 24
         , Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
-        , Element.width Element.fill
+        , Element.width <| Element.px 1074
         ]
         [ viewTopPeople "Maintainers" "5"
         , viewTopPeople "Top contributors" "30"

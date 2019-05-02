@@ -292,6 +292,7 @@ viewOverlay maybeOverlay url =
             let
                 backUrl =
                     Url.Builder.relative [ url.path ] []
+
                 ( title, content ) =
                     case overlay of
                         WaitForKeyPair ->
@@ -305,7 +306,6 @@ viewOverlay maybeOverlay url =
                             ( overlayTitle
                             , Element.map OverlayWalletSetup <| overlayView
                             )
-
             in
             ( Just title, overlayAttrs content backUrl )
 
@@ -377,8 +377,7 @@ view model =
             attrs
           <|
             Element.column
-                [ Element.spacing 42
-                , Element.height Element.fill
+                [ Element.height Element.fill
                 , Element.width Element.fill
                 ]
                 [ Element.map TopBarMsg <| TopBar.view model.topBarModel rUrl
