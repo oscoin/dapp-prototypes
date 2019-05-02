@@ -212,7 +212,7 @@ viewFundsDestination_ dest =
 
 viewFundsDestination : String -> Element msg
 viewFundsDestination dest =
-    Icon.intialCircle Color.purple dest
+    Icon.initialCircle Color.purple dest
 
 
 viewFundsDestinations : Exchange -> Element msg
