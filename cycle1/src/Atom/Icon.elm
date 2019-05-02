@@ -1,4 +1,8 @@
-module Atom.Icon exposing (initialCircle, largeLogoCircle)
+module Atom.Icon exposing
+    ( initialCircle
+    , largeLogoCircle
+    , logoCircle
+    )
 
 import Element exposing (Element)
 import Html exposing (..)
@@ -6,6 +10,26 @@ import Style.Color as Color
 import Style.Font as Font
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+
+
+logoCircle : Element.Color -> Element msg
+logoCircle bgColor =
+    Element.html <|
+        svg
+            [ width "24"
+            , height "24"
+            , viewBox "0 0 24 24"
+            , fill "none"
+            ]
+            [ circle
+                [ cx "12"
+                , cy "12"
+                , r "11"
+                , stroke (Color.toCssString bgColor)
+                , strokeWidth "2"
+                ]
+                []
+            ]
 
 
 largeLogoCircle : Element.Color -> Element msg
@@ -18,7 +42,7 @@ largeLogoCircle bgColor =
             , fill "none"
             ]
             [ circle
-                [ cx "24"
+                [ cx "12"
                 , cy "24"
                 , r "23"
                 , stroke (Color.toCssString bgColor)
