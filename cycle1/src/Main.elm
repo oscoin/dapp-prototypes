@@ -383,7 +383,7 @@ view model =
                 [ Element.map TopBarMsg <| TopBar.view model.topBarModel rUrl
                 , viewWallet model.wallet
                 , viewKeyPair model.keyPair
-                , Element.el [ Element.centerX ] <| pageContent
+                , pageContent
                 ]
         ]
     }

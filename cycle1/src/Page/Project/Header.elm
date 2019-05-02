@@ -16,24 +16,20 @@ import Style.Font as Font
 
 view : Element msg
 view =
-    Element.row
-        [ Element.height Element.fill ]
-        [ Element.el
-            [ Background.color Color.almostWhite
-            , Element.height Element.fill
-            , Element.width Element.fill
-            ]
-          <|
-            Element.text ""
-        , Element.column
-            [ Background.color Color.almostWhite
-            , Element.width Element.fill
-            , Element.paddingXY 0 44
+    Element.el
+        [ Background.color Color.almostWhite
+        , Element.width Element.fill
+        ]
+    <|
+        Element.column
+            [ Element.paddingXY 0 44
+            , Element.width <| Element.px 1074
+            , Element.centerX
             ]
             [ Element.row
                 [ Element.spacing 24
                 , Element.height (Element.px 112)
-                , Element.width Element.fill
+                , Element.width <| Element.px 1074
                 ]
                 [ viewLogo
                 , viewMeta
@@ -41,14 +37,6 @@ view =
                 ]
             , Actions.view
             ]
-        , Element.el
-            [ Background.color Color.almostWhite
-            , Element.height Element.fill
-            , Element.width Element.fill
-            ]
-          <|
-            Element.text ""
-        ]
 
 
 viewLogo : Element msg

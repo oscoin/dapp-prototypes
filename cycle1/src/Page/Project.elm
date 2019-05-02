@@ -29,7 +29,10 @@ view =
         , Element.paddingEach { top = 0, right = 0, bottom = 96, left = 0 }
         ]
         [ Header.view
-        , Contract.view <| Project.contract radicle
-        , People.view
+        , Element.column
+            [ Element.width <| Element.px 1074, Element.centerX ]
+            [ Contract.view <| Project.contract radicle
+            , People.view
+            ]
         ]
     )
