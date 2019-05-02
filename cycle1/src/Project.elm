@@ -3,10 +3,12 @@ module Project exposing
     , Project
     , address
     , contract
+    , contributors
     , decoder
     , encode
     , findByAddr
     , init
+    , maintainers
     , mapContract
     , mapMeta
     , meta
@@ -15,6 +17,7 @@ module Project exposing
 import Dict
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Person as Person exposing (Person)
 import Project.Contract as Contract exposing (Contract)
 import Project.Meta as Meta exposing (Meta)
 
@@ -28,44 +31,73 @@ type alias Address =
 
 
 
+-- DATA
+
+
+type alias Data =
+    { address : Address
+    , contract : Contract
+    , meta : Meta
+    , contributors : List Person
+    , maintainers : List Person
+    }
+
+
+emptyData : Data
+emptyData =
+    Data "" Contract.default Meta.empty [] []
+
+
+
 -- PROJECT
 
 
 type Project
-    = Project Address Meta Contract
+    = Project Data
 
 
 init : Project
 init =
-    Project "" Meta.empty Contract.default
+    Project emptyData
 
 
 address : Project -> Address
-address (Project addr _ _) =
-    addr
+address (Project data) =
+    data.address
 
 
 mapContract : (Contract -> Contract) -> Project -> Project
-mapContract change (Project addr currentMeta oldContract) =
-    Project addr currentMeta (change oldContract)
+mapContract change (Project data) =
+    Project { data | contract = change data.contract }
 
 
 contract : Project -> Contract
-contract (Project _ _ currentContract) =
-    currentContract
+contract (Project data) =
+    data.contract
 
 
 mapMeta : (Meta -> Meta) -> Project -> Project
-mapMeta change (Project addr oldMeta currentContract) =
-    Project addr (change oldMeta) currentContract
+mapMeta change (Project data) =
+    Project { data | meta = change data.meta }
 
 
 meta : Project -> Meta
-meta (Project _ currentMeta _) =
-    currentMeta
+meta (Project data) =
+    data.meta
+
+
+contributors : Project -> List Person
+contributors (Project data) =
+    data.contributors
+
+
+maintainers : Project -> List Person
+maintainers (Project data) =
+    data.maintainers
 
 
 
+-- STATS
 -- PROJECT QUERY
 
 
@@ -87,10 +119,17 @@ findByAddr projects addr =
 
 decoder : Decode.Decoder Project
 decoder =
-    Decode.map3 Project
+    Decode.map Project dataDecoder
+
+
+dataDecoder : Decode.Decoder Data
+dataDecoder =
+    Decode.map5 Data
         (Decode.field "address" Decode.string)
-        (Decode.field "meta" Meta.decoder)
         (Decode.field "contract" Contract.decoder)
+        (Decode.field "meta" Meta.decoder)
+        (Decode.field "contributors" (Decode.list Person.decoder))
+        (Decode.field "maintainers" (Decode.list Person.decoder))
 
 
 
@@ -98,8 +137,8 @@ decoder =
 
 
 encode : Project -> Encode.Value
-encode (Project _ currentMeta currentContract) =
+encode (Project data) =
     Encode.object
-        [ ( "contract", Contract.encode currentContract )
-        , ( "meta", Meta.encode currentMeta )
+        [ ( "contract", Contract.encode data.contract )
+        , ( "meta", Meta.encode data.meta )
         ]

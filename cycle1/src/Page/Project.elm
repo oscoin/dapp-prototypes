@@ -6,7 +6,7 @@ import Page.Project.Dependency as Dependency
 import Page.Project.Fund as Fund
 import Page.Project.Header as Header
 import Page.Project.People as People
-import Project exposing (Project)
+import Project as Project exposing (Project)
 
 
 
@@ -22,9 +22,11 @@ view project =
         ]
         [ Header.view <| Project.meta project
         , Element.column
-            [ Element.width <| Element.px 1074, Element.centerX ]
+            [ Element.centerX
+            , Element.width <| Element.px 1074
+            ]
             [ Contract.view <| Project.contract project
-            , People.view
+            , People.view (Project.maintainers project) (Project.contributors project)
             , Fund.view
             , Dependency.view
             ]
