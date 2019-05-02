@@ -105,10 +105,10 @@ init flags url navKey =
 -- PORTS - OUTGOING
 
 
-port registerProject : Encode.Value -> Cmd msg
-
-
 port requireKeyPair : () -> Cmd msg
+
+
+port signTransaction : Encode.Value -> Cmd msg
 
 
 
@@ -219,7 +219,7 @@ update msg model =
                             case subCmd of
                                 -- Call out to our port to register the project.
                                 Page.Register.Register project ->
-                                    [ registerProject <| Project.encode project
+                                    [ signTransaction <| Transaction.encode <| Transaction.registerProject project
                                     , Navigation.pushUrl
                                         model.navKey
                                         (Route.toString (Route.Register <| Just Route.WaitForTransaction))

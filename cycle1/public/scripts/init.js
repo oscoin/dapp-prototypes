@@ -15,24 +15,23 @@ window.addEventListener('DOMContentLoaded', _ => {
     type: 'getKeyPair',
   })
 
-  // Listen to project register messages that we hand off to the wallet for
-  // signing and sending.
-  app.ports.registerProject.subscribe(function(project) {
-    console.log('ports.registerProject', project)
-
-    window.postMessage({
-      direction: 'page-to-wallet',
-      type: 'registerProject',
-      project: project,
-    })
-  })
-
   app.ports.requireKeyPair.subscribe(function() {
     console.log('ports.requireKeyPair')
 
     window.postMessage({
       direction: 'page-to-wallet',
       type: 'requireKeyPair',
+    })
+  })
+
+  // Listen for transcation that need to be signed by the wallet.
+  app.ports.signTransaction.subscribe(function(transaction) {
+    console.log('ports.signTransaction', transaction)
+
+    window.postMessage({
+      direction: 'page-to-wallet',
+      type: 'signTransaction',
+      transaction: transaction,
     })
   })
 

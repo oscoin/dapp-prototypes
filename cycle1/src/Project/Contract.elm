@@ -7,9 +7,15 @@ module Project.Contract exposing
     , decodeReward
     , decodeRole
     , default
+    , defaultDonation
+    , defaultReward
+    , defaultRole
     , donation
     , donationString
     , encode
+    , isDefaultDonation
+    , isDefaultReward
+    , isDefaultRole
     , mapDonation
     , mapReward
     , mapRole
@@ -57,7 +63,22 @@ type Contract
 
 default : Contract
 default =
-    Contract RewardBurn DonationFundSaving RoleMaintainerSingleSigner
+    Contract defaultReward defaultDonation RoleMaintainerSingleSigner
+
+
+defaultDonation : Donation
+defaultDonation =
+    DonationFundSaving
+
+
+isDefaultDonation : Donation -> Bool
+isDefaultDonation d =
+    case d of
+        DonationFundSaving ->
+            True
+
+        _ ->
+            False
 
 
 mapDonation : (Donation -> Donation) -> Contract -> Contract
@@ -70,6 +91,21 @@ donation (Contract _ currentDonation _) =
     currentDonation
 
 
+defaultReward : Reward
+defaultReward =
+    RewardBurn
+
+
+isDefaultReward : Reward -> Bool
+isDefaultReward r =
+    case r of
+        RewardBurn ->
+            True
+
+        _ ->
+            False
+
+
 mapReward : (Reward -> Reward) -> Contract -> Contract
 mapReward change (Contract currentReward currentDonation currentRole) =
     Contract (change currentReward) currentDonation currentRole
@@ -78,6 +114,21 @@ mapReward change (Contract currentReward currentDonation currentRole) =
 reward : Contract -> Reward
 reward (Contract currentReward _ _) =
     currentReward
+
+
+defaultRole : Role
+defaultRole =
+    RoleMaintainerSingleSigner
+
+
+isDefaultRole : Role -> Bool
+isDefaultRole r =
+    case r of
+        RoleMaintainerSingleSigner ->
+            True
+
+        _ ->
+            False
 
 
 mapRole : (Role -> Role) -> Contract -> Contract

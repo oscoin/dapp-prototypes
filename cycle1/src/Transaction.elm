@@ -4,13 +4,17 @@ module Transaction exposing
     , RuleChange(..)
     , Transaction
     , decoder
+    , encode
     , hash
     , messageType
     , messages
+    , registerProject
     )
 
 import Json.Decode as Decode
 import Json.Decode.Extra exposing (when)
+import Json.Encode as Encode
+import Project exposing (Project)
 import Project.Contract as Contract exposing (Donation(..), Reward, Role)
 
 
@@ -24,6 +28,11 @@ type alias Fee =
 
 type alias Hash =
     String
+
+
+emptyHash : Hash
+emptyHash =
+    ""
 
 
 type Transaction
@@ -53,12 +62,24 @@ decoder =
 
 
 
+-- TRANSACTION ENCODING
+
+
+encode : Transaction -> Encode.Value
+encode (Transaction _ fee msgs) =
+    Encode.object
+        [ ( "fee", Encode.int fee )
+        , ( "messages", Encode.list encodeMessage msgs )
+        ]
+
+
+
 -- MESSAGE
 
 
 type Message
-    = ProjectRegistration String
-    | UpdateContractRule String RuleChange
+    = ProjectRegistration Project.Address
+    | UpdateContractRule Project.Address RuleChange
 
 
 messageType : Message -> String
@@ -68,13 +89,26 @@ messageType message =
             "project-registration"
 
         UpdateContractRule _ _ ->
-            "contract-update-rule"
+            "update-contract-rule"
 
 
 type RuleChange
     = Donation Donation Donation
     | Reward Reward Reward
     | Role Role Role
+
+
+ruleChangeType : RuleChange -> String
+ruleChangeType ruleChange =
+    case ruleChange of
+        Donation _ _ ->
+            "donation"
+
+        Reward _ _ ->
+            "reward"
+
+        Role _ _ ->
+            "role"
 
 
 
@@ -143,3 +177,93 @@ ruleChangeRoleDecoder =
 is : String -> (String -> Bool)
 is expected =
     \val -> val == expected
+
+
+
+-- MESSAGE ENCODING
+
+
+encodeMessage : Message -> Encode.Value
+encodeMessage msg =
+    case msg of
+        ProjectRegistration addr ->
+            Encode.object
+                [ ( "type", Encode.string <| messageType msg )
+                , ( "address", Encode.string addr )
+                ]
+
+        UpdateContractRule addr ruleChange ->
+            Encode.object
+                [ ( "type", Encode.string <| messageType msg )
+                , ( "address", Encode.string addr )
+                , ( "ruleChange", encodeRuleChange ruleChange )
+                ]
+
+
+encodeRuleChange : RuleChange -> Encode.Value
+encodeRuleChange ruleChange =
+    case ruleChange of
+        Donation old new ->
+            Encode.object
+                [ ( "type", Encode.string <| ruleChangeType ruleChange )
+                , ( "old", Encode.string <| Contract.donationString old )
+                , ( "new", Encode.string <| Contract.donationString new )
+                ]
+
+        Reward old new ->
+            Encode.object
+                [ ( "type", Encode.string <| ruleChangeType ruleChange )
+                , ( "old", Encode.string <| Contract.rewardString old )
+                , ( "new", Encode.string <| Contract.rewardString new )
+                ]
+
+        Role old new ->
+            Encode.object
+                [ ( "type", Encode.string <| ruleChangeType ruleChange )
+                , ( "old", Encode.string <| Contract.roleString old )
+                , ( "new", Encode.string <| Contract.roleString new )
+                ]
+
+
+
+-- CONSTRUCTORS
+
+
+registerProject : Project -> Transaction
+registerProject project =
+    let
+        registerMsgs =
+            [ ProjectRegistration <| Project.address project
+            ]
+
+        contract =
+            Project.contract project
+
+        donationMsgs =
+            if Contract.isDefaultDonation <| Contract.donation contract then
+                []
+
+            else
+                [ Donation Contract.defaultDonation (Contract.donation contract)
+                    |> UpdateContractRule (Project.address project)
+                ]
+
+        rewardMsgs =
+            if Contract.isDefaultReward <| Contract.reward contract then
+                []
+
+            else
+                [ Reward Contract.defaultReward (Contract.reward contract)
+                    |> UpdateContractRule (Project.address project)
+                ]
+
+        roleMsgs =
+            if Contract.isDefaultRole <| Contract.role contract then
+                []
+
+            else
+                [ Role Contract.defaultRole (Contract.role contract)
+                    |> UpdateContractRule (Project.address project)
+                ]
+    in
+    Transaction emptyHash 13 <| List.concat [ registerMsgs, rewardMsgs, donationMsgs, roleMsgs ]

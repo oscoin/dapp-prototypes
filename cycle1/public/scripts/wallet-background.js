@@ -50,11 +50,18 @@ browser.runtime.onMessage.addListener((msg, sender) => {
       })
     }
 
-    // A new project registration, this needs to be packed into a transaction
-    // and be prompted to sign with the current key.
-    if (msg.type === 'registerProject') {
+    // Present the transaction to sign to the user.
+    if (msg.type === 'signTransaction') {
       currentTab = sender.tab
-      transaction = testTransaction()
+      // transaction = testTransaction()
+
+      let tx = msg.transaction
+      let enc = new TextEncoder()
+      tx.hash = new TextDecoder().decode(
+        nacl.hash(enc.encode(JSON.stringify(tx)))
+      )
+
+      transaction = tx
 
       browser.windows
         .create({
