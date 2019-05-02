@@ -5,11 +5,12 @@ module Style.Font exposing
     , bodyTextMono
     , boldBodyTextMono
     , linkText
-    , smallLinkText
     , mediumBodyText
     , mediumBodyTextMono
     , mediumHeader
     , mediumHeaderMono
+    , smallLinkText
+    , smallMediumAllCapsText
     , smallMediumText
     , smallText
     , smallTextMono
@@ -97,6 +98,7 @@ linkText textColor =
     , Font.underline
     ]
 
+
 smallLinkText : Color -> List (Attribute msg)
 smallLinkText textColor =
     [ Font.color textColor
@@ -173,6 +175,18 @@ smallTextMono textColor =
         , Font.monospace
         ]
     , Font.size 14
+    ]
+
+
+smallMediumAllCapsText : Color -> List (Attribute msg)
+smallMediumAllCapsText textColor =
+    [ Font.color textColor
+    , Font.family
+        [ fontGTAmericaMedium
+        , Font.sansSerif
+        ]
+    , Font.size 14
+    , Font.letterSpacing 1.2
     ]
 
 
