@@ -13,10 +13,20 @@
       maybeTransaction,
       location: {
         hash: window.location.hash,
-        path: window.location.pathname
-      } 
+        path: window.location.pathname,
+      },
     },
-    node: document.getElementById('popup')
+    node: document.getElementById('popup'),
+  })
+
+  // Listen to authorizeTransaction events and signal the wallet that the user
+  // wants to go forward with signing.
+  popup.ports.authorizeTransaction.subscribe(function(payload) {
+    console.log('ports.authorizeTransaction', payload)
+
+    // Signal to sign the transaction and close.
+    background.signTransaction(payload.hash, payload.keyPairId)
+    window.close()
   })
 
   // Listen to keyPairCreate events and signal the wallet to create one with the
@@ -31,8 +41,8 @@
   popup.ports.keyPairSetupComplete.subscribe(function() {
     console.log('ports.keyPairSetupComplete')
 
-    // Signal that key pair setup completed in the popup and the it will close.
+    // Signal that key pair setup completed in the popup and then close.
     background.keyPairSetupComplete()
     window.close()
   })
-})();
+})()

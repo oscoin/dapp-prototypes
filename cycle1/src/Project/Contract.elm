@@ -3,12 +3,21 @@ module Project.Contract exposing
     , Donation(..)
     , Reward(..)
     , Role(..)
+    , decodeDonation
+    , decodeReward
+    , decodeRole
     , default
+    , defaultDonation
+    , defaultReward
+    , defaultRole
     , donation
     , donationIcon
     , donationName
     , donationString
     , encode
+    , isDefaultDonation
+    , isDefaultReward
+    , isDefaultRole
     , mapDonation
     , mapReward
     , mapRole
@@ -22,6 +31,7 @@ module Project.Contract exposing
     , roleString
     )
 
+import Json.Decode as Decode
 import Json.Encode as Encode
 
 
@@ -149,7 +159,22 @@ type Contract
 
 default : Contract
 default =
-    Contract RewardBurn DonationFundSaving RoleMaintainerSingleSigner
+    Contract defaultReward defaultDonation RoleMaintainerSingleSigner
+
+
+defaultDonation : Donation
+defaultDonation =
+    DonationFundSaving
+
+
+isDefaultDonation : Donation -> Bool
+isDefaultDonation d =
+    case d of
+        DonationFundSaving ->
+            True
+
+        _ ->
+            False
 
 
 mapDonation : (Donation -> Donation) -> Contract -> Contract
@@ -162,6 +187,21 @@ donation (Contract _ currentDonation _) =
     currentDonation
 
 
+defaultReward : Reward
+defaultReward =
+    RewardBurn
+
+
+isDefaultReward : Reward -> Bool
+isDefaultReward r =
+    case r of
+        RewardBurn ->
+            True
+
+        _ ->
+            False
+
+
 mapReward : (Reward -> Reward) -> Contract -> Contract
 mapReward change (Contract currentReward currentDonation currentRole) =
     Contract (change currentReward) currentDonation currentRole
@@ -172,6 +212,21 @@ reward (Contract currentReward _ _) =
     currentReward
 
 
+defaultRole : Role
+defaultRole =
+    RoleMaintainerSingleSigner
+
+
+isDefaultRole : Role -> Bool
+isDefaultRole r =
+    case r of
+        RoleMaintainerSingleSigner ->
+            True
+
+        _ ->
+            False
+
+
 mapRole : (Role -> Role) -> Contract -> Contract
 mapRole change (Contract currentReward currentDonation currentRole) =
     Contract currentReward currentDonation (change currentRole)
@@ -180,6 +235,52 @@ mapRole change (Contract currentReward currentDonation currentRole) =
 role : Contract -> Role
 role (Contract _ _ currentRole) =
     currentRole
+
+
+
+-- DECODING
+
+
+decodeDonation : Decode.Decoder Donation
+decodeDonation =
+    Decode.string
+        |> Decode.andThen
+            (\str ->
+                case donationFromString str of
+                    Just d ->
+                        Decode.succeed d
+
+                    Nothing ->
+                        Decode.fail <| "unknown donation"
+            )
+
+
+decodeReward : Decode.Decoder Reward
+decodeReward =
+    Decode.string
+        |> Decode.andThen
+            (\str ->
+                case rewardFromString str of
+                    Just r ->
+                        Decode.succeed r
+
+                    Nothing ->
+                        Decode.fail <| "unknown donation"
+            )
+
+
+decodeRole : Decode.Decoder Role
+decodeRole =
+    Decode.string
+        |> Decode.andThen
+            (\str ->
+                case roleFromString str of
+                    Just r ->
+                        Decode.succeed r
+
+                    Nothing ->
+                        Decode.fail <| "unknown donation"
+            )
 
 
 
@@ -230,6 +331,22 @@ donationString currentDonation =
             "Custom"
 
 
+donationFromString : String -> Maybe Donation
+donationFromString input =
+    case input of
+        "FundSaving" ->
+            Just DonationFundSaving
+
+        "EqualMaintainer" ->
+            Just DonationEqualMaintainer
+
+        "EqualDependency" ->
+            Just DonationEqualDependency
+
+        _ ->
+            Nothing
+
+
 rewardString : Reward -> String
 rewardString currentReward =
     case currentReward of
@@ -249,6 +366,25 @@ rewardString currentReward =
             "Custom"
 
 
+rewardFromString : String -> Maybe Reward
+rewardFromString currentReward =
+    case currentReward of
+        "Burn" ->
+            Just RewardBurn
+
+        "FundSaving" ->
+            Just RewardFundSaving
+
+        "EqualMaintainer" ->
+            Just RewardEqualMaintainer
+
+        "EqualDependency" ->
+            Just RewardEqualDependency
+
+        _ ->
+            Nothing
+
+
 roleString : Role -> String
 roleString currentRole =
     case currentRole of
@@ -257,3 +393,16 @@ roleString currentRole =
 
         RoleMaintainerMultiSig ->
             "MaintainerMultiSig"
+
+
+roleFromString : String -> Maybe Role
+roleFromString currentRole =
+    case currentRole of
+        "MaintainerSingleSigner" ->
+            Just RoleMaintainerSingleSigner
+
+        "MaintainerMultiSig" ->
+            Just RoleMaintainerMultiSig
+
+        _ ->
+            Nothing

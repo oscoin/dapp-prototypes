@@ -19,6 +19,7 @@ type Route
     | Project
     | Register (Maybe Route)
     | WaitForKeyPair
+    | WaitForTransaction
     | WalletSetup
 
 
@@ -27,6 +28,7 @@ queryOverlay =
     Query.enum "overlay"
         (Dict.fromList
             [ ( toString WaitForKeyPair, WaitForKeyPair )
+            , ( toString WaitForTransaction, WaitForTransaction )
             , ( toString WalletSetup, WalletSetup )
             ]
         )
@@ -75,6 +77,11 @@ toString route =
                                 relative (routeToPaths WaitForKeyPair) []
                             ]
 
+                        Just WaitForTransaction ->
+                            [ Url.Builder.string "overlay" <|
+                                relative (routeToPaths WaitForTransaction) []
+                            ]
+
                         Just WalletSetup ->
                             [ Url.Builder.string "overlay" <|
                                 relative (routeToPaths WalletSetup) []
@@ -107,6 +114,9 @@ routeToPaths route =
 
         WaitForKeyPair ->
             [ "wait-for-keypair" ]
+
+        WaitForTransaction ->
+            [ "wait-for-transaction" ]
 
         WalletSetup ->
             [ "wallet-setup" ]

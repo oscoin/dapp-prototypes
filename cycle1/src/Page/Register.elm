@@ -2,7 +2,7 @@ module Page.Register exposing (Model, Msg(..), init, update, view)
 
 import Atom.Button as Button
 import Atom.Heading as Heading
-import Element exposing (Element)
+import Element exposing (Attribute, Element)
 import Element.Border as Border
 import Element.Events as Events
 import Element.Font as Font
@@ -277,6 +277,7 @@ view (Model step project fieldError) =
 -- HELPER
 
 
+errorAttrs : List (Attribute msg)
 errorAttrs =
     [ Border.color Color.red
     , Border.width 1
