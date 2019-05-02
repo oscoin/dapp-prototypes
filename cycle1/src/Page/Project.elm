@@ -3,7 +3,7 @@ module Page.Project exposing (view)
 import Element exposing (Element)
 import Page.Project.Actions as Actions
 import Page.Project.Contract as Contract
-import Page.Project.Funds as Funds
+import Page.Project.Fund as Fund
 import Page.Project.Header as Header
 import Page.Project.People as People
 import Project exposing (Project)
@@ -33,6 +33,6 @@ view =
         , Actions.view
         , Contract.view <| Project.contract radicle
         , People.view
-        , Funds.view
+        , Fund.view
         ]
     )
