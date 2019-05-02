@@ -1,5 +1,7 @@
 module Page.Project.People exposing (view)
 
+import Atom.Button as Button
+import Atom.Heading as Heading
 import Element exposing (Element)
 import Element.Background as Background
 import Element.Border as Border
@@ -18,42 +20,24 @@ view =
         , Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
         , Element.width Element.fill
         ]
-        [ viewTopPeople "Maintainers" "5"
-        , viewTopPeople "Top contributors" "30"
+        [ viewTopPeople "Maintainers" 5
+        , viewTopPeople "Top contributors" 30
         ]
 
 
-viewTopPeople : String -> String -> Element msg
+viewTopPeople : String -> Int -> Element msg
 viewTopPeople title count =
     Element.column
         [ Border.color Color.lightGrey
         , Border.rounded 2
         , Border.width 1
-        , Element.height (Element.px 270)
+        , Element.height (Element.px 255)
         , Element.width <| Element.fillPortion 1
         ]
         -- Dependents
-        [ Element.row
-            [ Element.spacing 16
-            , Element.paddingEach { top = 24, right = 24, bottom = 8, left = 24 }
-            ]
-            [ Element.el
-                (Font.mediumHeader Color.black)
-              <|
-                Element.text title
-            , Element.el
-                ([ Background.color Color.purple
-                 , Element.paddingEach { top = 4, right = 8, bottom = 5, left = 8 }
-                 , Border.rounded 2
-                 ]
-                    ++ Font.boldBodyTextMono Color.white
-                )
-              <|
-                Element.text count
-            ]
+        [ Heading.sectionWithCount [] title count
         , Element.wrappedRow
-            [ Element.spacing 24
-            , Element.padding 24
+            [ Element.paddingEach { top = 12, right = 24, bottom = 0, left = 24 }
             , Element.width <| Element.fillPortion 1
             ]
             [ viewTopPeopleSingle "Jane Doe"
@@ -61,17 +45,14 @@ viewTopPeople title count =
             , viewTopPeopleSingle "Lorie Mike"
             , viewTopPeopleSingle "Harrold Downy"
             ]
-        , Element.el
-            [ Border.color Color.lightGrey
+        , Button.custom
+            [ Element.width Element.fill
+            , Border.color Color.lightGrey
             , Border.widthEach { top = 1, right = 0, bottom = 0, left = 0 }
-            , Element.height Element.fill
-            , Element.width Element.fill
             ]
-            (Element.el
-                ([ Element.centerX, Element.centerY ] ++ Font.linkText Color.darkGrey)
-             <|
-                Element.text "View all"
-            )
+            Color.white
+            Color.darkGrey
+            "View all"
         ]
 
 
@@ -80,6 +61,7 @@ viewTopPeopleSingle name =
     Element.row
         [ Element.spacing 12
         , Element.width <| Element.fillPortion 1
+        , Element.paddingEach { top = 0, right = 0, bottom = 24, left = 0 }
         ]
         [ Element.image
             [ Element.height (Element.px 48)

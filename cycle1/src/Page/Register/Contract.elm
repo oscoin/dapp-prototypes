@@ -3,8 +3,10 @@ module Page.Register.Contract exposing (Msg(..), update, view)
 import Atom.Button as Button
 import Atom.Heading as Heading
 import Element exposing (Element)
+import Element.Border as Border
 import Element.Events as Events
 import Project.Contract as Contract exposing (Contract, Donation(..), Reward(..), Role(..))
+import Style.Color as Color
 
 
 
@@ -78,7 +80,11 @@ view contract =
     in
     Element.column
         []
-        [ Heading.section "Project contract"
+        [ Heading.section
+            [ Border.color Color.lightGrey
+            , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
+            ]
+            "Project contract"
         , Element.row [] <| List.map (viewRewardOption currentReward) rewards
         , Element.row [] <| List.map (viewDonationOption currentDonation) donations
         , Element.row [] <| List.map (viewRoleOption currentRole) roles
