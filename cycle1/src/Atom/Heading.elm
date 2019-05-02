@@ -1,9 +1,11 @@
 module Atom.Heading exposing
     ( section
+    , sectionWithCount
     , sectionWithInfo
     )
 
 import Element exposing (Attribute, Element)
+import Element.Background as Background
 import Element.Border as Border
 import Style.Color as Color
 import Style.Font as Font
@@ -45,4 +47,31 @@ sectionWithInfo attr title component =
             [ Element.alignRight ]
           <|
             component
+        ]
+
+
+sectionWithCount : List (Attribute msg) -> String -> Int -> Element msg
+sectionWithCount attr title count =
+    Element.row
+        ([ Element.width <| Element.fillPortion 2
+         , Element.paddingXY 24 16
+         , Element.width Element.fill
+         , Element.height (Element.px 60)
+         , Element.spacing 16
+         ]
+            ++ attr
+        )
+        [ Element.el
+            (Font.mediumHeader Color.black)
+          <|
+            Element.text title
+        , Element.el
+            ([ Background.color Color.purple
+             , Element.paddingEach { top = 4, right = 8, bottom = 5, left = 8 }
+             , Border.rounded 2
+             ]
+                ++ Font.boldBodyTextMono Color.white
+            )
+          <|
+            Element.text (String.fromInt count)
         ]
