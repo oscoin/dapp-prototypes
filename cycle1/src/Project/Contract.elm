@@ -240,7 +240,6 @@ role (Contract _ _ currentRole) =
 
 
 -- DECODING
--- Contract Reward Donation Role
 
 
 decoder : Decode.Decoder Contract
@@ -261,7 +260,7 @@ decodeDonation =
                         Decode.succeed d
 
                     Nothing ->
-                        Decode.fail <| "unknown donation"
+                        Decode.fail "unknown donation"
             )
 
 
@@ -275,7 +274,7 @@ decodeReward =
                         Decode.succeed r
 
                     Nothing ->
-                        Decode.fail <| "unknown donation"
+                        Decode.fail "unknown donation"
             )
 
 
@@ -289,7 +288,7 @@ decodeRole =
                         Decode.succeed r
 
                     Nothing ->
-                        Decode.fail <| "unknown donation"
+                        Decode.fail "unknown donation"
             )
 
 

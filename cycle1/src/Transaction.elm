@@ -122,8 +122,8 @@ messageDecoder =
             Decode.field "type" Decode.string
     in
     Decode.oneOf
-        [ when typeDecoder (is "project-registration") projectRegistrationDecoder
-        , when typeDecoder (is "update-contract-rule") updateContractRuleDecoder
+        [ when typeDecoder (is (messageType (ProjectRegistration ""))) projectRegistrationDecoder
+        , when typeDecoder (is (messageType (UpdateContractRule "" (Donation Contract.defaultDonation Contract.defaultDonation)))) updateContractRuleDecoder
         ]
 
 
