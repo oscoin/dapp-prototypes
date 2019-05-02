@@ -376,7 +376,7 @@ rewardFromString currentReward =
             Just RewardFundSaving
 
         "EqualMaintainer" ->
-            Just RewardEqualMainatainer
+            Just RewardEqualMaintainer
 
         "EqualDependency" ->
             Just RewardEqualDependency
