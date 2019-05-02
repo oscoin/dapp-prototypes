@@ -1,6 +1,7 @@
 module TopBar exposing (Model, Msg, init, update, view)
 
 import Atom.Button as Button
+import Atom.Icon as Icon
 import Element
 import Element.Background as Background
 import Element.Border as Border
@@ -59,8 +60,8 @@ view searchTerm registerUrl =
         -- oscoin.io link
         [ Element.link
             [ Element.alignLeft ]
-            { url = "http://oscoin.io"
-            , label = Element.el [] <| Element.text "oscoin"
+            { url = "/"
+            , label = Icon.logoCircle Color.black
             }
         , Input.text
             ([ Element.paddingXY 16 8
