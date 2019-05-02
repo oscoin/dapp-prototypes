@@ -5,6 +5,7 @@ module Page.Project.Header exposing (view)
 import Element exposing (Element)
 import Element.Background as Background
 import Element.Border as Border
+import Page.Project.Actions as Actions
 import Style.Color as Color
 import Style.Font as Font
 
@@ -15,15 +16,27 @@ import Style.Font as Font
 
 view : Element msg
 view =
-    Element.row
-        [ Element.spacing 24
-        , Element.height (Element.px 112)
+    Element.el
+        [ Background.color Color.almostWhite
         , Element.width Element.fill
         ]
-        [ viewLogo
-        , viewMeta
-        , viewStats
-        ]
+    <|
+        Element.column
+            [ Element.paddingXY 0 44
+            , Element.width <| Element.px 1074
+            , Element.centerX
+            ]
+            [ Element.row
+                [ Element.spacing 24
+                , Element.height (Element.px 112)
+                , Element.width <| Element.px 1074
+                ]
+                [ viewLogo
+                , viewMeta
+                , viewStats
+                ]
+            , Actions.view
+            ]
 
 
 viewLogo : Element msg
@@ -74,6 +87,7 @@ viewStats =
         , Element.alignRight
         , Element.height Element.fill
         , Element.width (Element.px 364)
+        , Background.color Color.white
         ]
         -- Dependents
         [ statsColumn "1043" "dependents" "192 immediate"
