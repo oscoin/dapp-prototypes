@@ -21,7 +21,11 @@ view contract =
         , Element.width Element.fill
         , Element.centerX
         ]
-        [ Heading.section "Project contract"
+        [ Heading.section
+            [ Border.color Color.lightGrey
+            , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
+            ]
+            "Project contract"
         , Element.row
             [ Element.spacing 24
             , Element.width <| Element.fillPortion 3
