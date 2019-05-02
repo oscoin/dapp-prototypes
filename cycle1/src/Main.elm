@@ -4,6 +4,7 @@ import Browser
 import Browser.Navigation as Navigation
 import Element
 import Element.Background as Background
+import Footer
 import Html.Attributes
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -384,6 +385,7 @@ view model =
                 , viewWallet model.wallet
                 , viewKeyPair model.keyPair
                 , pageContent
+                , Footer.view
                 ]
         ]
     }
