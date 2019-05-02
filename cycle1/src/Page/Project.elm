@@ -27,7 +27,7 @@ view project =
             ]
             [ Contract.view <| Project.contract project
             , People.view (Project.maintainers project) (Project.contributors project)
-            , Fund.view
+            , Fund.view <| Project.funds project
             , Dependency.view
             ]
         ]

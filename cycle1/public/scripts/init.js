@@ -1,17 +1,54 @@
 const initialProjects = [
   {
     address: '1b4atzir794d11ckjtk7xawsqjizgwwabx9bun7qmw5ic7uxr1mj',
+    contract: {
+      reward: 'Burn',
+      donation: 'FundSaving',
+      role: 'MaintainerSingleSigner',
+    },
+    funds: {
+      oscoin: 824,
+      exchanges: [
+        {
+          date: 'Apr. 29, 2019',
+          destinations: ['RF'],
+          incoming: 100,
+          outgoing: 0,
+          rule: { type: 'donation', rule: 'FundSaving' },
+          source: 'IPFS',
+        },
+        {
+          date: 'Apr. 26, 2019',
+          destinations: ['JA', 'JH', 'MB'],
+          incoming: 124,
+          outgoing: 112,
+          rule: { type: 'reward', rule: 'EqualMaintainer' },
+          source: 'Network Reward',
+        },
+        {
+          date: 'Apr. 15, 2019',
+          destinations: ['RF'],
+          incoming: 100,
+          outgoing: 0,
+          rule: { type: 'donation', rule: 'FundSaving' },
+          source: 'IPFS',
+        },
+        {
+          date: 'Apr. 9, 2019',
+          destinations: ['JA', 'JH', 'MB'],
+          incoming: 124,
+          outgoing: 112,
+          rule: { type: 'reward', rule: 'EqualMaintainer' },
+          source: 'Network Reward',
+        },
+      ],
+    },
     meta: {
       codeHostUrl: 'github.com/radicle-dev/radicle',
       description: 'A peer-to-peer stack for code collaboration',
       imageUrl: '',
       name: 'Radicle',
       websiteUrl: 'https://radicle.xyz',
-    },
-    contract: {
-      reward: 'Burn',
-      donation: 'FundSaving',
-      role: 'MaintainerSingleSigner',
     },
     contributors: [
       {

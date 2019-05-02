@@ -10,73 +10,17 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Font
 import Project.Contract as Contract exposing (Donation(..))
+import Project.Funds as Funds exposing (Exchange, Funds)
 import Style.Color as Color
 import Style.Font as Font
-
-
-
--- MODEL
-
-
-type Transfer
-    = Outgoing
-
-
-type Rule
-    = RewardRule Contract.Reward
-    | DonationRule Contract.Donation
-    | TransferRule Transfer
-
-
-type alias Exchange =
-    { source : String
-    , date : String
-    , rule : Rule
-    , destination : List String
-    , incomingFunds : Int
-    , outgoingFunds : Int
-    }
-
-
-exchanges : List Exchange
-exchanges =
-    [ { source = "IPFS"
-      , date = "Feb. 3, 2019"
-      , rule = DonationRule Contract.DonationFundSaving
-      , destination = [ "RF" ]
-      , incomingFunds = 100
-      , outgoingFunds = 0
-      }
-    , { source = "Network reward"
-      , date = "Jan. 27, 2019"
-      , rule = RewardRule Contract.RewardEqualMaintainer
-      , destination = [ "RF", "JD", "JR" ]
-      , incomingFunds = 124
-      , outgoingFunds = 112
-      }
-    , { source = "IPFS"
-      , date = "Feb. 3, 2019"
-      , rule = DonationRule Contract.DonationFundSaving
-      , destination = [ "RF" ]
-      , incomingFunds = 100
-      , outgoingFunds = 0
-      }
-    , { source = "Network reward"
-      , date = "Jan. 27, 2019"
-      , rule = RewardRule Contract.RewardEqualMaintainer
-      , destination = [ "RF", "JD", "JR" ]
-      , incomingFunds = 124
-      , outgoingFunds = 112
-      }
-    ]
 
 
 
 -- VIEW
 
 
-view : Element msg
-view =
+view : Funds -> Element msg
+view funds =
     Element.column
         [ Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
         , Element.width Element.fill
@@ -85,7 +29,7 @@ view =
             "Project fund"
             (Element.row
                 []
-                [ Currency.large "824" Color.purple
+                [ Currency.large (String.fromInt <| Funds.coins funds) Color.purple
                 , Element.el
                     ([ Element.alignBottom
                      , Element.paddingEach { top = 0, right = 0, bottom = 0, left = 12 }
@@ -98,7 +42,7 @@ view =
             )
         , Element.table
             []
-            { data = exchanges
+            { data = Funds.exchanges funds
             , columns =
                 [ { header =
                         Table.headLeft
@@ -161,7 +105,7 @@ view =
                                     ++ Font.bodyTextMono Color.darkGrey
                                 )
                             <|
-                                Element.text (String.fromInt exchange.incomingFunds)
+                                Element.text (String.fromInt exchange.incoming)
                   }
                 , { header =
                         Table.headCenter
@@ -178,7 +122,7 @@ view =
                                     ++ Font.bodyTextMono Color.darkGrey
                                 )
                             <|
-                                Element.text (String.fromInt exchange.outgoingFunds)
+                                Element.text (String.fromInt exchange.outgoing)
                   }
                 , { header =
                         Table.headRight
@@ -195,7 +139,7 @@ view =
                                     ++ Font.boldBodyTextMono Color.darkGrey
                                 )
                             <|
-                                Element.text (String.fromInt <| exchange.incomingFunds - exchange.outgoingFunds)
+                                Element.text (String.fromInt <| exchange.incoming - exchange.outgoing)
                   }
                 ]
             }
@@ -224,7 +168,7 @@ viewFundsDestinations exchange =
         , Element.spacing 12
         ]
     <|
-        List.map viewFundsDestination exchange.destination
+        List.map viewFundsDestination exchange.destinations
 
 
 viewFundsRule : Exchange -> Element msg
@@ -232,13 +176,13 @@ viewFundsRule exchange =
     let
         ( icon, name ) =
             case exchange.rule of
-                RewardRule reward ->
+                Funds.RewardRule reward ->
                     ( Contract.rewardIcon reward, Contract.rewardName reward )
 
-                DonationRule donation ->
+                Funds.DonationRule donation ->
                     ( Contract.donationIcon donation, Contract.donationName donation )
 
-                TransferRule transfer ->
+                Funds.TransferRule transfer ->
                     ( "DT", "Donation transfer" )
     in
     Element.row
