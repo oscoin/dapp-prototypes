@@ -185,7 +185,11 @@ viewInfo project (FieldError nameError codeHostError) =
     in
     Element.column
         []
-        [ Heading.section "Project information"
+        [ Heading.section
+            [ Border.color Color.lightGrey
+            , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
+            ]
+            "Project information"
         , Input.text
             ([ Events.onLoseFocus BlurName
              ]
@@ -246,7 +250,11 @@ viewPreview : Project -> Element Msg
 viewPreview project =
     Element.column
         []
-        [ Heading.section "Project preview"
+        [ Heading.section
+            [ Border.color Color.lightGrey
+            , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
+            ]
+            "Project preview"
         , Element.el
             [ Events.onClick <| Register project ]
           <|

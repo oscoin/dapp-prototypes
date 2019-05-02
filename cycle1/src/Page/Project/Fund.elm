@@ -81,7 +81,8 @@ view =
         [ Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
         , Element.width Element.fill
         ]
-        [ Heading.sectionWithInfo "Project fund"
+        [ Heading.sectionWithInfo []
+            "Project fund"
             (Element.row
                 []
                 [ Currency.large "824" Color.purple
