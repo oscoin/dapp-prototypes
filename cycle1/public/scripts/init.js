@@ -1,10 +1,69 @@
+const initialProjects = [
+  {
+    address: '1b4atzir794d11ckjtk7xawsqjizgwwabx9bun7qmw5ic7uxr1mj',
+    meta: {
+      codeHostUrl: 'github.com/radicle-dev/radicle',
+      description: 'A peer-to-peer stack for code collaboration',
+      imageUrl: '',
+      name: 'Radicle',
+      websiteUrl: 'https://radicle.xyz',
+    },
+    contract: {
+      reward: 'Burn',
+      donation: 'FundSaving',
+      role: 'MaintainerSingleSigner',
+    },
+    contributors: [
+      {
+        name: 'geigerzaehler',
+        imageUrl: 'https://avatars2.githubusercontent.com/u/3919579?s=400&v=4',
+      },
+      {
+        name: 'jameshaydon',
+        imageUrl: 'https://avatars2.githubusercontent.com/u/692690?s=400&v=4',
+      },
+      {
+        name: 'jkarni',
+        imageUrl: 'https://avatars3.githubusercontent.com/u/1657498?s=400&v=4',
+      },
+      {
+        name: 'MeBrei',
+        imageUrl: 'https://avatars1.githubusercontent.com/u/16262137?s=400&v=4',
+      },
+      {
+        name: 'luqui',
+        imageUrl: 'https://avatars0.githubusercontent.com/u/22957?s=400&v=4',
+      },
+      {
+        name: 'juliendonck',
+        imageUrl: 'https://avatars2.githubusercontent.com/u/2326909?s=400&v=4',
+      },
+    ],
+    maintainers: [
+      {
+        name: 'jkarni',
+        imageUrl: 'https://avatars3.githubusercontent.com/u/1657498?s=400&v=4',
+      },
+      {
+        name: 'jameshaydon',
+        imageUrl: 'https://avatars2.githubusercontent.com/u/692690?s=400&v=4',
+      },
+      {
+        name: 'MeBrei',
+        imageUrl: 'https://avatars1.githubusercontent.com/u/16262137?s=400&v=4',
+      },
+    ],
+  },
+]
+
 window.addEventListener('DOMContentLoaded', _ => {
   console.log(document.getElementById('wallet') ? 'webext' : null)
 
   var app = Elm.Main.init({
     flags: {
-      keyPair: null,
-      wallet: document.getElementById('wallet') ? 'webext' : null,
+      maybeKeyPair: null,
+      maybeWallet: document.getElementById('wallet') ? 'webext' : null,
+      projects: initialProjects,
     },
     node: document.getElementById('app'),
   })

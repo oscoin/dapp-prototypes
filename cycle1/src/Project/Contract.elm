@@ -6,6 +6,7 @@ module Project.Contract exposing
     , decodeDonation
     , decodeReward
     , decodeRole
+    , decoder
     , default
     , defaultDonation
     , defaultReward
@@ -239,6 +240,15 @@ role (Contract _ _ currentRole) =
 
 
 -- DECODING
+-- Contract Reward Donation Role
+
+
+decoder : Decode.Decoder Contract
+decoder =
+    Decode.map3 Contract
+        (Decode.field "reward" decodeReward)
+        (Decode.field "donation" decodeDonation)
+        (Decode.field "role" decodeRole)
 
 
 decodeDonation : Decode.Decoder Donation

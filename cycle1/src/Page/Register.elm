@@ -9,6 +9,7 @@ import Element.Font as Font
 import Element.Input as Input
 import Page.Register.Contract as Contract
 import Project exposing (Project)
+import Project.Meta as Meta
 import Style.Color as Color
 import Style.Font as Font
 
@@ -63,7 +64,7 @@ update msg (Model oldStep oldProject fieldError) =
                     fieldError
 
                 errors =
-                    if Project.codeHostUrl oldProject == "" then
+                    if (Project.meta oldProject |> Meta.codeHostUrl) == "" then
                         FieldError nameError True
 
                     else
@@ -77,7 +78,7 @@ update msg (Model oldStep oldProject fieldError) =
                     fieldError
 
                 errors =
-                    if Project.name oldProject == "" then
+                    if (Project.meta oldProject |> Meta.name) == "" then
                         FieldError True codeHostError
 
                     else
@@ -108,19 +109,39 @@ update msg (Model oldStep oldProject fieldError) =
             ( Model oldStep project fieldError, Cmd.none )
 
         UpdateCodeHostUrl url ->
-            ( Model oldStep (Project.mapCodeHostUrl (\_ -> url) oldProject) fieldError, Cmd.none )
+            let
+                changeUrl meta =
+                    Meta.mapCodeHostUrl (\_ -> url) meta
+            in
+            ( Model oldStep (Project.mapMeta changeUrl oldProject) fieldError, Cmd.none )
 
         UpdateDescription description ->
-            ( Model oldStep (Project.mapDescription (\_ -> description) oldProject) fieldError, Cmd.none )
+            let
+                changeDescription meta =
+                    Meta.mapDescription (\_ -> description) meta
+            in
+            ( Model oldStep (Project.mapMeta changeDescription oldProject) fieldError, Cmd.none )
 
         UpdateImageUrl url ->
-            ( Model oldStep (Project.mapImageUrl (\_ -> url) oldProject) fieldError, Cmd.none )
+            let
+                changeImageUrl meta =
+                    Meta.mapImageUrl (\_ -> url) meta
+            in
+            ( Model oldStep (Project.mapMeta changeImageUrl oldProject) fieldError, Cmd.none )
 
         UpdateName name ->
-            ( Model oldStep (Project.mapName (\_ -> name) oldProject) fieldError, Cmd.none )
+            let
+                changeName meta =
+                    Meta.mapName (\_ -> name) meta
+            in
+            ( Model oldStep (Project.mapMeta changeName oldProject) fieldError, Cmd.none )
 
         UpdateWebsiteUrl url ->
-            ( Model oldStep (Project.mapWebsiteUrl (\_ -> url) oldProject) fieldError, Cmd.none )
+            let
+                changeWebsiteUrl meta =
+                    Meta.mapWebsiteUrl (\_ -> url) meta
+            in
+            ( Model oldStep (Project.mapMeta changeWebsiteUrl oldProject) fieldError, Cmd.none )
 
 
 
@@ -158,6 +179,10 @@ viewInfoNext blocked =
 
 viewInfo : Project -> FieldError -> Element Msg
 viewInfo project (FieldError nameError codeHostError) =
+    let
+        meta =
+            Project.meta project
+    in
     Element.column
         []
         [ Heading.section
@@ -178,7 +203,7 @@ viewInfo project (FieldError nameError codeHostError) =
             { label = Input.labelLeft [] <| Element.text "name*"
             , onChange = UpdateName
             , placeholder = Nothing
-            , text = Project.name project
+            , text = Meta.name meta
             }
         , Input.text
             ([ Events.onLoseFocus BlurCodeHost
@@ -193,31 +218,31 @@ viewInfo project (FieldError nameError codeHostError) =
             { label = Input.labelLeft [] <| Element.text "code hosting url*"
             , onChange = UpdateCodeHostUrl
             , placeholder = Nothing
-            , text = Project.codeHostUrl project
+            , text = Meta.codeHostUrl meta
             }
         , Input.text
             []
             { label = Input.labelLeft [] <| Element.text "description"
             , onChange = UpdateDescription
             , placeholder = Just <| Input.placeholder [] <| Element.text "max 200 characters"
-            , text = Project.description project
+            , text = Meta.description meta
             }
         , Input.text
             []
             { label = Input.labelLeft [] <| Element.text "website url"
             , onChange = UpdateWebsiteUrl
             , placeholder = Nothing
-            , text = Project.websiteUrl project
+            , text = Meta.websiteUrl meta
             }
         , Input.text
             []
             { label = Input.labelLeft [] <| Element.text "image url"
             , onChange = UpdateImageUrl
             , placeholder = Just <| Input.placeholder [] <| Element.text "svg, png or jpg - max 400 x 400 px"
-            , text = Project.imageUrl project
+            , text = Meta.imageUrl meta
             }
         , viewInfoFormError (nameError || codeHostError)
-        , viewInfoNext (nameError || codeHostError || Project.name project == "" || Project.codeHostUrl project == "")
+        , viewInfoNext (nameError || codeHostError || Meta.name meta == "" || Meta.codeHostUrl meta == "")
         ]
 
 

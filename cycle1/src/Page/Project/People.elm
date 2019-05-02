@@ -3,8 +3,8 @@ module Page.Project.People exposing (view)
 import Atom.Button as Button
 import Atom.Heading as Heading
 import Element exposing (Element)
-import Element.Background as Background
 import Element.Border as Border
+import Person as Person exposing (Person)
 import Style.Color as Color
 import Style.Font as Font
 
@@ -13,20 +13,20 @@ import Style.Font as Font
 -- VIEW
 
 
-view : Element msg
-view =
+view : List Person -> List Person -> Element msg
+view maintainers contributors =
     Element.row
         [ Element.spacing 24
         , Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
         , Element.width Element.fill
         ]
-        [ viewTopPeople "Maintainers" 5
-        , viewTopPeople "Top contributors" 30
+        [ viewTopPeople "Maintainers" <| List.take 4 maintainers
+        , viewTopPeople "Top contributors" <| List.take 4 contributors
         ]
 
 
-viewTopPeople : String -> Int -> Element msg
-viewTopPeople title count =
+viewTopPeople : String -> List Person -> Element msg
+viewTopPeople title people =
     Element.column
         [ Border.color Color.lightGrey
         , Border.rounded 2
@@ -35,16 +35,13 @@ viewTopPeople title count =
         , Element.width <| Element.fillPortion 1
         ]
         -- Dependents
-        [ Heading.sectionWithCount [] title count
+        [ Heading.sectionWithCount [] title (List.length people)
         , Element.wrappedRow
             [ Element.paddingEach { top = 12, right = 24, bottom = 0, left = 24 }
             , Element.width <| Element.fillPortion 1
             ]
-            [ viewTopPeopleSingle "Jane Doe"
-            , viewTopPeopleSingle "Jimmy Bong"
-            , viewTopPeopleSingle "Lorie Mike"
-            , viewTopPeopleSingle "Harrold Downy"
-            ]
+          <|
+            List.map viewTopPeopleSingle people
         , Button.custom
             [ Element.width Element.fill
             , Border.color Color.lightGrey
@@ -56,8 +53,8 @@ viewTopPeople title count =
         ]
 
 
-viewTopPeopleSingle : String -> Element msg
-viewTopPeopleSingle name =
+viewTopPeopleSingle : Person -> Element msg
+viewTopPeopleSingle person =
     Element.row
         [ Element.spacing 12
         , Element.width <| Element.fillPortion 1
@@ -71,7 +68,7 @@ viewTopPeopleSingle name =
             , Border.width 1
             , Element.clip
             ]
-            { src = "https://res.cloudinary.com/juliendonck/image/upload/v1536080565/avatars/6163.png"
+            { src = Person.imageUrl person
             , description = "avatar"
             }
         , Element.column
@@ -79,7 +76,8 @@ viewTopPeopleSingle name =
             [ Element.el
                 (Font.mediumBodyText Color.black)
               <|
-                Element.text name
+                Element.text <|
+                    Person.name person
             , Element.el
                 (Font.bodyText Color.darkGrey)
               <|

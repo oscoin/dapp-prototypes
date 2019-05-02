@@ -6,7 +6,7 @@ import Element
 import Html.Attributes as Attr
 import Url exposing (Url)
 import Url.Builder exposing (relative)
-import Url.Parser as Parser exposing ((<?>), Parser, oneOf, s)
+import Url.Parser as Parser exposing ((</>), (<?>), Parser, oneOf, s)
 import Url.Parser.Query as Query
 
 
@@ -16,7 +16,7 @@ import Url.Parser.Query as Query
 
 type Route
     = Home
-    | Project
+    | Project String
     | Register (Maybe Route)
     | WaitForKeyPair
     | WaitForTransaction
@@ -37,8 +37,8 @@ queryOverlay =
 parser : Parser (Route -> a) a
 parser =
     oneOf
-        [ Parser.map Project Parser.top
-        , Parser.map Project (s "project")
+        [ Parser.map (Project "1b4atzir794d11ckjtk7xawsqjizgwwabx9bun7qmw5ic7uxr1mj") Parser.top
+        , Parser.map Project (s "projects" </> Parser.string)
         , Parser.map Register (s "register" <?> queryOverlay)
         ]
 
@@ -106,8 +106,8 @@ routeToPaths route =
         Home ->
             []
 
-        Project ->
-            [ "project" ]
+        Project addr ->
+            [ "project", addr ]
 
         Register _ ->
             [ "register" ]
