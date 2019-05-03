@@ -17,22 +17,35 @@ import Transaction exposing (Hash, Transaction)
 -- MODEL
 
 
-type alias Location =
-    { hash : String
-    }
+type Page
+    = Keys
+    | Sign
 
 
-locationDecoder : Decode.Decoder Location
-locationDecoder =
-    Decode.map Location
-        (Decode.field "hash" Decode.string)
+type Flags
+    = Flags (Maybe KeyPair) (Maybe Transaction) Page
 
 
-type alias Flags =
-    { maybeKeyPair : Maybe KeyPair
-    , maybeTransaction : Maybe Transaction
-    , location : Location
-    }
+emptyFlags : Flags
+emptyFlags =
+    Flags Nothing Nothing Keys
+
+
+pageDecoder : Decode.Decoder Page
+pageDecoder =
+    Decode.string
+        |> Decode.andThen
+            (\str ->
+                case str of
+                    "keys" ->
+                        Decode.succeed Keys
+
+                    "sign" ->
+                        Decode.succeed Sign
+
+                    _ ->
+                        Decode.fail "unkown page"
+            )
 
 
 flagDecoder : Decode.Decoder Flags
@@ -40,7 +53,7 @@ flagDecoder =
     Decode.map3 Flags
         (Decode.field "maybeKeyPair" (Decode.nullable KeyPair.decoder))
         (Decode.field "maybeTransaction" (Decode.nullable Transaction.decoder))
-        (Decode.field "location" locationDecoder)
+        (Decode.field "page" pageDecoder)
 
 
 type Model
@@ -53,7 +66,7 @@ type Model
 init : Decode.Value -> ( Model, Cmd Msg )
 init flags =
     let
-        { maybeKeyPair, maybeTransaction, location } =
+        (Flags maybeKeyPair maybeTransaction page) =
             case Decode.decodeValue flagDecoder flags of
                 Ok decodedFlags ->
                     decodedFlags
@@ -63,17 +76,17 @@ init flags =
                         _ =
                             Debug.log "flags decode error" err
                     in
-                    Flags Nothing Nothing (Location "")
+                    emptyFlags
 
         model =
-            case ( Debug.log "WalletPopup.init.location" location.hash, maybeKeyPair, maybeTransaction ) of
-                ( "#keys", Nothing, Nothing ) ->
+            case ( Debug.log "WalletPopup.init.page" page, maybeKeyPair, maybeTransaction ) of
+                ( Keys, Nothing, Nothing ) ->
                     KeyPairSetup Page.KeyPairSetup.init
 
-                ( "#keys", Just keyPair, _ ) ->
+                ( Keys, Just keyPair, _ ) ->
                     KeyPairList keyPair
 
-                ( "#sign", Just keyPair, Just transaction ) ->
+                ( Sign, Just keyPair, Just transaction ) ->
                     ShowTransaction keyPair transaction
 
                 ( _, _, _ ) ->
