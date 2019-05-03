@@ -90,6 +90,14 @@ const initialProjects = [
         imageUrl: 'https://avatars1.githubusercontent.com/u/16262137?s=400&v=4',
       },
     ],
+    graph: {
+      edges: [
+        { direction: 'outgoing', name: 'IPFS', osrank: 0.84 },
+        { direction: 'incoming', name: 'Julien package', osrank: 0.99 },
+      ],
+      osrank: 0.86,
+      percentile: 85,
+    },
   },
 ]
 
