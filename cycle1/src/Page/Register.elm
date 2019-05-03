@@ -48,6 +48,7 @@ type Msg
     | BlurName
     | ContractMsg Contract.Msg
     | MoveStepContract
+    | MoveStepInfo
     | MoveStepPreview
     | Register Project
     | UpdateCodeHostUrl String
@@ -104,6 +105,9 @@ update msg (Model oldStep oldProject fieldError) =
         MoveStepContract ->
             ( Model Contract oldProject fieldError, Cmd.none )
 
+        MoveStepInfo ->
+            ( Model Info oldProject fieldError, Cmd.none )
+
         MoveStepPreview ->
             ( Model Preview oldProject fieldError, Cmd.none )
 
@@ -148,6 +152,53 @@ update msg (Model oldStep oldProject fieldError) =
 
 
 -- VIEW
+
+
+view : Model -> ( String, Element Msg )
+view (Model step project fieldError) =
+    let
+        viewStep =
+            case step of
+                Info ->
+                    viewInfo project fieldError
+
+                Contract ->
+                    Element.column
+                        [ Element.width Element.fill
+                        , Element.paddingXY 0 32
+                        ]
+                        [ Element.map ContractMsg <| Contract.view <| Project.contract project
+                        , Element.row
+                            [ Element.alignRight, Element.spacing 16 ]
+                            [ Element.el
+                                [ Events.onClick MoveStepInfo ]
+                              <|
+                                Button.transparent []
+                                    "Back"
+                            , Element.el
+                                [ Events.onClick <| MoveStepPreview ]
+                              <|
+                                Button.primary [] "Next"
+                            ]
+                        ]
+
+                Preview ->
+                    viewPreview project
+    in
+    ( "register"
+    , Element.column
+        [ Element.width (Element.px 1074), Element.centerX ]
+        [ Element.el
+            ([ Element.centerX
+             ]
+                ++ Font.bigHeader Color.black
+            )
+          <|
+            Element.text "Register your project"
+        , viewProgress step
+        , viewStep
+        ]
+    )
 
 
 viewInfoFormError : Bool -> Element Msg
@@ -253,8 +304,14 @@ viewInfo project (FieldError nameError codeHostError) =
         , Element.row
             [ Element.width Element.fill
             , Element.paddingEach { top = 0, left = 0, bottom = 96, right = 0 }
+            , Element.spacing 16
             ]
             [ viewInfoFormError (nameError || codeHostError)
+            , Element.link
+                [ Element.alignRight ]
+                { url = "/"
+                , label = Button.transparent [] "Cancel"
+                }
             , viewInfoNext (nameError || codeHostError || Meta.name meta == "" || Meta.codeHostUrl meta == "")
             ]
         ]
@@ -282,48 +339,19 @@ viewPreview project =
             , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
             ]
             "Project preview"
-        , Element.el
-            [ Events.onClick <| Register project ]
-          <|
-            Button.primary [] "Register this project"
+        , Element.row
+            [ Element.alignRight, Element.spacing 16 ]
+            [ Element.el
+                [ Events.onClick MoveStepContract ]
+              <|
+                Button.transparent []
+                    "Back"
+            , Element.el
+                [ Events.onClick <| Register project ]
+              <|
+                Button.primary [] "Register this project"
+            ]
         ]
-
-
-view : Model -> ( String, Element Msg )
-view (Model step project fieldError) =
-    let
-        viewStep =
-            case step of
-                Info ->
-                    viewInfo project fieldError
-
-                Contract ->
-                    Element.column
-                        []
-                        [ Element.map ContractMsg <| Contract.view <| Project.contract project
-                        , Element.el
-                            [ Events.onClick <| MoveStepPreview ]
-                          <|
-                            Button.primary [] "Next"
-                        ]
-
-                Preview ->
-                    viewPreview project
-    in
-    ( "register"
-    , Element.column
-        [ Element.width (Element.px 1074), Element.centerX ]
-        [ Element.el
-            ([ Element.centerX
-             ]
-                ++ Font.bigHeader Color.black
-            )
-          <|
-            Element.text "Register your project"
-        , viewProgress step
-        , viewStep
-        ]
-    )
 
 
 viewProgress : Step -> Element msg
