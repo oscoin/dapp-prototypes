@@ -22,7 +22,7 @@ import Route exposing (Route)
 import Style.Color as Color
 import Task
 import TopBar
-import Transaction
+import Transaction exposing (Transaction)
 import Url
 import Url.Builder
 import Wallet exposing (Wallet(..))
@@ -80,6 +80,7 @@ type alias Model =
     , navKey : Navigation.Key
     , overlay : Maybe Overlay
     , page : Page
+    , pendingTransactions : List Transaction
     , projects : List Project
     , topBarModel : TopBar.Model
     , url : Url.Url
@@ -120,6 +121,7 @@ init flags url navKey =
       , navKey = navKey
       , overlay = maybeOverlay
       , page = page
+      , pendingTransactions = []
       , projects = projects
       , topBarModel = TopBar.init
       , url = url
@@ -290,10 +292,13 @@ update msg model =
                 tx =
                     Transaction.registerProject project
 
+                txs =
+                    tx :: model.pendingTransactions
+
                 ov =
                     Just WaitForTransaction
             in
-            ( { model | overlay = ov, projects = project :: model.projects }
+            ( { model | overlay = ov, pendingTransactions = txs, projects = project :: model.projects }
             , signTransaction <| Transaction.encode tx
             )
 
