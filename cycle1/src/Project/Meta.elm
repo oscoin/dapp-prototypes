@@ -60,7 +60,7 @@ description meta =
 
 mapImageUrl : (String -> String) -> Meta -> Meta
 mapImageUrl change meta =
-    { meta | name = change meta.imageUrl }
+    { meta | imageUrl = change meta.imageUrl }
 
 
 imageUrl : Meta -> String
@@ -80,7 +80,7 @@ name meta =
 
 mapWebsiteUrl : (String -> String) -> Meta -> Meta
 mapWebsiteUrl change meta =
-    { meta | name = change meta.websiteUrl }
+    { meta | websiteUrl = change meta.websiteUrl }
 
 
 websiteUrl : Meta -> String
