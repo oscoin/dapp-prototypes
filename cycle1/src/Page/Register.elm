@@ -9,6 +9,7 @@ import Element.Font as Font
 import Element.Input as Input
 import Page.Register.Contract as Contract
 import Project exposing (Project)
+import Project.Address exposing (Address)
 import Project.Meta as Meta
 import Style.Color as Color
 import Style.Font as Font
@@ -32,9 +33,9 @@ type Model
     = Model Step Project FieldError
 
 
-init : Model
-init =
-    Model Info Project.init (FieldError False False)
+init : Address -> Model
+init addr =
+    Model Info (Project.withAddress addr) (FieldError False False)
 
 
 

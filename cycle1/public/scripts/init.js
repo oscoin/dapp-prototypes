@@ -1,3 +1,5 @@
+import { encode } from './base32.js'
+
 const initialProjects = [
   {
     address: '1b4atzir794d11ckjtk7xawsqjizgwwabx9bun7qmw5ic7uxr1mj',
@@ -106,6 +108,7 @@ window.addEventListener('DOMContentLoaded', _ => {
 
   var app = Elm.Main.init({
     flags: {
+      address: encode(nacl.sign.keyPair().publicKey),
       maybeKeyPair: null,
       maybeWallet: document.getElementById('wallet') ? 'webext' : null,
       projects: initialProjects,
