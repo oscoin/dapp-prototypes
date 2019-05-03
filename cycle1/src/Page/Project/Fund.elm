@@ -177,13 +177,13 @@ viewFundsRule exchange =
         ( icon, name ) =
             case exchange.rule of
                 Funds.RewardRule reward ->
-                    ( Contract.rewardIcon reward, Contract.rewardName reward )
+                    ( Icon.reward reward Color.purple, Contract.rewardName reward )
 
                 Funds.DonationRule donation ->
-                    ( Contract.donationIcon donation, Contract.donationName donation )
+                    ( Icon.donation donation Color.purple, Contract.donationName donation )
 
                 Funds.TransferRule transfer ->
-                    ( "DT", "Donation transfer" )
+                    ( Icon.transfer transfer Color.purple, Funds.transferName transfer )
     in
     Element.row
         ([ Element.paddingEach { top = 0, right = 0, bottom = 9, left = 0 }
@@ -192,6 +192,9 @@ viewFundsRule exchange =
          ]
             ++ Font.bodyText Color.purple
         )
-        [ Element.text icon
-        , Element.text name
+        [ icon
+        , Element.el
+            [ Element.paddingXY 12 0 ]
+          <|
+            Element.text name
         ]

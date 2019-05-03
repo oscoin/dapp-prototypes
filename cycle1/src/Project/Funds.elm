@@ -2,10 +2,12 @@ module Project.Funds exposing
     ( Exchange
     , ExchangeRule(..)
     , Funds
+    , Transfer(..)
     , coins
     , decoder
     , empty
     , exchanges
+    , transferName
     )
 
 import Json.Decode as Decode
@@ -53,6 +55,13 @@ decoder =
 
 type Transfer
     = Outgoing
+
+
+transferName : Transfer -> String
+transferName trans =
+    case trans of
+        Outgoing ->
+            "Outgoing transfer"
 
 
 type ExchangeRule
