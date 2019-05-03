@@ -93,8 +93,7 @@ sectionWithDesc attr title desc =
           <|
             Element.text title
         , Element.el
-            ([ Element.paddingEach { top = 0, right = 0, bottom = 16, left = 0 }
-             ]
+            ([ Element.paddingEach { top = 0, right = 0, bottom = 16, left = 0 } ]
                 ++ Font.bodyText Color.darkGrey
             )
           <|
