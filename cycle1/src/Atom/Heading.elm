@@ -1,6 +1,7 @@
 module Atom.Heading exposing
     ( section
     , sectionWithCount
+    , sectionWithDesc
     , sectionWithInfo
     )
 
@@ -74,4 +75,28 @@ sectionWithCount attr title count =
             )
           <|
             Element.text (String.fromInt count)
+        ]
+
+
+sectionWithDesc : List (Attribute msg) -> String -> String -> Element msg
+sectionWithDesc attr title desc =
+    Element.column
+        ([ Element.width Element.fill
+         , Element.paddingXY 24 16
+         , Element.height (Element.px 92)
+         , Element.spacing 16
+         ]
+            ++ attr
+        )
+        [ Element.el
+            (Font.mediumHeader Color.black)
+          <|
+            Element.text title
+        , Element.el
+            ([ Element.paddingEach { top = 0, right = 0, bottom = 16, left = 0 }
+             ]
+                ++ Font.bodyText Color.darkGrey
+            )
+          <|
+            Element.text desc
         ]
