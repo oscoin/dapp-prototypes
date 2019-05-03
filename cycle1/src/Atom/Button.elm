@@ -1,6 +1,7 @@
 module Atom.Button exposing
     ( accent
     , custom
+    , inactive
     , primary
     , secondary
     , secondaryAccent
@@ -27,6 +28,11 @@ primary attrs btnText =
 secondary : List (Attribute msg) -> String -> Element msg
 secondary attrs btnText =
     style attrs Color.lightGrey Color.darkGrey (Color.alpha Color.lightGrey 0.85) btnText
+
+
+inactive : List (Attribute msg) -> String -> Element msg
+inactive attrs btnText =
+    style attrs Color.lightGrey Color.grey Color.lightGrey btnText
 
 
 accent : List (Attribute msg) -> String -> Element msg
