@@ -1,8 +1,10 @@
 module Atom.Icon exposing
-    ( donation
+    ( alert
+    , donation
     , initialCircle
     , largeLogoCircle
     , logoCircle
+    , progress
     , reward
     , role
     , transfer
@@ -350,4 +352,48 @@ transferIcon bgColor =
                 , strokeLinecap "round"
                 ]
                 []
+            ]
+
+
+progress : Int -> Element msg
+progress step =
+    let
+        pos =
+            case step of
+                1 ->
+                    "148.5"
+
+                2 ->
+                    "289.5"
+
+                _ ->
+                    "7.5"
+    in
+    Element.html <|
+        svg
+            [ width "297"
+            , height "15"
+            , viewBox "0 0 297 15"
+            , fill "none"
+            ]
+            [ circle [ cx "7.5", cy "7.5", r "7", stroke (Color.toCssString Color.grey) ] []
+            , circle [ cx pos, cy "7.5", r "4.5", fill (Color.toCssString Color.purple) ] []
+            , circle [ cx "148.5", cy "7.5", r "7", stroke (Color.toCssString Color.grey) ] []
+            , circle [ cx "289.5", cy "7.5", r "7", stroke (Color.toCssString Color.grey) ] []
+            , rect [ x "15", y "7", width "126", height "1", fill (Color.toCssString Color.grey) ] []
+            , rect [ x "156", y "7", width "126", height "1", fill (Color.toCssString Color.grey) ] []
+            ]
+
+
+alert : Element msg
+alert =
+    Element.html <|
+        svg
+            [ width "24", height "24", viewBox "0 0 24 24", fill "none" ]
+            [ Svg.path
+                [ d "M12 2C14.6522 2 17.1957 3.05357 19.0711 4.92893C20.9464 6.8043 22 9.34784 22 12C22 14.6522 20.9464 17.1957 19.0711 19.0711C17.1957 20.9464 14.6522 22 12 22C9.34784 22 6.8043 20.9464 4.92893 19.0711C3.05357 17.1957 2 14.6522 2 12C2 9.34784 3.05357 6.8043 4.92893 4.92893C6.8043 3.05357 9.34784 2 12 2Z"
+                , fill (Color.toCssString Color.red)
+                ]
+                []
+            , Svg.path [ d "M11.9992 18C11.6013 18 11.2198 17.842 10.9385 17.5607C10.6572 17.2794 10.4992 16.8978 10.4992 16.5C10.4992 16.1022 10.6572 15.7207 10.9385 15.4394C11.2198 15.158 11.6013 15 11.9992 15C12.397 15 12.7785 15.158 13.0598 15.4394C13.3411 15.7207 13.4992 16.1022 13.4992 16.5C13.4992 16.8978 13.3411 17.2794 13.0598 17.5607C12.7785 17.842 12.397 18 11.9992 18ZM12.9992 12.1C12.8692 13.3 11.1192 13.3 10.9992 12.1L10.4992 7.10001C10.4851 6.96054 10.5006 6.81967 10.5445 6.68656C10.5885 6.55344 10.6599 6.43105 10.7542 6.32733C10.8485 6.2236 10.9635 6.14086 11.0919 6.08447C11.2202 6.02809 11.359 5.99931 11.4992 6.00001H12.4992C12.6393 5.99931 12.7781 6.02809 12.9064 6.08447C13.0348 6.14086 13.1498 6.2236 13.2441 6.32733C13.3384 6.43105 13.4098 6.55344 13.4538 6.68656C13.4977 6.81967 13.5132 6.96054 13.4992 7.10001L12.9992 12.1Z", fill "white" ] []
             ]
