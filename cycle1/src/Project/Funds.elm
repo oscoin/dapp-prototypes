@@ -4,10 +4,12 @@ module Project.Funds exposing
     , Funds
     , Transfer(..)
     , coins
+    , coinsString
     , decoder
     , empty
     , exchanges
     , transferName
+    , multiply
     )
 
 import Json.Decode as Decode
@@ -15,8 +17,18 @@ import Json.Decode.Extra exposing (when)
 import Project.Contract as Contract
 
 
-type alias Coins =
-    Int
+type Coins
+    = Coins Int
+
+
+coinsString : Coins -> String
+coinsString (Coins cs) =
+    String.fromInt cs
+
+
+multiply : Coins -> Float -> Float
+multiply (Coins cs) q =
+    toFloat cs * q
 
 
 type Funds
@@ -25,17 +37,17 @@ type Funds
 
 empty : Funds
 empty =
-    Funds 0 []
-
-
-exchanges : Funds -> List Exchange
-exchanges (Funds _ es) =
-    es
+    Funds (Coins 0) []
 
 
 coins : Funds -> Coins
 coins (Funds osc _) =
     osc
+
+
+exchanges : Funds -> List Exchange
+exchanges (Funds _ es) =
+    es
 
 
 
@@ -45,8 +57,13 @@ coins (Funds osc _) =
 decoder : Decode.Decoder Funds
 decoder =
     Decode.map2 Funds
-        (Decode.field "oscoin" Decode.int)
+        (Decode.field "oscoin" coinsDecoder)
         (Decode.field "exchanges" (Decode.list exchangeDecoder))
+
+
+coinsDecoder : Decode.Decoder Coins
+coinsDecoder =
+    Decode.map Coins Decode.int
 
 
 

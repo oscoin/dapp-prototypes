@@ -29,7 +29,7 @@ view funds =
             "Project fund"
             (Element.row
                 []
-                [ Currency.large (String.fromInt <| Funds.coins funds) Color.purple
+                [ Currency.large (Funds.coinsString <| Funds.coins funds) Color.purple
                 , Element.el
                     ([ Element.alignBottom
                      , Element.paddingEach { top = 0, right = 0, bottom = 0, left = 12 }
@@ -37,7 +37,10 @@ view funds =
                         ++ Font.mediumBodyTextMono Color.grey
                     )
                   <|
-                    Element.text "($12.462)"
+                    Element.text <|
+                        "($"
+                            ++ (String.fromFloat <| Funds.multiply (Funds.coins funds) 15.14)
+                            ++ ")"
                 ]
             )
         , Element.table
