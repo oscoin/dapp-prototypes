@@ -8,6 +8,7 @@ module Project exposing
     , encode
     , findByAddr
     , funds
+    , graph
     , init
     , maintainers
     , mapContract
@@ -21,6 +22,7 @@ import Json.Encode as Encode
 import Person as Person exposing (Person)
 import Project.Contract as Contract exposing (Contract)
 import Project.Funds as Funds exposing (Funds)
+import Project.Graph as Graph exposing (Graph)
 import Project.Meta as Meta exposing (Meta)
 
 
@@ -40,6 +42,7 @@ type alias Data =
     { address : Address
     , contract : Contract
     , funds : Funds
+    , graph : Graph
     , meta : Meta
     , contributors : List Person
     , maintainers : List Person
@@ -48,7 +51,7 @@ type alias Data =
 
 emptyData : Data
 emptyData =
-    Data "" Contract.default Funds.empty Meta.empty [] []
+    Data "" Contract.default Funds.empty Graph.empty Meta.empty [] []
 
 
 
@@ -82,6 +85,11 @@ contract (Project data) =
 funds : Project -> Funds
 funds (Project data) =
     data.funds
+
+
+graph : Project -> Graph
+graph (Project data) =
+    data.graph
 
 
 mapMeta : (Meta -> Meta) -> Project -> Project
@@ -131,10 +139,11 @@ decoder =
 
 dataDecoder : Decode.Decoder Data
 dataDecoder =
-    Decode.map6 Data
+    Decode.map7 Data
         (Decode.field "address" Decode.string)
         (Decode.field "contract" Contract.decoder)
         (Decode.field "funds" Funds.decoder)
+        (Decode.field "graph" Graph.decoder)
         (Decode.field "meta" Meta.decoder)
         (Decode.field "contributors" (Decode.list Person.decoder))
         (Decode.field "maintainers" (Decode.list Person.decoder))

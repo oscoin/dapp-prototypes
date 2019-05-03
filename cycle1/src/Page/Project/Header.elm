@@ -1,11 +1,10 @@
 module Page.Project.Header exposing (view)
 
--- import Element.Font as Font
-
 import Element exposing (Element)
 import Element.Background as Background
 import Element.Border as Border
 import Page.Project.Actions as Actions
+import Project.Graph as Graph exposing (Graph)
 import Project.Meta as Meta exposing (Meta)
 import Style.Color as Color
 import Style.Font as Font
@@ -15,8 +14,8 @@ import Style.Font as Font
 -- VIEW
 
 
-view : Meta -> Element msg
-view meta =
+view : Meta -> Graph -> Element msg
+view meta graph =
     Element.el
         [ Background.color Color.almostWhite
         , Element.width Element.fill
@@ -34,7 +33,7 @@ view meta =
                 ]
                 [ viewLogo
                 , viewMeta (Meta.name meta) (Meta.description meta)
-                , viewStats
+                , viewStats graph
                 ]
             , Actions.view
             ]
@@ -79,8 +78,21 @@ viewMeta name description =
         ]
 
 
-viewStats : Element msg
-viewStats =
+viewStats : Graph -> Element msg
+viewStats graph =
+    let
+        dependents =
+            String.fromInt <| List.length <| Graph.dependents graph
+
+        immediate =
+            String.fromInt <| List.length <| Graph.dependents graph
+
+        osrank =
+            Graph.rankString <| Graph.rank graph
+
+        percentile =
+            Graph.percentileString <| Graph.percentile graph
+    in
     Element.row
         [ Border.color Color.lightGrey
         , Border.rounded 2
@@ -91,10 +103,10 @@ viewStats =
         , Background.color Color.white
         ]
         -- Dependents
-        [ statsColumn "1043" "dependents" "192 immediate"
+        [ statsColumn dependents "dependents" (immediate ++ " immediate")
 
         -- Rank
-        , statsColumn "0.84" "osrank" "85th percentile"
+        , statsColumn osrank "osrank" (percentile ++ "th percentile")
         ]
 
 
