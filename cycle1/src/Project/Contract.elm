@@ -12,6 +12,7 @@ module Project.Contract exposing
     , defaultReward
     , defaultRole
     , donation
+    , donationDesc
     , donationIcon
     , donationName
     , donationString
@@ -23,10 +24,12 @@ module Project.Contract exposing
     , mapReward
     , mapRole
     , reward
+    , rewardDesc
     , rewardIcon
     , rewardName
     , rewardString
     , role
+    , roleDesc
     , roleIcon
     , roleName
     , roleString
@@ -79,6 +82,22 @@ donationName don =
             "Custom distribution"
 
 
+donationDesc : Donation -> String
+donationDesc don =
+    case don of
+        DonationFundSaving ->
+            "Donations to the project go to the project fund. The maintainer can then do with it what they want."
+
+        DonationEqualMaintainer ->
+            "Donations to the project get distributed equally between each maintainer of the project."
+
+        DonationEqualDependency ->
+            "Donations to the project get distributed equally between each dependency of the project."
+
+        DonationCustom _ _ _ _ ->
+            "Distribute donations to the project between the project fund, maintainers, contributors and dependencies."
+
+
 type Reward
     = RewardBurn
     | RewardFundSaving
@@ -125,6 +144,25 @@ rewardName rew =
             "Custom distribution"
 
 
+rewardDesc : Reward -> String
+rewardDesc rew =
+    case rew of
+        RewardBurn ->
+            "The oscoin reward gets burned, diminishing the supply of OSC and increasing the value of each token."
+
+        RewardFundSaving ->
+            "The oscoin reward goes to the project fund. The maintainer can then do with it what they want."
+
+        RewardEqualMaintainer ->
+            "The oscoin reward is distributed equally among maintainers of the project."
+
+        RewardEqualDependency ->
+            "The oscoin reward is distributed equally among dependencies of the project."
+
+        RewardCustom _ _ _ _ ->
+            "Design a custom distribution of the reward between the project fund, maintainers, contributors, and/or dependencies."
+
+
 type Role
     = RoleMaintainerSingleSigner
     | RoleMaintainerMultiSig
@@ -148,6 +186,16 @@ roleName rol =
 
         RoleMaintainerMultiSig ->
             "Multiple maintainers need to sign"
+
+
+roleDesc : Role -> String
+roleDesc rol =
+    case rol of
+        RoleMaintainerSingleSigner ->
+            "Only one maintainers’ signature is necessary to make changes to the project."
+
+        RoleMaintainerMultiSig ->
+            "Multiple maintainer signatures are necessary to make changes."
 
 
 

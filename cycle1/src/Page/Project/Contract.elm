@@ -1,6 +1,7 @@
 module Page.Project.Contract exposing (view)
 
 import Atom.Heading as Heading
+import Atom.Icon as Icon
 import Element exposing (Element)
 import Element.Background as Background
 import Element.Border as Border
@@ -31,15 +32,15 @@ view contract =
             , Element.width <| Element.fillPortion 3
             , Element.padding 0
             ]
-            [ viewRule "Reward distribution" <| Contract.rewardString <| Contract.reward contract
-            , viewRule "Donation distribution" <| Contract.donationString <| Contract.donation contract
-            , viewRule "Roles & abilities" <| Contract.roleString <| Contract.role contract
+            [ viewRule "Reward distribution" (Icon.reward (Contract.reward contract) Color.purple) (Contract.rewardName <| Contract.reward contract) (Contract.rewardDesc <| Contract.reward contract)
+            , viewRule "Donation distribution" (Icon.donation (Contract.donation contract) Color.purple) (Contract.donationName <| Contract.donation contract) (Contract.donationDesc <| Contract.donation contract)
+            , viewRule "Roles & abilities" (Icon.role (Contract.role contract) Color.purple) (Contract.roleName <| Contract.role contract) (Contract.roleDesc <| Contract.role contract)
             ]
         ]
 
 
-viewRule : String -> String -> Element msg
-viewRule title contract =
+viewRule : String -> Element msg -> String -> String -> Element msg
+viewRule title ruleIcon ruleName ruleDesc =
     Element.column
         [ Element.spacing 18, Element.width Element.fill ]
         [ Element.el
@@ -53,16 +54,20 @@ viewRule title contract =
             , Border.width 1
             , Element.spacing 24
             ]
-            [ Element.el
-                (Font.mediumBodyText Color.purple)
-                (Element.text contract)
+            [ Element.row
+                []
+                [ ruleIcon
+                , Element.el
+                    ([ Element.paddingXY 12 0 ] ++ Font.mediumBodyText Color.purple)
+                    (Element.text ruleName)
+                ]
             , Element.paragraph
                 ([ Element.spacing 8
                  , Element.paddingEach { top = 0, right = 0, bottom = 8, left = 0 }
                  ]
                     ++ Font.bodyText Color.purple
                 )
-                [ Element.text "Some more text about this all, explaining what it’s about and how it should be interpreted. I mean I’m just writing sentences to have enough copy."
+                [ Element.text ruleDesc
                 ]
             ]
         ]

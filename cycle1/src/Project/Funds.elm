@@ -2,11 +2,13 @@ module Project.Funds exposing
     ( Exchange
     , ExchangeRule(..)
     , Funds
+    , Transfer(..)
     , coins
     , coinsString
     , decoder
     , empty
     , exchanges
+    , transferName
     , multiply
     )
 
@@ -70,6 +72,13 @@ coinsDecoder =
 
 type Transfer
     = Outgoing
+
+
+transferName : Transfer -> String
+transferName trans =
+    case trans of
+        Outgoing ->
+            "Outgoing transfer"
 
 
 type ExchangeRule
