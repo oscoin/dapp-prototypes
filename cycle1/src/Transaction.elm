@@ -38,17 +38,22 @@ emptyHash =
 
 
 type Transaction
-    = Transaction Hash Fee (List Message)
+    = Transaction Hash Fee (List Message) Progress
 
 
 hash : Transaction -> Hash
-hash (Transaction h _ _) =
+hash (Transaction h _ _ _) =
     h
 
 
 messages : Transaction -> List Message
-messages (Transaction _ _ ms) =
+messages (Transaction _ _ ms _) =
     ms
+
+
+progress : Transaction -> Progress
+progress (Transaction _ _ _ p) =
+    p
 
 
 
@@ -57,10 +62,11 @@ messages (Transaction _ _ ms) =
 
 decoder : Decode.Decoder Transaction
 decoder =
-    Decode.map3 Transaction
+    Decode.map4 Transaction
         (Decode.field "hash" Decode.string)
         (Decode.field "fee" Decode.int)
         (Decode.field "messages" <| Decode.list messageDecoder)
+        (Decode.field "progress" progressDecoder)
 
 
 
@@ -68,11 +74,12 @@ decoder =
 
 
 encode : Transaction -> Encode.Value
-encode (Transaction h fee msgs) =
+encode (Transaction h fee msgs p) =
     Encode.object
         [ ( "hash", Encode.string h )
         , ( "fee", Encode.int fee )
         , ( "messages", Encode.list encodeMessage msgs )
+        , ( "progress", encodeProgress p )
         ]
 
 
@@ -229,6 +236,54 @@ encodeRuleChange ruleChange =
 
 
 
+-- PROGRESS
+
+
+type Progress
+    = Unsigned
+    | Unconfirmed Int
+    | Confirmed
+
+
+
+-- PROGRESS DECODING
+
+
+progressDecoder : Decode.Decoder Progress
+progressDecoder =
+    let
+        stateDecoder =
+            Decode.field "state" Decode.string
+    in
+    Decode.oneOf
+        [ when stateDecoder (is "unsigned") <| Decode.succeed Unsigned
+        , when stateDecoder (is "unconfirmed") <| Decode.succeed <| Unconfirmed 0
+        , when stateDecoder (is "confirmed") <| Decode.succeed Confirmed
+        ]
+
+
+
+-- PROGRESS ENCODING
+
+
+encodeProgress : Progress -> Encode.Value
+encodeProgress p =
+    let
+        state =
+            case p of
+                Unsigned ->
+                    "unsigned"
+
+                Unconfirmed _ ->
+                    "unconfirmed"
+
+                Confirmed ->
+                    "confirmed"
+    in
+    Encode.object [ ( "state", Encode.string state ) ]
+
+
+
 -- CONSTRUCTORS
 
 
@@ -275,4 +330,4 @@ registerProject project =
         newHash =
             sha256 (Encode.encode 0 <| Encode.list encodeMessage msgs)
     in
-    Transaction newHash 13 msgs
+    Transaction newHash 13 msgs Unsigned
