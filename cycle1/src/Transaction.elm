@@ -15,6 +15,7 @@ import Json.Decode as Decode
 import Json.Decode.Extra exposing (when)
 import Json.Encode as Encode
 import Project exposing (Project)
+import Project.Address as Address exposing (Address)
 import Project.Contract as Contract exposing (Donation(..), Reward, Role)
 
 
@@ -78,8 +79,8 @@ encode (Transaction _ fee msgs) =
 
 
 type Message
-    = ProjectRegistration Project.Address
-    | UpdateContractRule Project.Address RuleChange
+    = ProjectRegistration Address
+    | UpdateContractRule Address RuleChange
 
 
 messageType : Message -> String
@@ -122,21 +123,21 @@ messageDecoder =
             Decode.field "type" Decode.string
     in
     Decode.oneOf
-        [ when typeDecoder (is (messageType (ProjectRegistration ""))) projectRegistrationDecoder
-        , when typeDecoder (is (messageType (UpdateContractRule "" (Donation Contract.defaultDonation Contract.defaultDonation)))) updateContractRuleDecoder
+        [ when typeDecoder (is (messageType (ProjectRegistration Address.empty))) projectRegistrationDecoder
+        , when typeDecoder (is (messageType (UpdateContractRule Address.empty (Donation Contract.defaultDonation Contract.defaultDonation)))) updateContractRuleDecoder
         ]
 
 
 projectRegistrationDecoder : Decode.Decoder Message
 projectRegistrationDecoder =
     Decode.map ProjectRegistration
-        (Decode.field "address" Decode.string)
+        (Decode.field "address" Address.decoder)
 
 
 updateContractRuleDecoder : Decode.Decoder Message
 updateContractRuleDecoder =
     Decode.map2 UpdateContractRule
-        (Decode.field "address" Decode.string)
+        (Decode.field "address" Address.decoder)
         (Decode.field "ruleChange" ruleChangeDecoder)
 
 
@@ -189,13 +190,13 @@ encodeMessage msg =
         ProjectRegistration addr ->
             Encode.object
                 [ ( "type", Encode.string <| messageType msg )
-                , ( "address", Encode.string addr )
+                , ( "address", Address.encode addr )
                 ]
 
         UpdateContractRule addr ruleChange ->
             Encode.object
                 [ ( "type", Encode.string <| messageType msg )
-                , ( "address", Encode.string addr )
+                , ( "address", Address.encode addr )
                 , ( "ruleChange", encodeRuleChange ruleChange )
                 ]
 

@@ -57,9 +57,7 @@ browser.runtime.onMessage.addListener((msg, sender) => {
 
       let tx = msg.transaction
       let enc = new TextEncoder()
-      tx.hash = new TextDecoder().decode(
-        nacl.hash(enc.encode(JSON.stringify(tx)))
-      )
+      tx.hash = encode(enc.encode(JSON.stringify(tx)))
 
       transaction = tx
 

@@ -17,6 +17,7 @@ import Page.NotFound
 import Page.Project
 import Page.Register
 import Project exposing (Project)
+import Project.Address as Address exposing (Address)
 import Route exposing (Route)
 import Style.Color as Color
 import TopBar
@@ -31,7 +32,8 @@ import Wallet exposing (Wallet(..))
 
 
 type alias Flags =
-    { maybeKeyPair : Maybe KeyPair
+    { address : Address
+    , maybeKeyPair : Maybe KeyPair
     , maybeWallet : Maybe Wallet
     , projects : List Project
     }
@@ -39,7 +41,8 @@ type alias Flags =
 
 flagDecoder : Decode.Decoder Flags
 flagDecoder =
-    Decode.map3 Flags
+    Decode.map4 Flags
+        (Decode.field "address" Address.decoder)
         (Decode.field "maybeKeyPair" (Decode.nullable KeyPair.decoder))
         (Decode.field "maybeWallet" (Decode.nullable Wallet.decoder))
         (Decode.field "projects" (Decode.list Project.decoder))
@@ -71,7 +74,8 @@ type Page
 
 
 type alias Model =
-    { keyPair : Maybe KeyPair
+    { address : Address
+    , keyPair : Maybe KeyPair
     , navKey : Navigation.Key
     , overlay : Maybe Overlay
     , page : Page
@@ -85,7 +89,7 @@ type alias Model =
 init : Decode.Value -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
-        { maybeKeyPair, maybeWallet, projects } =
+        { address, maybeKeyPair, maybeWallet, projects } =
             case Decode.decodeValue flagDecoder flags of
                 Ok parsedFlags ->
                     parsedFlags
@@ -95,7 +99,8 @@ init flags url navKey =
                         _ =
                             Debug.log "Main.Flags.decode" err
                     in
-                    { maybeKeyPair = Nothing
+                    { address = Address.empty
+                    , maybeKeyPair = Nothing
                     , maybeWallet = Nothing
                     , projects = []
                     }
@@ -104,7 +109,7 @@ init flags url navKey =
             Route.fromUrl url
 
         page =
-            pageFromRoute projects maybeRoute
+            pageFromRoute address projects maybeRoute
 
         maybeOverlay =
             overlayFromRoute maybeRoute
@@ -112,7 +117,8 @@ init flags url navKey =
         cmd =
             guardUrl navKey maybeRoute maybeWallet maybeKeyPair
     in
-    ( { keyPair = maybeKeyPair
+    ( { address = address
+      , keyPair = maybeKeyPair
       , navKey = navKey
       , overlay = maybeOverlay
       , page = page
@@ -192,9 +198,9 @@ type Msg
     | OverlayWalletSetup Overlay.WalletSetup.Msg
     | PageRegister Page.Register.Msg
     | TopBarMsg TopBar.Msg
-    | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
     | KeyPairCreated (Maybe KeyPair)
     | KeyPairFetched (Maybe KeyPair)
+    | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
     | WalletWebExtPresent ()
 
 
@@ -217,7 +223,7 @@ update msg model =
                     Route.fromUrl url
 
                 page =
-                    pageFromRoute model.projects maybeRoute
+                    pageFromRoute model.address model.projects maybeRoute
 
                 overlay =
                     overlayFromRoute maybeRoute
@@ -533,8 +539,8 @@ overlayFromRoute maybeRoute =
             Nothing
 
 
-pageFromRoute : List Project -> Maybe Route -> Page
-pageFromRoute projects maybeRoute =
+pageFromRoute : Address -> List Project -> Maybe Route -> Page
+pageFromRoute newAddr projects maybeRoute =
     case Debug.log "Main.pageFromRoute" maybeRoute of
         Just Route.Home ->
             Home
@@ -548,7 +554,7 @@ pageFromRoute projects maybeRoute =
                     Project project
 
         Just (Route.Register _) ->
-            Register Page.Register.init
+            Register <| Page.Register.init newAddr
 
         _ ->
             NotFound
