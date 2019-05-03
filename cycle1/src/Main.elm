@@ -20,6 +20,7 @@ import Project exposing (Project)
 import Project.Address as Address exposing (Address)
 import Route exposing (Route)
 import Style.Color as Color
+import Task
 import TopBar
 import Transaction
 import Url
@@ -112,10 +113,7 @@ init flags url navKey =
             pageFromRoute address projects maybeRoute
 
         maybeOverlay =
-            overlayFromRoute maybeRoute
-
-        cmd =
-            guardUrl navKey maybeRoute maybeWallet maybeKeyPair
+            overlay page maybeWallet maybeKeyPair
     in
     ( { address = address
       , keyPair = maybeKeyPair
@@ -127,7 +125,7 @@ init flags url navKey =
       , url = url
       , wallet = maybeWallet
       }
-    , cmd
+    , Cmd.none
     )
 
 
@@ -198,6 +196,7 @@ type Msg
     | OverlayWalletSetup Overlay.WalletSetup.Msg
     | PageRegister Page.Register.Msg
     | TopBarMsg TopBar.Msg
+    | RegisterProject Project
     | KeyPairCreated (Maybe KeyPair)
     | KeyPairFetched (Maybe KeyPair)
     | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
@@ -225,73 +224,18 @@ update msg model =
                 page =
                     pageFromRoute model.address model.projects maybeRoute
 
-                overlay =
-                    overlayFromRoute maybeRoute
+                ov =
+                    case page of
+                        Register _ ->
+                            overlay page model.wallet model.keyPair
+
+                        _ ->
+                            Nothing
 
                 cmd =
-                    cmdFromOverlay overlay
+                    cmdFromOverlay ov
             in
-            ( { model | overlay = overlay, page = page }, cmd )
-
-        KeyPairCreated maybeKeyPair ->
-            case maybeKeyPair of
-                Nothing ->
-                    ( model, Cmd.none )
-
-                Just keyPair ->
-                    let
-                        cmd =
-                            case model.overlay of
-                                Just WaitForKeyPair ->
-                                    Navigation.pushUrl
-                                        model.navKey
-                                        (Route.toString (Route.Register Nothing))
-
-                                _ ->
-                                    Cmd.none
-                    in
-                    ( { model | keyPair = Just keyPair }, cmd )
-
-        KeyPairFetched maybeKeyPair ->
-            ( { model | keyPair = maybeKeyPair }, Cmd.none )
-
-        PageRegister subCmd ->
-            case model.page of
-                Register oldModel ->
-                    let
-                        ( pageModel, pageCmd ) =
-                            Page.Register.update subCmd oldModel
-
-                        portCmds =
-                            case subCmd of
-                                -- Call out to our port to register the project.
-                                Page.Register.Register project ->
-                                    [ signTransaction <| Transaction.encode <| Transaction.registerProject project
-                                    , Navigation.pushUrl
-                                        model.navKey
-                                        (Route.toString (Route.Register <| Just Route.WaitForTransaction))
-                                    ]
-
-                                -- Ignore all other sub commands as they should
-                                -- be handled by the page.
-                                _ ->
-                                    []
-
-                        newModel =
-                            case subCmd of
-                                -- Append new project to be stored.
-                                Page.Register.Register project ->
-                                    { model | projects = project :: model.projects }
-
-                                _ ->
-                                    model
-                    in
-                    ( { newModel | page = Register pageModel }
-                    , Cmd.batch <| portCmds ++ [ Cmd.map PageRegister <| pageCmd ]
-                    )
-
-                _ ->
-                    ( model, Cmd.none )
+            ( { model | overlay = ov, page = page }, cmd )
 
         OverlayWalletSetup subCmd ->
             case model.overlay of
@@ -307,12 +251,62 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        PageRegister subCmd ->
+            case model.page of
+                Register subModel ->
+                    let
+                        ( pageModel, pageCmd ) =
+                            Page.Register.update subCmd subModel
+
+                        registerCmd =
+                            case subCmd of
+                                Page.Register.Register project ->
+                                    Task.perform
+                                        (always RegisterProject project)
+                                        (Task.succeed project)
+
+                                _ ->
+                                    Cmd.none
+                    in
+                    ( { model | page = Register pageModel }
+                    , Cmd.batch
+                        [ Cmd.map PageRegister <| pageCmd
+                        , registerCmd
+                        ]
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
         TopBarMsg subMsg ->
             let
                 ( topBarModel, topBarMsg ) =
                     TopBar.update subMsg model.topBarModel
             in
             ( { model | topBarModel = topBarModel }, Cmd.map TopBarMsg topBarMsg )
+
+        RegisterProject project ->
+            let
+                tx =
+                    Transaction.registerProject project
+
+                ov =
+                    Just WaitForTransaction
+            in
+            ( { model | overlay = ov, projects = project :: model.projects }
+            , signTransaction <| Transaction.encode tx
+            )
+
+        KeyPairCreated maybeKeyPair ->
+            case maybeKeyPair of
+                Nothing ->
+                    ( model, Cmd.none )
+
+                Just keyPair ->
+                    ( { model | keyPair = Just keyPair, overlay = Nothing }, Cmd.none )
+
+        KeyPairFetched maybeKeyPair ->
+            ( { model | keyPair = maybeKeyPair }, Cmd.none )
 
         TransactionAuthorized (Ok _) ->
             case model.overlay of
@@ -369,13 +363,13 @@ viewOverlay maybeOverlay url =
         Nothing ->
             ( Nothing, [] )
 
-        Just overlay ->
+        Just ov ->
             let
                 backUrl =
                     Url.Builder.relative [ url.path ] []
 
                 ( title, content ) =
-                    case overlay of
+                    case ov of
                         WaitForKeyPair ->
                             Overlay.WaitForKeyPair.view
 
@@ -453,7 +447,7 @@ view model =
                     [ oTitle, pageTitle, "oscoin" ]
 
         rUrl =
-            registerUrl model.wallet model.keyPair
+            Route.toString Route.Register
     in
     { title = String.join " <> " titleParts
     , body =
@@ -500,26 +494,6 @@ cmdFromOverlay maybeOverlay =
             Cmd.none
 
 
-guardUrl :
-    Navigation.Key
-    -> Maybe Route
-    -> Maybe Wallet
-    -> Maybe KeyPair
-    -> Cmd msg
-guardUrl navKey maybeRoute maybeWallet maybeKeyPair =
-    case maybeRoute of
-        Just (Route.Register _) ->
-            let
-                url =
-                    registerUrl maybeWallet maybeKeyPair
-            in
-            Navigation.pushUrl navKey url
-
-        -- Nothing to do for all other routes.
-        _ ->
-            Cmd.none
-
-
 overlayAttrs : Element.Element msg -> String -> List (Element.Attribute msg)
 overlayAttrs content backUrl =
     [ background backUrl
@@ -527,21 +501,22 @@ overlayAttrs content backUrl =
     ]
 
 
-overlayFromRoute : Maybe Route -> Maybe Overlay
-overlayFromRoute maybeRoute =
-    case maybeRoute of
-        Just (Route.Register maybeOverlay) ->
-            case maybeOverlay of
-                Just Route.WaitForKeyPair ->
-                    Just WaitForKeyPair
-
-                Just Route.WaitForTransaction ->
-                    Just WaitForTransaction
-
-                Just Route.WalletSetup ->
+overlay : Page -> Maybe Wallet -> Maybe KeyPair -> Maybe Overlay
+overlay page maybeWallet maybeKeyPair =
+    case page of
+        -- Overlays are only relevant to guard register.
+        Register _ ->
+            case ( maybeWallet, maybeKeyPair ) of
+                -- Neither Wallet nor key pair is present.
+                ( Nothing, _ ) ->
                     Just <| WalletSetup Overlay.WalletSetup.init
 
-                _ ->
+                -- Wallet is present but no key pair yet.
+                ( Just _, Nothing ) ->
+                    Just WaitForKeyPair
+
+                -- Wallet and key pair are available.
+                ( Just _, Just _ ) ->
                     Nothing
 
         _ ->
@@ -562,32 +537,11 @@ pageFromRoute newAddr projects maybeRoute =
                 Just project ->
                     Project project
 
-        Just (Route.Register _) ->
+        Just Route.Register ->
             Register <| Page.Register.init newAddr
 
         _ ->
             NotFound
-
-
-registerUrl : Maybe Wallet -> Maybe KeyPair -> String
-registerUrl maybeWallet maybeKeyPair =
-    case ( maybeWallet, maybeKeyPair ) of
-        -- Neither Wallet nor key pair is present.
-        ( Nothing, Nothing ) ->
-            Route.toString <| Route.Register <| Just Route.WalletSetup
-
-        -- Wallet is present but no key pair yet.
-        ( Just _, Nothing ) ->
-            Route.toString <| Route.Register <| Just Route.WaitForKeyPair
-
-        -- Wallet and key pair are available.
-        ( Just _, Just _ ) ->
-            Route.toString <| Route.Register Nothing
-
-        -- Only the key pair is present, unclear if this state is
-        -- possible, maybe for testing when we have it in memory.
-        ( Nothing, Just _ ) ->
-            Route.toString <| Route.Register Nothing
 
 
 
