@@ -13,7 +13,7 @@ browser.browserAction
       console.log('icon success')
     },
     () => {
-      cosnole.log('icon fail')
+      console.log('icon fail')
     }
   )
   .catch(err => {
