@@ -4,17 +4,20 @@
   // Get background object to call API on it and current key pair if exists.
   let background = browser.extension.getBackgroundPage()
   let maybeKeyPair = background.getKeyPair()
-  let maybeTransaction = background.getTransaction()
+  let maybeTransaction = null
+  let page = 'keys'
+
+  if (location.pathname === '/wallet-popup-sign.html') {
+    page = 'sign'
+    maybeTransaction = background.getTransaction(location.hash.substring(1))
+  }
 
   // Init elm uid#1z1qqm6d5yb3wqngb9pfhjwf6yuhjj6x3f89prxepuinae18mr85.
   var popup = Elm.WalletPopup.init({
     flags: {
       maybeKeyPair,
       maybeTransaction,
-      location: {
-        hash: window.location.hash,
-        path: window.location.pathname,
-      },
+      page: page,
     },
     node: document.getElementById('popup'),
   })

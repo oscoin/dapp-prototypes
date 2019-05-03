@@ -17,6 +17,7 @@ import Json.Encode as Encode
 import Project exposing (Project)
 import Project.Address as Address exposing (Address)
 import Project.Contract as Contract exposing (Donation(..), Reward, Role)
+import Sha256 exposing (sha256)
 
 
 
@@ -67,9 +68,10 @@ decoder =
 
 
 encode : Transaction -> Encode.Value
-encode (Transaction _ fee msgs) =
+encode (Transaction h fee msgs) =
     Encode.object
-        [ ( "fee", Encode.int fee )
+        [ ( "hash", Encode.string h )
+        , ( "fee", Encode.int fee )
         , ( "messages", Encode.list encodeMessage msgs )
         ]
 
@@ -266,5 +268,11 @@ registerProject project =
                 [ Role Contract.defaultRole (Contract.role contract)
                     |> UpdateContractRule (Project.address project)
                 ]
+
+        msgs =
+            List.concat [ registerMsgs, rewardMsgs, donationMsgs, roleMsgs ]
+
+        newHash =
+            sha256 (Encode.encode 0 <| Encode.list encodeMessage msgs)
     in
-    Transaction emptyHash 13 <| List.concat [ registerMsgs, rewardMsgs, donationMsgs, roleMsgs ]
+    Transaction newHash 13 msgs

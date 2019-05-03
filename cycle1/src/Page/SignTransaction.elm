@@ -4,6 +4,7 @@ import Atom.Button as Button
 import Element exposing (Element)
 import Element.Events as Events
 import KeyPair exposing (KeyPair)
+import Project.Address as Address exposing (Address)
 import Project.Contract as Contract
 import Style.Color as Color
 import Style.Font as Font
@@ -81,12 +82,12 @@ viewMessage message =
         ]
 
 
-viewProjectAddress : String -> Element msg
+viewProjectAddress : Address -> Element msg
 viewProjectAddress address =
     Element.column
         []
         [ Element.el (Font.smallText Color.grey) <| Element.text "PROJECT ADDRESS"
-        , Element.el (Font.smallTextMono Color.black) <| Element.text address
+        , Element.el (Font.smallTextMono Color.black) <| Element.text <| Address.string address
         ]
 
 
@@ -127,7 +128,7 @@ viewRuleChange ruleChange =
         ]
 
 
-viewUpdateContractRule : String -> RuleChange -> Element msg
+viewUpdateContractRule : Address -> RuleChange -> Element msg
 viewUpdateContractRule address ruleChange =
     Element.column
         [ Element.spacingXY 0 16
