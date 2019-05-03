@@ -276,8 +276,17 @@ update msg model =
                                 -- be handled by the page.
                                 _ ->
                                     []
+
+                        newModel =
+                            case subCmd of
+                                -- Append new project to be stored.
+                                Page.Register.Register project ->
+                                    { model | projects = project :: model.projects }
+
+                                _ ->
+                                    model
                     in
-                    ( { model | page = Register pageModel }
+                    ( { newModel | page = Register pageModel }
                     , Cmd.batch <| portCmds ++ [ Cmd.map PageRegister <| pageCmd ]
                     )
 
