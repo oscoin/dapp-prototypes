@@ -5,10 +5,12 @@ module Transaction exposing
     , Transaction
     , decoder
     , encode
+    , hasWaitToAuthorize
     , hash
     , messageType
     , messages
     , registerProject
+    , state
     )
 
 import Json.Decode as Decode
@@ -38,7 +40,7 @@ emptyHash =
 
 
 type Transaction
-    = Transaction Hash Fee (List Message) Progress
+    = Transaction Hash Fee (List Message) State
 
 
 hash : Transaction -> Hash
@@ -51,9 +53,9 @@ messages (Transaction _ _ ms _) =
     ms
 
 
-progress : Transaction -> Progress
-progress (Transaction _ _ _ p) =
-    p
+state : Transaction -> State
+state (Transaction _ _ _ s) =
+    s
 
 
 
@@ -66,7 +68,7 @@ decoder =
         (Decode.field "hash" Decode.string)
         (Decode.field "fee" Decode.int)
         (Decode.field "messages" <| Decode.list messageDecoder)
-        (Decode.field "progress" progressDecoder)
+        (Decode.field "state" stateDecoder)
 
 
 
@@ -74,12 +76,12 @@ decoder =
 
 
 encode : Transaction -> Encode.Value
-encode (Transaction h fee msgs p) =
+encode (Transaction h fee msgs s) =
     Encode.object
         [ ( "hash", Encode.string h )
         , ( "fee", Encode.int fee )
         , ( "messages", Encode.list encodeMessage msgs )
-        , ( "progress", encodeProgress p )
+        , ( "state", encodeState s )
         ]
 
 
@@ -236,51 +238,86 @@ encodeRuleChange ruleChange =
 
 
 
--- PROGRESS
+-- STATE
 
 
-type Progress
-    = Unsigned
+type alias Progress =
+    Int
+
+
+type State
+    = WaitToAuthorize
+    | Unauthorized
+    | Denied
     | Unconfirmed Int
     | Confirmed
 
 
+stateString : State -> String
+stateString s =
+    case s of
+        WaitToAuthorize ->
+            "wait-to-authorize"
 
--- PROGRESS DECODING
+        Unauthorized ->
+            "unauthorized"
 
+        Denied ->
+            "denied"
 
-progressDecoder : Decode.Decoder Progress
-progressDecoder =
-    let
-        stateDecoder =
-            Decode.field "state" Decode.string
-    in
-    Decode.oneOf
-        [ when stateDecoder (is "unsigned") <| Decode.succeed Unsigned
-        , when stateDecoder (is "unconfirmed") <| Decode.succeed <| Unconfirmed 0
-        , when stateDecoder (is "confirmed") <| Decode.succeed Confirmed
-        ]
+        Unconfirmed _ ->
+            "unconfirmed"
 
-
-
--- PROGRESS ENCODING
+        Confirmed ->
+            "confirmed"
 
 
-encodeProgress : Progress -> Encode.Value
-encodeProgress p =
-    let
-        state =
-            case p of
-                Unsigned ->
-                    "unsigned"
 
-                Unconfirmed _ ->
-                    "unconfirmed"
+-- STATE DECODING
 
-                Confirmed ->
-                    "confirmed"
-    in
-    Encode.object [ ( "state", Encode.string state ) ]
+
+stateDecoder : Decode.Decoder State
+stateDecoder =
+    Decode.string
+        |> Decode.andThen
+            (\str ->
+                case str of
+                    "wait-to-authorize" ->
+                        Decode.succeed WaitToAuthorize
+
+                    "unauthorized" ->
+                        Decode.succeed Unauthorized
+
+                    "denied" ->
+                        Decode.succeed Denied
+
+                    "unconfirmed" ->
+                        Decode.succeed <| Unconfirmed 0
+
+                    "confirmed" ->
+                        Decode.succeed Confirmed
+
+                    _ ->
+                        Decode.fail "unknown state"
+            )
+
+
+
+-- STATE ENCODING
+
+
+encodeState : State -> Encode.Value
+encodeState s =
+    Encode.string <| stateString s
+
+
+
+-- ACCESSORS
+
+
+hasWaitToAuthorize : List Transaction -> Bool
+hasWaitToAuthorize txs =
+    List.any (\t -> state t == WaitToAuthorize) txs
 
 
 
@@ -330,4 +367,4 @@ registerProject project =
         newHash =
             sha256 (Encode.encode 0 <| Encode.list encodeMessage msgs)
     in
-    Transaction newHash 13 msgs Unsigned
+    Transaction newHash 13 msgs WaitToAuthorize

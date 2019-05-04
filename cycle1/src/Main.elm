@@ -107,6 +107,9 @@ init flags url navKey =
                     , projects = []
                     }
 
+        pendingTransactions =
+            []
+
         maybeRoute =
             Route.fromUrl url
 
@@ -114,14 +117,14 @@ init flags url navKey =
             pageFromRoute address projects maybeRoute
 
         maybeOverlay =
-            overlay page maybeWallet maybeKeyPair
+            overlay page maybeWallet maybeKeyPair pendingTransactions
     in
     ( { address = address
       , keyPair = maybeKeyPair
       , navKey = navKey
       , overlay = maybeOverlay
       , page = page
-      , pendingTransactions = []
+      , pendingTransactions = pendingTransactions
       , projects = projects
       , topBarModel = TopBar.init
       , url = url
@@ -227,17 +230,12 @@ update msg model =
                     pageFromRoute model.address model.projects maybeRoute
 
                 ov =
-                    case page of
-                        Register _ ->
-                            overlay page model.wallet model.keyPair
-
-                        _ ->
-                            Nothing
+                    overlay page model.wallet model.keyPair model.pendingTransactions
 
                 cmd =
                     cmdFromOverlay ov
             in
-            ( { model | overlay = ov, page = page }, cmd )
+            ( { model | overlay = ov, page = page, url = url }, cmd )
 
         OverlayWalletSetup subCmd ->
             case model.overlay of
@@ -294,12 +292,18 @@ update msg model =
 
                 txs =
                     tx :: model.pendingTransactions
-
-                ov =
-                    Just WaitForTransaction
             in
-            ( { model | overlay = ov, pendingTransactions = txs, projects = project :: model.projects }
-            , signTransaction <| Transaction.encode tx
+            ( { model
+                | pendingTransactions = txs
+                , projects = project :: model.projects
+              }
+            , Cmd.batch
+                [ signTransaction <| Transaction.encode tx
+                , Project.address project
+                    |> Address.string
+                    |> Route.Project
+                    |> Route.pushUrl model.navKey
+                ]
             )
 
         KeyPairCreated maybeKeyPair ->
@@ -506,8 +510,8 @@ overlayAttrs content backUrl =
     ]
 
 
-overlay : Page -> Maybe Wallet -> Maybe KeyPair -> Maybe Overlay
-overlay page maybeWallet maybeKeyPair =
+overlay : Page -> Maybe Wallet -> Maybe KeyPair -> List Transaction -> Maybe Overlay
+overlay page maybeWallet maybeKeyPair txs =
     case page of
         -- Overlays are only relevant to guard register.
         Register _ ->
@@ -525,7 +529,11 @@ overlay page maybeWallet maybeKeyPair =
                     Nothing
 
         _ ->
-            Nothing
+            if Transaction.hasWaitToAuthorize txs then
+                Just WaitForTransaction
+
+            else
+                Nothing
 
 
 pageFromRoute : Address -> List Project -> Maybe Route -> Page
