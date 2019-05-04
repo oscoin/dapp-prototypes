@@ -9,6 +9,7 @@ import Html.Attributes
 import Json.Decode as Decode
 import Json.Encode as Encode
 import KeyPair exposing (KeyPair)
+import Molecule.Transaction
 import Overlay.WaitForKeyPair
 import Overlay.WaitForTransaction
 import Overlay.WalletSetup
@@ -36,16 +37,18 @@ type alias Flags =
     { address : Address
     , maybeKeyPair : Maybe KeyPair
     , maybeWallet : Maybe Wallet
+    , pendingTransactions : List Transaction
     , projects : List Project
     }
 
 
 flagDecoder : Decode.Decoder Flags
 flagDecoder =
-    Decode.map4 Flags
+    Decode.map5 Flags
         (Decode.field "address" Address.decoder)
         (Decode.field "maybeKeyPair" (Decode.nullable KeyPair.decoder))
         (Decode.field "maybeWallet" (Decode.nullable Wallet.decoder))
+        (Decode.field "pendingTransactions" (Decode.list Transaction.decoder))
         (Decode.field "projects" (Decode.list Project.decoder))
 
 
@@ -91,7 +94,7 @@ type alias Model =
 init : Decode.Value -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
-        { address, maybeKeyPair, maybeWallet, projects } =
+        { address, maybeKeyPair, maybeWallet, pendingTransactions, projects } =
             case Decode.decodeValue flagDecoder flags of
                 Ok parsedFlags ->
                     parsedFlags
@@ -104,11 +107,9 @@ init flags url navKey =
                     { address = Address.empty
                     , maybeKeyPair = Nothing
                     , maybeWallet = Nothing
+                    , pendingTransactions = []
                     , projects = []
                     }
-
-        pendingTransactions =
-            []
 
         maybeRoute =
             Route.fromUrl url
@@ -320,10 +321,8 @@ update msg model =
         TransactionAuthorized (Ok _) ->
             case model.overlay of
                 Just WaitForTransaction ->
-                    ( model
-                    , Navigation.pushUrl
-                        model.navKey
-                        (Route.toString <| Route.Project "")
+                    ( { model | overlay = Nothing }
+                    , Cmd.none
                     )
 
                 _ ->
@@ -470,6 +469,7 @@ view model =
                 [ Element.map TopBarMsg <| TopBar.view model.topBarModel rUrl
                 , viewWallet model.wallet
                 , viewKeyPair model.keyPair
+                , Molecule.Transaction.viewProgress model.pendingTransactions
                 , pageContent
                 , Footer.view
                 ]

@@ -2,15 +2,18 @@ module Transaction exposing
     ( Hash
     , Message(..)
     , RuleChange(..)
+    , State(..)
     , Transaction
     , decoder
     , encode
     , hasWaitToAuthorize
     , hash
+    , messageDigest
     , messageType
     , messages
     , registerProject
     , state
+    , stateText
     )
 
 import Json.Decode as Decode
@@ -92,6 +95,29 @@ encode (Transaction h fee msgs s) =
 type Message
     = ProjectRegistration Address
     | UpdateContractRule Address RuleChange
+
+
+messageAddress : Message -> Address
+messageAddress msg =
+    case msg of
+        ProjectRegistration addr ->
+            addr
+
+        UpdateContractRule addr _ ->
+            addr
+
+
+messageDigest : Message -> String
+messageDigest msg =
+    let
+        ps =
+            [ messageType msg
+            , "("
+            , messageAddress msg |> Address.string |> String.left 12
+            , ")"
+            ]
+    in
+    String.join " " ps
 
 
 messageType : Message -> String
@@ -270,6 +296,32 @@ stateString s =
 
         Confirmed ->
             "confirmed"
+
+
+stateText : State -> String
+stateText s =
+    case s of
+        WaitToAuthorize ->
+            "Waiting for authorization"
+
+        Unauthorized ->
+            "Unauthorized"
+
+        Denied ->
+            "Denied"
+
+        Unconfirmed blocks ->
+            if blocks < 1 then
+                "Awaiting confirmation"
+
+            else if blocks < 5 then
+                "Confirmation pending"
+
+            else
+                "Confirmed"
+
+        Confirmed ->
+            "Confirmed"
 
 
 

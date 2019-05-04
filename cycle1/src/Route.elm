@@ -8,7 +8,7 @@ module Route exposing
 
 import Browser.Navigation as Nav
 import Url exposing (Url)
-import Url.Builder exposing (relative)
+import Url.Builder exposing (absolute)
 import Url.Parser as Parser exposing ((</>), Parser, oneOf, s)
 
 
@@ -52,7 +52,7 @@ replaceUrl key route =
 
 toString : Route -> String
 toString route =
-    relative (routeToPaths route) []
+    absolute (routeToPaths route) []
 
 
 
