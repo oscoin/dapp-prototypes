@@ -267,10 +267,6 @@ encodeRuleChange ruleChange =
 -- STATE
 
 
-type alias Progress =
-    Int
-
-
 type State
     = WaitToAuthorize
     | Unauthorized
@@ -330,28 +326,22 @@ stateText s =
 
 stateDecoder : Decode.Decoder State
 stateDecoder =
-    Decode.string
-        |> Decode.andThen
-            (\str ->
-                case str of
-                    "wait-to-authorize" ->
-                        Decode.succeed WaitToAuthorize
+    let
+        typeDecoder =
+            Decode.field "type" Decode.string
+    in
+    Decode.oneOf
+        [ when typeDecoder (is "wait-to-authorize") <| Decode.succeed WaitToAuthorize
+        , when typeDecoder (is "unauthorized") <| Decode.succeed Unauthorized
+        , when typeDecoder (is "denied") <| Decode.succeed Denied
+        , when typeDecoder (is "unconfirmed") unconfirmedDecoder
+        , when typeDecoder (is "confirmed") <| Decode.succeed Confirmed
+        ]
 
-                    "unauthorized" ->
-                        Decode.succeed Unauthorized
 
-                    "denied" ->
-                        Decode.succeed Denied
-
-                    "unconfirmed" ->
-                        Decode.succeed <| Unconfirmed 0
-
-                    "confirmed" ->
-                        Decode.succeed Confirmed
-
-                    _ ->
-                        Decode.fail "unknown state"
-            )
+unconfirmedDecoder : Decode.Decoder State
+unconfirmedDecoder =
+    Decode.map Unconfirmed <| Decode.field "blocks" Decode.int
 
 
 

@@ -108,31 +108,37 @@ let initialTransactions = [
   {
     hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
     fee: 1038,
-    state: 'denied',
+    state: { type: 'denied' },
     messages: [{ type: 'project-registration', address: cabalAddr }],
   },
   {
     hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
     fee: 1038,
-    state: 'unauthorized',
+    state: { type: 'unauthorized' },
     messages: [{ type: 'project-registration', address: cabalAddr }],
   },
   {
     hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
     fee: 1038,
-    state: 'wait-to-authorize',
+    state: { type: 'wait-to-authorize' },
     messages: [{ type: 'project-registration', address: cabalAddr }],
   },
   {
     hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
     fee: 1038,
-    state: 'unconfirmed',
+    state: { type: 'unconfirmed', blocks: 0 },
     messages: [{ type: 'project-registration', address: cabalAddr }],
   },
   {
     hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
     fee: 1038,
-    state: 'confirmed',
+    state: { type: 'unconfirmed', blocks: 4 },
+    messages: [{ type: 'project-registration', address: cabalAddr }],
+  },
+  {
+    hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
+    fee: 1038,
+    state: { type: 'confirmed' },
     messages: [
       { type: 'project-registration', address: cabalAddr },
       {

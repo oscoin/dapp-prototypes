@@ -46,7 +46,7 @@ viewRow tx =
         [ Element.text "Transaction:"
         , viewDigest color <| Transaction.messages tx
         , viewStateText color <| Transaction.state tx
-        , viewBlockCount <| Transaction.state tx
+        , viewBlockCount color <| Transaction.state tx
         , viewBlocks color <| Transaction.state tx
         ]
 
@@ -69,8 +69,8 @@ viewStateText color st =
         (Element.text <| Transaction.stateText st)
 
 
-viewBlockCount : State -> Element msg
-viewBlockCount st =
+viewBlockCount : Element.Color -> State -> Element msg
+viewBlockCount color st =
     let
         confirmed =
             case st of
@@ -84,39 +84,72 @@ viewBlockCount st =
                     0
     in
     Element.el
-        [ Element.alignRight
-        ]
+        ([ Element.alignRight
+         ]
+            ++ Font.bodyTextMono color
+        )
     <|
         Element.text <|
             String.fromInt confirmed
-                ++ " / 6"
+                ++ "/6"
 
 
 viewBlocks : Element.Color -> State -> Element msg
 viewBlocks color st =
+    let
+        confirmedBlocks =
+            case st of
+                Transaction.Confirmed ->
+                    6
+
+                Transaction.Unconfirmed c ->
+                    c
+
+                _ ->
+                    0
+
+        confirmed =
+            if confirmedBlocks > 0 then
+                List.map (\_ -> iconBlock color 1.0) <| List.range 1 confirmedBlocks
+
+            else
+                [ Element.none ]
+
+        unconfirmed =
+            if confirmedBlocks == 6 then
+                [ Element.none ]
+
+            else
+                List.map (\_ -> iconBlock color 0.25) <| List.range 1 (6 - confirmedBlocks)
+    in
     Element.row
         [ Element.alignRight
         , Element.spacingXY 2 0
         ]
-        ((List.map (\_ -> iconBlock color 1.0) <| List.range 0 3)
-            ++ (List.map (\_ -> iconBlock color 0.25) <| List.range 4 5)
-        )
+        (confirmed ++ unconfirmed)
 
 
 rowColor : Transaction -> Element.Color
 rowColor tx =
     case Transaction.state tx of
         Transaction.WaitToAuthorize ->
-            Color.grey
+            Color.purple
 
         Transaction.Unauthorized ->
-            Color.pink
+            Color.radicleBlue
 
         Transaction.Denied ->
-            Color.bordeaux
+            Color.darkGrey
 
-        Transaction.Unconfirmed _ ->
-            Color.yellow
+        Transaction.Unconfirmed blocks ->
+            if blocks == 6 then
+                Color.green
+
+            else if blocks > 3 then
+                Color.orange
+
+            else
+                Color.red
 
         Transaction.Confirmed ->
             Color.green
