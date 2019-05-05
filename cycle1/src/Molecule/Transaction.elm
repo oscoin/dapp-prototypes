@@ -1,7 +1,9 @@
 module Molecule.Transaction exposing (viewProgress)
 
+import Dict
 import Element exposing (Element)
 import Element.Background as Background
+import List.Extra
 import Style.Color as Color
 import Style.Font as Font
 import Svg exposing (rect, svg)
@@ -56,6 +58,7 @@ viewDigest color msgs =
     let
         ps =
             List.map Transaction.messageDigest msgs
+                |> List.Extra.unique
     in
     Element.el
         (Font.mediumBodyText color)
