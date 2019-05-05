@@ -2,13 +2,18 @@ module Transaction exposing
     ( Hash
     , Message(..)
     , RuleChange(..)
+    , State(..)
     , Transaction
     , decoder
     , encode
+    , hasWaitToAuthorize
     , hash
+    , messageDigest
     , messageType
     , messages
     , registerProject
+    , state
+    , stateText
     )
 
 import Json.Decode as Decode
@@ -38,17 +43,22 @@ emptyHash =
 
 
 type Transaction
-    = Transaction Hash Fee (List Message)
+    = Transaction Hash Fee (List Message) State
 
 
 hash : Transaction -> Hash
-hash (Transaction h _ _) =
+hash (Transaction h _ _ _) =
     h
 
 
 messages : Transaction -> List Message
-messages (Transaction _ _ ms) =
+messages (Transaction _ _ ms _) =
     ms
+
+
+state : Transaction -> State
+state (Transaction _ _ _ s) =
+    s
 
 
 
@@ -57,10 +67,11 @@ messages (Transaction _ _ ms) =
 
 decoder : Decode.Decoder Transaction
 decoder =
-    Decode.map3 Transaction
+    Decode.map4 Transaction
         (Decode.field "hash" Decode.string)
         (Decode.field "fee" Decode.int)
         (Decode.field "messages" <| Decode.list messageDecoder)
+        (Decode.field "state" stateDecoder)
 
 
 
@@ -68,11 +79,12 @@ decoder =
 
 
 encode : Transaction -> Encode.Value
-encode (Transaction h fee msgs) =
+encode (Transaction h fee msgs s) =
     Encode.object
         [ ( "hash", Encode.string h )
         , ( "fee", Encode.int fee )
         , ( "messages", Encode.list encodeMessage msgs )
+        , ( "state", encodeState s )
         ]
 
 
@@ -83,6 +95,29 @@ encode (Transaction h fee msgs) =
 type Message
     = ProjectRegistration Address
     | UpdateContractRule Address RuleChange
+
+
+messageAddress : Message -> Address
+messageAddress msg =
+    case msg of
+        ProjectRegistration addr ->
+            addr
+
+        UpdateContractRule addr _ ->
+            addr
+
+
+messageDigest : Message -> String
+messageDigest msg =
+    let
+        ps =
+            [ messageType msg
+            , "("
+            , messageAddress msg |> Address.string |> String.left 12
+            , ")"
+            ]
+    in
+    String.join " " ps
 
 
 messageType : Message -> String
@@ -229,6 +264,105 @@ encodeRuleChange ruleChange =
 
 
 
+-- STATE
+
+
+type State
+    = WaitToAuthorize
+    | Unauthorized
+    | Denied
+    | Unconfirmed Int
+    | Confirmed
+
+
+stateString : State -> String
+stateString s =
+    case s of
+        WaitToAuthorize ->
+            "wait-to-authorize"
+
+        Unauthorized ->
+            "unauthorized"
+
+        Denied ->
+            "denied"
+
+        Unconfirmed _ ->
+            "unconfirmed"
+
+        Confirmed ->
+            "confirmed"
+
+
+stateText : State -> String
+stateText s =
+    case s of
+        WaitToAuthorize ->
+            "Waiting for authorization"
+
+        Unauthorized ->
+            "Unauthorized"
+
+        Denied ->
+            "Denied"
+
+        Unconfirmed blocks ->
+            if blocks < 1 then
+                "Awaiting confirmation"
+
+            else if blocks < 5 then
+                "Confirmation pending"
+
+            else
+                "Confirmed"
+
+        Confirmed ->
+            "Confirmed"
+
+
+
+-- STATE DECODING
+
+
+stateDecoder : Decode.Decoder State
+stateDecoder =
+    let
+        typeDecoder =
+            Decode.field "type" Decode.string
+    in
+    Decode.oneOf
+        [ when typeDecoder (is "wait-to-authorize") <| Decode.succeed WaitToAuthorize
+        , when typeDecoder (is "unauthorized") <| Decode.succeed Unauthorized
+        , when typeDecoder (is "denied") <| Decode.succeed Denied
+        , when typeDecoder (is "unconfirmed") unconfirmedDecoder
+        , when typeDecoder (is "confirmed") <| Decode.succeed Confirmed
+        ]
+
+
+unconfirmedDecoder : Decode.Decoder State
+unconfirmedDecoder =
+    Decode.map Unconfirmed <| Decode.field "blocks" Decode.int
+
+
+
+-- STATE ENCODING
+
+
+encodeState : State -> Encode.Value
+encodeState s =
+    Encode.string <| stateString s
+
+
+
+-- ACCESSORS
+
+
+hasWaitToAuthorize : List Transaction -> Bool
+hasWaitToAuthorize txs =
+    List.any (\t -> state t == WaitToAuthorize) txs
+
+
+
 -- CONSTRUCTORS
 
 
@@ -275,4 +409,4 @@ registerProject project =
         newHash =
             sha256 (Encode.encode 0 <| Encode.list encodeMessage msgs)
     in
-    Transaction newHash 13 msgs
+    Transaction newHash 13 msgs WaitToAuthorize

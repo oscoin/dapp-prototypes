@@ -126,7 +126,7 @@ function signTransaction(hash, keyPairId) {
     direction: 'wallet-to-page',
     type: 'transactionAuthorized',
     hash: hash,
-    keyPairId: getKeyPair(),
+    keyPairId: getKeyPair().id,
   })
 }
 
