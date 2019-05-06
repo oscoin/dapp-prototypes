@@ -8,6 +8,7 @@ module Transaction exposing
     , encode
     , hasWaitToAuthorize
     , hash
+    , mapState
     , messageDigest
     , messageType
     , messages
@@ -59,6 +60,11 @@ messages (Transaction _ _ ms _) =
 state : Transaction -> State
 state (Transaction _ _ _ s) =
     s
+
+
+mapState : (State -> State) -> Transaction -> Transaction
+mapState change (Transaction h f msgs oldState) =
+    Transaction h f msgs (change oldState)
 
 
 
@@ -350,7 +356,19 @@ unconfirmedDecoder =
 
 encodeState : State -> Encode.Value
 encodeState s =
-    Encode.string <| stateString s
+    let
+        fields =
+            case s of
+                Unconfirmed blocks ->
+                    [ ( "type", Encode.string <| stateString s )
+                    , ( "blocks", Encode.int blocks )
+                    ]
+
+                _ ->
+                    [ ( "type", Encode.string <| stateString s )
+                    ]
+    in
+    Encode.object fields
 
 
 

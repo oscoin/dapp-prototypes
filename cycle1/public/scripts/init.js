@@ -219,6 +219,12 @@ window.addEventListener('DOMContentLoaded', _ => {
     console.log('window.message.msg', msg)
 
     if (msg.direction === 'wallet-to-page') {
+      // A transaction has been reject.
+      if (msg.type === 'transactionRejected') {
+        console.log('SENDING', msg.hash)
+        app.ports.transactionRejected.send(msg.hash)
+      }
+
       // A transaction has been authorized.
       if (msg.type === 'transactionAuthorized') {
         app.ports.transactionAuthorized.send({

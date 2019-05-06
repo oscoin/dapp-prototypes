@@ -102,6 +102,9 @@ init flags =
 port authorizeTransaction : { keyPairId : KeyPair.ID, hash : Hash } -> Cmd msg
 
 
+port rejectTransaction : Hash -> Cmd msg
+
+
 port keyPairCreate : String -> Cmd msg
 
 
@@ -132,6 +135,7 @@ subscriptions _ =
 
 type Msg
     = AuthorizeTransaction
+    | RejectTransaction
     | KeyPairCreated (Maybe KeyPair)
     | PageKeyPairSetup Page.KeyPairSetup.Msg
 
@@ -150,6 +154,16 @@ update msg model =
 
         -- Ignore transaction authorization on other pages.
         ( AuthorizeTransaction, _ ) ->
+            ( model, Cmd.none )
+
+        -- Communicate back when the transaction is authorized.
+        ( RejectTransaction, ShowTransaction keyPair transaction ) ->
+            ( model
+            , rejectTransaction <| Transaction.hash transaction
+            )
+
+        -- Ignore transaction rejection on other pages.
+        ( RejectTransaction, _ ) ->
             ( model, Cmd.none )
 
         -- Relay created key pair event to the KeyPairSetup page.
@@ -235,7 +249,7 @@ view model =
                     )
 
                 ShowTransaction keyPair transaction ->
-                    Page.SignTransaction.view AuthorizeTransaction keyPair transaction
+                    Page.SignTransaction.view RejectTransaction AuthorizeTransaction keyPair transaction
 
                 NotFound ->
                     Page.NotFound.view

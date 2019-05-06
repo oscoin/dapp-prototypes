@@ -158,6 +158,9 @@ port keyPairFetched : (Decode.Value -> msg) -> Sub msg
 port transactionAuthorized : (Decode.Value -> msg) -> Sub msg
 
 
+port transactionRejected : (Decode.Value -> msg) -> Sub msg
+
+
 port walletWebExtPresent : (() -> msg) -> Sub msg
 
 
@@ -188,6 +191,7 @@ subscriptions _ =
         [ keyPairCreated (KeyPair.decode >> KeyPairCreated)
         , keyPairFetched (KeyPair.decode >> KeyPairFetched)
         , transactionAuthorized (Decode.decodeValue authorizeResponseDecoder >> TransactionAuthorized)
+        , transactionRejected (Decode.decodeValue Decode.string >> TransactionRejected)
         , walletWebExtPresent WalletWebExtPresent
         ]
 
@@ -207,6 +211,7 @@ type Msg
     | KeyPairFetched (Maybe KeyPair)
     | DismissTransaction Transaction.Hash
     | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
+    | TransactionRejected (Result Decode.Error Transaction.Hash)
     | WalletWebExtPresent ()
 
 
@@ -326,10 +331,21 @@ update msg model =
             in
             ( { model | pendingTransactions = txs }, Cmd.none )
 
-        TransactionAuthorized (Ok _) ->
+        TransactionAuthorized (Ok res) ->
             case model.overlay of
                 Just WaitForTransaction ->
-                    ( { model | overlay = Nothing }
+                    let
+                        mapState tx =
+                            if Transaction.hash tx == res.hash then
+                                Transaction.mapState (\_ -> Transaction.Unconfirmed 0) tx
+
+                            else
+                                tx
+
+                        txs =
+                            List.map mapState model.pendingTransactions
+                    in
+                    ( { model | overlay = Nothing, pendingTransactions = txs }
                     , Cmd.none
                     )
 
@@ -338,6 +354,27 @@ update msg model =
 
         -- TODO(xla): Surface conversion errors properly and show them in the UI.
         TransactionAuthorized (Err _) ->
+            ( model, Cmd.none )
+
+        TransactionRejected (Ok hash) ->
+            case model.overlay of
+                Just WaitForTransaction ->
+                    let
+                        mapState tx =
+                            if Transaction.hash tx == hash then
+                                Transaction.mapState (\_ -> Transaction.Rejected) tx
+
+                            else
+                                tx
+                    in
+                    ( { model | overlay = Nothing, pendingTransactions = List.map mapState model.pendingTransactions }
+                    , Route.pushUrl model.navKey Route.Home
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        TransactionRejected (Err _) ->
             ( model, Cmd.none )
 
         WalletWebExtPresent _ ->
