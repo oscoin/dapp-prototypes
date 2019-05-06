@@ -413,3 +413,25 @@ copy =
                 ]
                 []
             ]
+
+
+cross : Element.Color -> Element msg
+cross color =
+    Element.html <|
+        svg
+            [ width "24", height "24", viewBox "0 0 24 24", fill "none" ]
+            [ Svg.path
+                [ d "M8 8L16 16"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
+                , strokeLinecap "round"
+                ]
+                []
+            , Svg.path
+                [ d "M8 16L16 8"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
+                , strokeLinecap "round"
+                ]
+                []
+            ]
