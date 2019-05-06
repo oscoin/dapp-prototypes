@@ -82,9 +82,8 @@ sectionWithDesc : List (Attribute msg) -> String -> String -> Element msg
 sectionWithDesc attr title desc =
     Element.column
         ([ Element.width Element.fill
-         , Element.paddingXY 24 16
-         , Element.height (Element.px 92)
-         , Element.spacing 16
+         , Element.paddingXY 24 18
+         , Element.spacing 10
          ]
             ++ attr
         )
@@ -92,10 +91,11 @@ sectionWithDesc attr title desc =
             (Font.mediumHeader Color.black)
           <|
             Element.text title
-        , Element.el
-            ([ Element.paddingEach { top = 0, right = 0, bottom = 16, left = 0 } ]
+        , Element.paragraph
+            ([ Element.width
+                (Element.fill |> Element.maximum 720)
+             ]
                 ++ Font.bodyText Color.darkGrey
             )
-          <|
-            Element.text desc
+            [ Element.text desc ]
         ]
