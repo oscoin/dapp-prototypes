@@ -32,7 +32,7 @@ view contract =
             , Element.width <| Element.fillPortion 3
             , Element.padding 0
             ]
-            [ viewRule "Reward distribution" (Icon.reward <| Contract.reward contract) (Contract.rewardName <| Contract.reward contract) (Contract.rewardDesc <| Contract.reward contract)
+            [ viewRule "Network reward distribution" (Icon.reward <| Contract.reward contract) (Contract.rewardName <| Contract.reward contract) (Contract.rewardDesc <| Contract.reward contract)
             , viewRule "Donation distribution" (Icon.donation <| Contract.donation contract) (Contract.donationName <| Contract.donation contract) (Contract.donationDesc <| Contract.donation contract)
             , viewRule "Roles & abilities" (Icon.role <| Contract.role contract) (Contract.roleName <| Contract.role contract) (Contract.roleDesc <| Contract.role contract)
             ]
