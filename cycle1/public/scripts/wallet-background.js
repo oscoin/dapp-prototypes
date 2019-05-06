@@ -27,7 +27,7 @@ let keyPair = {
   id: 'fakeid',
   pubKey: encode(nacl.sign.keyPair().publicKey),
 }
-let transaction = null
+let transactions = {}
 
 browser.runtime.onMessage.addListener((msg, sender) => {
   console.log(msg, sender)
@@ -53,20 +53,15 @@ browser.runtime.onMessage.addListener((msg, sender) => {
     // Present the transaction to sign to the user.
     if (msg.type === 'signTransaction') {
       currentTab = sender.tab
-      // transaction = testTransaction()
 
       let tx = msg.transaction
-      let enc = new TextEncoder()
-      tx.hash = new TextDecoder().decode(
-        nacl.hash(enc.encode(JSON.stringify(tx)))
-      )
 
-      transaction = tx
+      transactions[tx.hash] = tx
 
       browser.windows
         .create({
           type: 'popup',
-          url: 'wallet-popup.html#sign',
+          url: `wallet-popup-sign.html#${tx.hash}`,
           height: 534,
           width: 420,
         })
@@ -119,8 +114,8 @@ function keyPairSetupComplete() {
   })
 }
 
-function getTransaction() {
-  return transaction
+function getTransaction(hash) {
+  return transactions[hash]
 }
 
 function signTransaction(hash, keyPairId) {
@@ -131,7 +126,7 @@ function signTransaction(hash, keyPairId) {
     direction: 'wallet-to-page',
     type: 'transactionAuthorized',
     hash: hash,
-    keyPairId: getKeyPair(),
+    keyPairId: getKeyPair().id,
   })
 }
 

@@ -12,6 +12,7 @@ import Element.Input as Input
 import Molecule.ProjectMeta as ProjectMeta
 import Page.Register.Contract as Contract
 import Project exposing (Project)
+import Project.Address exposing (Address)
 import Project.Meta as Meta
 import Style.Color as Color
 import Style.Font as Font
@@ -35,6 +36,7 @@ type Model
     = Model Step Project FieldError
 
 
+<<<<<<< HEAD
 init : Model
 init =
     let
@@ -50,6 +52,11 @@ init =
             Project.mapMeta (\_ -> meta) Project.init
     in
     Model Preview project (FieldError False False)
+=======
+init : Address -> Model
+init addr =
+    Model Info (Project.withAddress addr) (FieldError False False)
+>>>>>>> master
 
 
 

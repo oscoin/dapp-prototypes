@@ -9,6 +9,7 @@ import Html.Attributes
 import Json.Decode as Decode
 import Json.Encode as Encode
 import KeyPair exposing (KeyPair)
+import Molecule.Transaction
 import Overlay.WaitForKeyPair
 import Overlay.WaitForTransaction
 import Overlay.WalletSetup
@@ -17,10 +18,12 @@ import Page.NotFound
 import Page.Project
 import Page.Register
 import Project exposing (Project)
+import Project.Address as Address exposing (Address)
 import Route exposing (Route)
 import Style.Color as Color
+import Task
 import TopBar
-import Transaction
+import Transaction exposing (Transaction)
 import Url
 import Url.Builder
 import Wallet exposing (Wallet(..))
@@ -31,17 +34,21 @@ import Wallet exposing (Wallet(..))
 
 
 type alias Flags =
-    { maybeKeyPair : Maybe KeyPair
+    { address : Address
+    , maybeKeyPair : Maybe KeyPair
     , maybeWallet : Maybe Wallet
+    , pendingTransactions : List Transaction
     , projects : List Project
     }
 
 
 flagDecoder : Decode.Decoder Flags
 flagDecoder =
-    Decode.map3 Flags
+    Decode.map5 Flags
+        (Decode.field "address" Address.decoder)
         (Decode.field "maybeKeyPair" (Decode.nullable KeyPair.decoder))
         (Decode.field "maybeWallet" (Decode.nullable Wallet.decoder))
+        (Decode.field "pendingTransactions" (Decode.list Transaction.decoder))
         (Decode.field "projects" (Decode.list Project.decoder))
 
 
@@ -71,10 +78,12 @@ type Page
 
 
 type alias Model =
-    { keyPair : Maybe KeyPair
+    { address : Address
+    , keyPair : Maybe KeyPair
     , navKey : Navigation.Key
     , overlay : Maybe Overlay
     , page : Page
+    , pendingTransactions : List Transaction
     , projects : List Project
     , topBarModel : TopBar.Model
     , url : Url.Url
@@ -85,7 +94,7 @@ type alias Model =
 init : Decode.Value -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
-        { maybeKeyPair, maybeWallet, projects } =
+        { address, maybeKeyPair, maybeWallet, pendingTransactions, projects } =
             case Decode.decodeValue flagDecoder flags of
                 Ok parsedFlags ->
                     parsedFlags
@@ -95,8 +104,10 @@ init flags url navKey =
                         _ =
                             Debug.log "Main.Flags.decode" err
                     in
-                    { maybeKeyPair = Nothing
+                    { address = Address.empty
+                    , maybeKeyPair = Nothing
                     , maybeWallet = Nothing
+                    , pendingTransactions = []
                     , projects = []
                     }
 
@@ -104,24 +115,23 @@ init flags url navKey =
             Route.fromUrl url
 
         page =
-            pageFromRoute projects maybeRoute
+            pageFromRoute address projects maybeRoute
 
         maybeOverlay =
-            overlayFromRoute maybeRoute
-
-        cmd =
-            guardUrl navKey maybeRoute maybeWallet maybeKeyPair
+            overlay page maybeWallet maybeKeyPair pendingTransactions
     in
-    ( { keyPair = maybeKeyPair
+    ( { address = address
+      , keyPair = maybeKeyPair
       , navKey = navKey
       , overlay = maybeOverlay
       , page = page
+      , pendingTransactions = pendingTransactions
       , projects = projects
       , topBarModel = TopBar.init
       , url = url
       , wallet = maybeWallet
       }
-    , cmd
+    , Cmd.none
     )
 
 
@@ -192,9 +202,10 @@ type Msg
     | OverlayWalletSetup Overlay.WalletSetup.Msg
     | PageRegister Page.Register.Msg
     | TopBarMsg TopBar.Msg
-    | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
+    | RegisterProject Project
     | KeyPairCreated (Maybe KeyPair)
     | KeyPairFetched (Maybe KeyPair)
+    | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
     | WalletWebExtPresent ()
 
 
@@ -217,66 +228,15 @@ update msg model =
                     Route.fromUrl url
 
                 page =
-                    pageFromRoute model.projects maybeRoute
+                    pageFromRoute model.address model.projects maybeRoute
 
-                overlay =
-                    overlayFromRoute maybeRoute
+                ov =
+                    overlay page model.wallet model.keyPair model.pendingTransactions
 
                 cmd =
-                    cmdFromOverlay overlay
+                    cmdFromOverlay ov
             in
-            ( { model | overlay = overlay, page = page }, cmd )
-
-        KeyPairCreated maybeKeyPair ->
-            case maybeKeyPair of
-                Nothing ->
-                    ( model, Cmd.none )
-
-                Just keyPair ->
-                    let
-                        cmd =
-                            case model.overlay of
-                                Just WaitForKeyPair ->
-                                    Navigation.pushUrl
-                                        model.navKey
-                                        (Route.toString (Route.Register Nothing))
-
-                                _ ->
-                                    Cmd.none
-                    in
-                    ( { model | keyPair = Just keyPair }, cmd )
-
-        KeyPairFetched maybeKeyPair ->
-            ( { model | keyPair = maybeKeyPair }, Cmd.none )
-
-        PageRegister subCmd ->
-            case model.page of
-                Register oldModel ->
-                    let
-                        ( pageModel, pageCmd ) =
-                            Page.Register.update subCmd oldModel
-
-                        portCmds =
-                            case subCmd of
-                                -- Call out to our port to register the project.
-                                Page.Register.Register project ->
-                                    [ signTransaction <| Transaction.encode <| Transaction.registerProject project
-                                    , Navigation.pushUrl
-                                        model.navKey
-                                        (Route.toString (Route.Register <| Just Route.WaitForTransaction))
-                                    ]
-
-                                -- Ignore all other sub commands as they should
-                                -- be handled by the page.
-                                _ ->
-                                    []
-                    in
-                    ( { model | page = Register pageModel }
-                    , Cmd.batch <| portCmds ++ [ Cmd.map PageRegister <| pageCmd ]
-                    )
-
-                _ ->
-                    ( model, Cmd.none )
+            ( { model | overlay = ov, page = page, url = url }, cmd )
 
         OverlayWalletSetup subCmd ->
             case model.overlay of
@@ -292,6 +252,33 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        PageRegister subCmd ->
+            case model.page of
+                Register subModel ->
+                    let
+                        ( pageModel, pageCmd ) =
+                            Page.Register.update subCmd subModel
+
+                        registerCmd =
+                            case subCmd of
+                                Page.Register.Register project ->
+                                    Task.perform
+                                        (always RegisterProject project)
+                                        (Task.succeed project)
+
+                                _ ->
+                                    Cmd.none
+                    in
+                    ( { model | page = Register pageModel }
+                    , Cmd.batch
+                        [ Cmd.map PageRegister <| pageCmd
+                        , registerCmd
+                        ]
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
         TopBarMsg subMsg ->
             let
                 ( topBarModel, topBarMsg ) =
@@ -299,13 +286,43 @@ update msg model =
             in
             ( { model | topBarModel = topBarModel }, Cmd.map TopBarMsg topBarMsg )
 
+        RegisterProject project ->
+            let
+                tx =
+                    Transaction.registerProject project
+
+                txs =
+                    tx :: model.pendingTransactions
+            in
+            ( { model
+                | pendingTransactions = txs
+                , projects = project :: model.projects
+              }
+            , Cmd.batch
+                [ signTransaction <| Transaction.encode tx
+                , Project.address project
+                    |> Address.string
+                    |> Route.Project
+                    |> Route.pushUrl model.navKey
+                ]
+            )
+
+        KeyPairCreated maybeKeyPair ->
+            case maybeKeyPair of
+                Nothing ->
+                    ( model, Cmd.none )
+
+                Just keyPair ->
+                    ( { model | keyPair = Just keyPair, overlay = Nothing }, Cmd.none )
+
+        KeyPairFetched maybeKeyPair ->
+            ( { model | keyPair = maybeKeyPair }, Cmd.none )
+
         TransactionAuthorized (Ok _) ->
             case model.overlay of
                 Just WaitForTransaction ->
-                    ( model
-                    , Navigation.pushUrl
-                        model.navKey
-                        (Route.toString <| Route.Project "")
+                    ( { model | overlay = Nothing }
+                    , Cmd.none
                     )
 
                 _ ->
@@ -354,13 +371,13 @@ viewOverlay maybeOverlay url =
         Nothing ->
             ( Nothing, [] )
 
-        Just overlay ->
+        Just ov ->
             let
                 backUrl =
                     Url.Builder.relative [ url.path ] []
 
                 ( title, content ) =
-                    case overlay of
+                    case ov of
                         WaitForKeyPair ->
                             Overlay.WaitForKeyPair.view
 
@@ -438,7 +455,7 @@ view model =
                     [ oTitle, pageTitle, "oscoin" ]
 
         rUrl =
-            registerUrl model.wallet model.keyPair
+            Route.toString Route.Register
     in
     { title = String.join " <> " titleParts
     , body =
@@ -452,6 +469,7 @@ view model =
                 [ Element.map TopBarMsg <| TopBar.view model.topBarModel rUrl
                 , viewWallet model.wallet
                 , viewKeyPair model.keyPair
+                , Molecule.Transaction.viewProgress model.pendingTransactions
                 , pageContent
                 , Footer.view
                 ]
@@ -485,26 +503,6 @@ cmdFromOverlay maybeOverlay =
             Cmd.none
 
 
-guardUrl :
-    Navigation.Key
-    -> Maybe Route
-    -> Maybe Wallet
-    -> Maybe KeyPair
-    -> Cmd msg
-guardUrl navKey maybeRoute maybeWallet maybeKeyPair =
-    case maybeRoute of
-        Just (Route.Register _) ->
-            let
-                url =
-                    registerUrl maybeWallet maybeKeyPair
-            in
-            Navigation.pushUrl navKey url
-
-        -- Nothing to do for all other routes.
-        _ ->
-            Cmd.none
-
-
 overlayAttrs : Element.Element msg -> String -> List (Element.Attribute msg)
 overlayAttrs content backUrl =
     [ background backUrl
@@ -512,29 +510,34 @@ overlayAttrs content backUrl =
     ]
 
 
-overlayFromRoute : Maybe Route -> Maybe Overlay
-overlayFromRoute maybeRoute =
-    case maybeRoute of
-        Just (Route.Register maybeOverlay) ->
-            case maybeOverlay of
-                Just Route.WaitForKeyPair ->
-                    Just WaitForKeyPair
-
-                Just Route.WaitForTransaction ->
-                    Just WaitForTransaction
-
-                Just Route.WalletSetup ->
+overlay : Page -> Maybe Wallet -> Maybe KeyPair -> List Transaction -> Maybe Overlay
+overlay page maybeWallet maybeKeyPair txs =
+    case page of
+        -- Overlays are only relevant to guard register.
+        Register _ ->
+            case ( maybeWallet, maybeKeyPair ) of
+                -- Neither Wallet nor key pair is present.
+                ( Nothing, _ ) ->
                     Just <| WalletSetup Overlay.WalletSetup.init
 
-                _ ->
+                -- Wallet is present but no key pair yet.
+                ( Just _, Nothing ) ->
+                    Just WaitForKeyPair
+
+                -- Wallet and key pair are available.
+                ( Just _, Just _ ) ->
                     Nothing
 
         _ ->
-            Nothing
+            if Transaction.hasWaitToAuthorize txs then
+                Just WaitForTransaction
+
+            else
+                Nothing
 
 
-pageFromRoute : List Project -> Maybe Route -> Page
-pageFromRoute projects maybeRoute =
+pageFromRoute : Address -> List Project -> Maybe Route -> Page
+pageFromRoute newAddr projects maybeRoute =
     case Debug.log "Main.pageFromRoute" maybeRoute of
         Just Route.Home ->
             Home
@@ -547,32 +550,11 @@ pageFromRoute projects maybeRoute =
                 Just project ->
                     Project project
 
-        Just (Route.Register _) ->
-            Register Page.Register.init
+        Just Route.Register ->
+            Register <| Page.Register.init newAddr
 
         _ ->
             NotFound
-
-
-registerUrl : Maybe Wallet -> Maybe KeyPair -> String
-registerUrl maybeWallet maybeKeyPair =
-    case ( maybeWallet, maybeKeyPair ) of
-        -- Neither Wallet nor key pair is present.
-        ( Nothing, Nothing ) ->
-            Route.toString <| Route.Register <| Just Route.WalletSetup
-
-        -- Wallet is present but no key pair yet.
-        ( Just _, Nothing ) ->
-            Route.toString <| Route.Register <| Just Route.WaitForKeyPair
-
-        -- Wallet and key pair are available.
-        ( Just _, Just _ ) ->
-            Route.toString <| Route.Register Nothing
-
-        -- Only the key pair is present, unclear if this state is
-        -- possible, maybe for testing when we have it in memory.
-        ( Nothing, Just _ ) ->
-            Route.toString <| Route.Register Nothing
 
 
 

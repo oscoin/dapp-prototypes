@@ -1,3 +1,5 @@
+import { encode } from './base32.js'
+
 const initialProjects = [
   {
     address: '1b4atzir794d11ckjtk7xawsqjizgwwabx9bun7qmw5ic7uxr1mj',
@@ -90,6 +92,79 @@ const initialProjects = [
         imageUrl: 'https://avatars1.githubusercontent.com/u/16262137?s=400&v=4',
       },
     ],
+    graph: {
+      edges: [
+        { direction: 'outgoing', name: 'IPFS', osrank: 0.84 },
+        { direction: 'incoming', name: 'Julien package', osrank: 0.99 },
+      ],
+      osrank: 0.86,
+      percentile: 85,
+    },
+  },
+]
+
+let cabalAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd'
+let initialTransactions = [
+  {
+    hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
+    fee: 1038,
+    state: { type: 'denied' },
+    messages: [{ type: 'project-registration', address: cabalAddr }],
+  },
+  {
+    hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
+    fee: 1038,
+    state: { type: 'unauthorized' },
+    messages: [{ type: 'project-registration', address: cabalAddr }],
+  },
+  {
+    hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
+    fee: 1038,
+    state: { type: 'wait-to-authorize' },
+    messages: [{ type: 'project-registration', address: cabalAddr }],
+  },
+  {
+    hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
+    fee: 1038,
+    state: { type: 'unconfirmed', blocks: 0 },
+    messages: [{ type: 'project-registration', address: cabalAddr }],
+  },
+  {
+    hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
+    fee: 1038,
+    state: { type: 'unconfirmed', blocks: 4 },
+    messages: [{ type: 'project-registration', address: cabalAddr }],
+  },
+  {
+    hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
+    fee: 1038,
+    state: { type: 'confirmed' },
+    messages: [
+      { type: 'project-registration', address: cabalAddr },
+      {
+        type: 'update-contract-rule',
+        address: cabalAddr,
+        ruleChange: { type: 'reward', old: 'EqualDependency', new: 'Burn' },
+      },
+      {
+        type: 'update-contract-rule',
+        address: cabalAddr,
+        ruleChange: {
+          type: 'donation',
+          old: 'FundSaving',
+          new: 'EqualMaintainer',
+        },
+      },
+      {
+        type: 'update-contract-rule',
+        address: cabalAddr,
+        ruleChange: {
+          type: 'role',
+          old: 'MaintainerSingleSigner',
+          new: 'MaintainerMultiSig',
+        },
+      },
+    ],
   },
 ]
 
@@ -98,8 +173,13 @@ window.addEventListener('DOMContentLoaded', _ => {
 
   var app = Elm.Main.init({
     flags: {
-      maybeKeyPair: null,
+      address: encode(nacl.sign.keyPair().publicKey),
+      maybeKeyPair: {
+        id: 'fakeid',
+        pubKey: encode(nacl.sign.keyPair().publicKey),
+      },
       maybeWallet: document.getElementById('wallet') ? 'webext' : null,
+      pendingTransactions: initialTransactions,
       projects: initialProjects,
     },
     node: document.getElementById('app'),
