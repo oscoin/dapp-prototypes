@@ -174,6 +174,7 @@ window.addEventListener('DOMContentLoaded', _ => {
   var app = Elm.Main.init({
     flags: {
       address: encode(nacl.sign.keyPair().publicKey),
+      // maybeKeyPair: null,
       maybeKeyPair: {
         id: 'fakeid',
         pubKey: encode(nacl.sign.keyPair().publicKey),

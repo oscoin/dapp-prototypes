@@ -62,8 +62,8 @@ browser.runtime.onMessage.addListener((msg, sender) => {
         .create({
           type: 'popup',
           url: `wallet-popup-sign.html#${tx.hash}`,
-          height: 534,
-          width: 420,
+          height: 640,
+          width: 560,
         })
         .then(windowInfo => {
           console.log('popup window info', windowInfo)
@@ -79,8 +79,8 @@ browser.runtime.onMessage.addListener((msg, sender) => {
         .create({
           type: 'popup',
           url: 'wallet-popup.html#keys',
-          height: 534,
-          width: 420,
+          height: 640,
+          width: 560,
         })
         .then(windowInfo => {
           console.log('popup window info', windowInfo)

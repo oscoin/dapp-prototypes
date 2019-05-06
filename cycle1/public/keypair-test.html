@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <link href="styles/fonts.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="popup"></div>
+  <script src="scripts/wallet-popup.js"></script>
+  <script>
+    var popup = Elm.WalletPopup.init({
+      flags: {
+        maybeKeyPair: null,
+        maybeTransaction: null,
+        page: 'keys',
+      },
+      node: document.getElementById('popup'),
+    });
+  </script>
+</body>
+
+</html>
