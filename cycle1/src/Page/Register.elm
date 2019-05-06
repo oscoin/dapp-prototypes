@@ -9,10 +9,13 @@ import Element.Border as Border
 import Element.Events as Events
 import Element.Font
 import Element.Input as Input
+import Molecule.ContractPreview as ContractPreview
 import Molecule.ProjectMeta as ProjectMeta
+import Molecule.Rule as Rule
 import Page.Register.Contract as Contract
 import Project exposing (Project)
-import Project.Address exposing (Address)
+import Project.Address as Address exposing (Address)
+import Project.Contract as Contract
 import Project.Meta as Meta
 import Style.Color as Color
 import Style.Font as Font
@@ -36,27 +39,9 @@ type Model
     = Model Step Project FieldError
 
 
-<<<<<<< HEAD
-init : Model
-init =
-    let
-        meta =
-            Meta.empty
-                |> Meta.mapCodeHostUrl (\_ -> "https://github.com/radicle-dev/radicle")
-                |> Meta.mapDescription (\_ -> "Cabal is a system for building and packaging Haskell libraries and programs.")
-                |> Meta.mapName (\_ -> "Cabal")
-                |> Meta.mapImageUrl (\_ -> "https://avatars0.githubusercontent.com/u/48290027?s=144&v=4")
-                |> Meta.mapWebsiteUrl (\_ -> "www.www.com")
-
-        project =
-            Project.mapMeta (\_ -> meta) Project.init
-    in
-    Model Preview project (FieldError False False)
-=======
 init : Address -> Model
 init addr =
     Model Info (Project.withAddress addr) (FieldError False False)
->>>>>>> master
 
 
 
@@ -207,7 +192,9 @@ view (Model step project fieldError) =
     in
     ( "register"
     , Element.column
-        [ Element.width (Element.px 1074), Element.centerX ]
+        [ Element.width <| Element.px 1074
+        , Element.centerX
+        ]
         [ Element.el
             ([ Element.centerX
              ]
@@ -352,24 +339,21 @@ viewInput label =
 
 viewPreview : Project -> Element Msg
 viewPreview project =
-    let
-        meta =
-            Project.meta project
-    in
     Element.column
-        []
+        [ Element.spacing 24, Element.width <| Element.px 1074 ]
         [ Heading.sectionWithDesc
             [ Border.color Color.lightGrey
             , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
             ]
             "Project preview"
             "Below is a preview of your project's profile before it's registered on the network. You'll be able to edit this information once the project has been registered."
-        , ProjectMeta.view (Meta.imageUrl meta)
-            (Meta.name meta)
-            "cabal#3gd815h0c6x84hj0..."
-            (Meta.description meta)
+        , ProjectMeta.view project
+        , ContractPreview.view [ Element.paddingXY 0 44 ] <| Project.contract project
         , Element.row
-            [ Element.alignRight, Element.spacing 16 ]
+            [ Element.alignRight
+            , Element.spacing 16
+            , Element.paddingEach { top = 0, right = 0, bottom = 96, left = 0 }
+            ]
             [ Element.el
                 [ Events.onClick MoveStepContract ]
               <|

@@ -3,16 +3,19 @@ module Molecule.ProjectMeta exposing (view)
 import Atom.Icon as Icon
 import Element exposing (Element)
 import Element.Background as Background
+import Project as Project exposing (Project)
+import Project.Address as Address exposing (Address)
+import Project.Meta as Meta exposing (Meta)
 import Style.Color as Color
 import Style.Font as Font
 
 
-view : String -> String -> String -> String -> Element msg
-view imgUrl name hash description =
+view : Project -> Element msg
+view project =
     Element.row
         [ Element.spacing 24, Element.width Element.fill ]
-        [ viewLogo imgUrl
-        , viewMeta name hash description
+        [ viewLogo <| Meta.imageUrl <| Project.meta project
+        , viewMeta (Project.address project) (Project.meta project)
         ]
 
 
@@ -36,8 +39,12 @@ viewLogo imgUrl =
             }
 
 
-viewMeta : String -> String -> String -> Element msg
-viewMeta name hash description =
+viewMeta : Address -> Meta -> Element msg
+viewMeta address meta =
+    let
+        addr =
+            (String.slice 0 15 <| Address.string address) ++ "..."
+    in
     Element.column
         [ Element.spacing 8
         , Element.width
@@ -48,7 +55,8 @@ viewMeta name hash description =
         [ Element.el
             (Font.bigHeader Color.black)
           <|
-            Element.text name
+            Element.text <|
+                Meta.name meta
 
         -- Hash
         , Element.row
@@ -58,7 +66,10 @@ viewMeta name hash description =
                     ++ Font.mediumBodyText Color.grey
                 )
               <|
-                Element.text hash
+                Element.text <|
+                    Meta.name meta
+                        ++ "#"
+                        ++ addr
             , Icon.copy
             ]
 
@@ -69,6 +80,6 @@ viewMeta name hash description =
              ]
                 ++ Font.bodyText Color.black
             )
-            [ Element.text description
+            [ Element.text <| Meta.description meta
             ]
         ]
