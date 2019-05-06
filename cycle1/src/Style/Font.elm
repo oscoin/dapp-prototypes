@@ -14,6 +14,7 @@ module Style.Font exposing
     , smallMediumText
     , smallText
     , smallTextMono
+    , tinyMediumAllCapsText
     )
 
 import Element exposing (Attribute, Color)
@@ -187,6 +188,18 @@ smallMediumAllCapsText textColor =
         ]
     , Font.size 14
     , Font.letterSpacing 1.2
+    ]
+
+
+tinyMediumAllCapsText : Color -> List (Attribute msg)
+tinyMediumAllCapsText textColor =
+    [ Font.color textColor
+    , Font.family
+        [ fontGTAmericaMedium
+        , Font.sansSerif
+        ]
+    , Font.size 11
+    , Font.letterSpacing 1.1
     ]
 
 
