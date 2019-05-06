@@ -2,9 +2,11 @@ module Page.Project.Header exposing (view)
 
 -- import Element.Font as Font
 
+import Atom.Icon as Icon
 import Element exposing (Element)
 import Element.Background as Background
 import Element.Border as Border
+import Molecule.ProjectMeta as ProjectMeta
 import Page.Project.Actions as Actions
 import Project.Meta as Meta exposing (Meta)
 import Style.Color as Color
@@ -29,54 +31,13 @@ view meta =
             ]
             [ Element.row
                 [ Element.spacing 24
-                , Element.height (Element.px 112)
                 , Element.width <| Element.px 1074
                 ]
-                [ viewLogo
-                , viewMeta (Meta.name meta) (Meta.description meta)
+                [ ProjectMeta.view "https://avatars0.githubusercontent.com/u/48290027?s=144&v=4" (Meta.name meta) "cabal#3gd815h0c6x84hj0..." (Meta.description meta)
                 , viewStats
                 ]
             , Actions.view
             ]
-
-
-viewLogo : Element msg
-viewLogo =
-    Element.el
-        [ Background.color Color.radicleBlue
-        , Element.height (Element.px 72)
-        , Element.width (Element.px 72)
-        , Element.alignTop
-        ]
-    <|
-        Element.el [ Element.centerX, Element.centerY ] <|
-            Element.text "rad"
-
-
-viewMeta : String -> String -> Element msg
-viewMeta name description =
-    Element.column
-        [ Element.spacing 8
-        , Element.width
-            (Element.fill |> Element.maximum 420)
-        , Element.alignTop
-        ]
-        -- Title
-        [ Element.el
-            (Font.bigHeader Color.black)
-          <|
-            Element.text name
-
-        -- Description
-        , Element.paragraph
-            ([ Element.spacing 8
-             , Element.paddingEach { top = 6, right = 0, bottom = 0, left = 0 }
-             ]
-                ++ Font.bodyText Color.black
-            )
-            [ Element.text description
-            ]
-        ]
 
 
 viewStats : Element msg
