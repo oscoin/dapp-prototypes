@@ -20,7 +20,7 @@ view project =
         [ Element.width Element.fill
         , Element.paddingEach { top = 0, right = 0, bottom = 96, left = 0 }
         ]
-        [ Header.view (Project.meta project) (Project.graph project)
+        [ Header.view project
         , Element.column
             [ Element.centerX
             , Element.width <| Element.px 1074

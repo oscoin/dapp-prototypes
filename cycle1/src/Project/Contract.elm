@@ -95,7 +95,7 @@ donationDesc don =
             "Donations to the project get distributed equally between each dependency of the project."
 
         DonationCustom _ _ _ _ ->
-            "Distribute donations to the project between the project fund, maintainers, contributors and dependencies."
+            "Design a custom distribution of the donations to the project between the project fund, maintainers, contributors and/or dependencies."
 
 
 type Reward
