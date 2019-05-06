@@ -1,10 +1,12 @@
 module Page.SignTransaction exposing (Model, Msg(..), init, update, view)
 
 import Atom.Button as Button
+import Atom.Icon as Icon
 import Element exposing (Element)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Events as Events
+import Element.Font
 import KeyPair exposing (KeyPair)
 import Project.Address as Address exposing (Address)
 import Project.Contract as Contract
@@ -70,17 +72,24 @@ view : Model -> ( String, Element Msg )
 view (Model data) =
     ( "sign transaction"
     , Element.column
-        [ Element.height Element.fill
-        , Element.width Element.fill
-        , Element.spacingXY 0 24
+        [ Element.centerX
+        , Element.centerY
+        , Element.height Element.fill
+        , Element.width (Element.fill |> Element.maximum 520)
         ]
         [ Element.el
-            (Font.bigHeaderMono Color.black)
+            ([ Element.width Element.fill
+             , Element.Font.center
+             , Element.paddingXY 0 24
+             , Border.widthEach { top = 0, left = 0, bottom = 1, right = 0 }
+             , Border.color Color.lightGrey
+             ]
+                ++ Font.mediumHeader Color.black
+            )
           <|
             Element.text "Authorize transaction"
         , Element.column
-            [ Element.spacingXY 0 48
-            ]
+            [ Element.width Element.fill ]
           <|
             List.map viewMessage <|
                 Transaction.messages data.transaction
@@ -95,7 +104,7 @@ viewActions { transaction, keyPairs, selectedKeyPair, selectionOpen } =
         dropdown =
             if selectionOpen then
                 Element.el
-                    [ Element.below <| viewKeyPairDropdown keyPairs ]
+                    [ Element.width Element.fill, Element.below <| viewKeyPairDropdown keyPairs ]
                     Element.none
 
             else
@@ -114,25 +123,40 @@ viewActions { transaction, keyPairs, selectedKeyPair, selectionOpen } =
                     KeyPair.toString keyPair
 
                 Nothing ->
-                    "no key pair selected"
+                    "Select the key you want to use to sign this transaction"
     in
     Element.column
-        [ Element.width Element.fill ]
+        [ Element.width Element.fill
+        , Background.color Color.almostWhite
+        , Element.padding 24
+        ]
         -- Keypair dropdown
-        [ Element.el
-            [ Border.color Color.grey
+        [ Element.row
+            [ Element.spacing 24
+            , Border.color Color.lightGrey
             , Border.width 1
+            , Border.rounded 2
+            , Background.color Color.white
+            , Element.height <| Element.px 36
             , Element.pointer
             , Element.width Element.fill
             , Events.onClick selectionMsg
+            , Element.padding 4
             ]
-          <|
-            Element.text selectionText
+            [ Icon.lock Color.grey
+            , Element.el
+                ([ Element.paddingEach { top = 0, left = 8, bottom = 3, right = 0 } ]
+                    ++ Font.bodyText Color.darkGrey
+                )
+              <|
+                Element.text selectionText
+            ]
         , dropdown
 
         -- Buttons
         , Element.row
             [ Element.alignRight
+            , Element.paddingEach { top = 24, left = 0, bottom = 0, right = 0 }
             ]
             [ Button.transparent [ Events.onClick <| Reject transaction ] "Reject"
             , viewAuthAction transaction selectedKeyPair
@@ -153,24 +177,33 @@ viewAuthAction tx selectedKeyPair =
 viewKeyPairDropdown : List KeyPair -> Element Msg
 viewKeyPairDropdown keyPairs =
     Element.column
-        []
+        [ Element.width Element.fill
+        , Border.color Color.lightGrey
+        , Border.width 1
+        , Border.rounded 2
+        , Background.color Color.white
+        , Element.height <| Element.px 36
+        ]
         (List.map viewOption keyPairs)
 
 
 viewOption : KeyPair -> Element Msg
 viewOption keyPair =
-    Element.el
-        [ Background.color Color.white
+    Element.row
+        [ Element.pointer
         , Element.width Element.fill
+        , Events.onClick <| SelectKeyPair keyPair
+        , Element.padding 4
         ]
-    <|
-        Element.el
-            [ Element.pointer
-            , Events.onClick <| SelectKeyPair keyPair
-            ]
-        <|
+        [ Icon.lock Color.pink
+        , Element.el
+            ([ Element.paddingEach { top = 0, left = 8, bottom = 3, right = 0 } ]
+                ++ Font.bodyText Color.darkGrey
+            )
+          <|
             Element.text <|
                 KeyPair.toString keyPair
+        ]
 
 
 viewMessage : Message -> Element msg
@@ -186,8 +219,13 @@ viewMessage message =
     in
     Element.column
         [ Element.width Element.fill
+        , Element.padding 24
         ]
-        [ Element.el (Font.mediumHeader Color.purple) <| Element.text <| Transaction.messageType message
+        [ Element.row
+            []
+            [ Icon.transaction Color.purple
+            , Element.el ([ Element.paddingEach { top = 0, left = 8, bottom = 5, right = 0 } ] ++ Font.mediumBodyText Color.purple) <| Element.text <| Transaction.messageType message
+            ]
         , viewDetail
         ]
 
@@ -195,9 +233,9 @@ viewMessage message =
 viewProjectAddress : Address -> Element msg
 viewProjectAddress address =
     Element.column
-        []
-        [ Element.el (Font.smallText Color.grey) <| Element.text "PROJECT ADDRESS"
-        , Element.el (Font.smallTextMono Color.black) <| Element.text <| Address.string address
+        [ Element.width Element.fill ]
+        [ Element.el ([ Element.paddingEach { top = 10, left = 0, bottom = 4, right = 0 } ] ++ Font.tinyMediumAllCapsText Color.grey) <| Element.text "PROJECT ADDRESS"
+        , Element.el (Font.smallMediumText Color.black) <| Element.text <| Address.string address
         ]
 
 
@@ -227,13 +265,13 @@ viewRuleChange ruleChange =
     Element.column
         [ Element.width Element.fill
         ]
-        [ Element.el (Font.smallText Color.grey) <| Element.text title
+        [ Element.el ([ Element.paddingEach { top = 10, left = 0, bottom = 4, right = 0 } ] ++ Font.tinyMediumAllCapsText Color.grey) <| Element.text title
         , Element.row
             [ Element.width Element.fill
             ]
-            [ Element.text from
-            , Element.el [ Element.centerX ] <| Element.text "->"
-            , Element.el [ Element.alignRight ] <| Element.text to
+            [ Element.el ([] ++ Font.smallMediumText Color.black) <| Element.text from
+            , Element.el [ Element.centerX ] <| Icon.arrow Color.purple
+            , Element.el ([ Element.alignRight ] ++ Font.smallMediumText Color.black) <| Element.text to
             ]
         ]
 
@@ -242,6 +280,7 @@ viewUpdateContractRule : Address -> RuleChange -> Element msg
 viewUpdateContractRule address ruleChange =
     Element.column
         [ Element.spacingXY 0 16
+        , Element.width Element.fill
         ]
         [ viewProjectAddress address
         , viewRuleChange ruleChange
