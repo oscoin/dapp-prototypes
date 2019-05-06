@@ -7,7 +7,6 @@ module Atom.Table exposing
 import Element exposing (Attribute, Element)
 import Element.Background as Background
 import Element.Border as Border
-import Element.Font
 import Style.Color as Color
 import Style.Font as Font
 

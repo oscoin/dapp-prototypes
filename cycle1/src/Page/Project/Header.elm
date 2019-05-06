@@ -58,7 +58,8 @@ viewStats graph =
         , Border.rounded 2
         , Border.width 1
         , Element.alignRight
-        , Element.height Element.fill
+        , Element.alignTop
+        , Element.height (Element.fill |> Element.maximum 112)
         , Element.width (Element.px 364)
         , Background.color Color.white
         ]
