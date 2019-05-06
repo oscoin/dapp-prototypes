@@ -1,7 +1,9 @@
-module Page.SignTransaction exposing (view)
+module Page.SignTransaction exposing (Model, Msg(..), init, update, view)
 
 import Atom.Button as Button
 import Element exposing (Element)
+import Element.Background as Background
+import Element.Border as Border
 import Element.Events as Events
 import KeyPair exposing (KeyPair)
 import Project.Address as Address exposing (Address)
@@ -12,11 +14,60 @@ import Transaction exposing (Message(..), RuleChange(..), Transaction)
 
 
 
+-- MODEL
+
+
+type alias Data =
+    { transaction : Transaction
+    , keyPairs : List KeyPair
+    , selectedKeyPair : Maybe KeyPair
+    , selectionOpen : Bool
+    }
+
+
+type Model
+    = Model Data
+
+
+init : Transaction -> List KeyPair -> Model
+init transaction keyPairs =
+    Model (Data transaction keyPairs Nothing False)
+
+
+
+-- UPDATE
+
+
+type Msg
+    = Authorize Transaction KeyPair
+    | Reject Transaction
+    | CloseDropdown
+    | OpenDropdown
+    | SelectKeyPair KeyPair
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg (Model data) =
+    case msg of
+        CloseDropdown ->
+            ( Model { data | selectionOpen = False }, Cmd.none )
+
+        OpenDropdown ->
+            ( Model { data | selectionOpen = True }, Cmd.none )
+
+        SelectKeyPair keyPair ->
+            ( Model { data | selectedKeyPair = Just keyPair, selectionOpen = False }, Cmd.none )
+
+        _ ->
+            ( Model data, Cmd.none )
+
+
+
 -- VIEW
 
 
-view : msg -> msg -> KeyPair -> Transaction -> ( String, Element msg )
-view rejectMsg authorizeMsg keyPair transaction =
+view : Model -> ( String, Element Msg )
+view (Model data) =
     ( "sign transaction"
     , Element.column
         [ Element.height Element.fill
@@ -27,37 +78,99 @@ view rejectMsg authorizeMsg keyPair transaction =
             (Font.bigHeaderMono Color.black)
           <|
             Element.text "Authorize transaction"
-        , viewFlow keyPair
         , Element.column
             [ Element.spacingXY 0 48
             ]
           <|
             List.map viewMessage <|
-                Transaction.messages transaction
-        , viewActions rejectMsg authorizeMsg
+                Transaction.messages data.transaction
+        , viewActions <| data
         ]
     )
 
 
-viewActions : msg -> msg -> Element msg
-viewActions rejectMsg authorizeMsg =
-    Element.row
-        []
-        [ Button.transparent [ Events.onClick rejectMsg ] "Reject"
-        , Button.accent [ Events.onClick authorizeMsg ] "Authorize transaction"
+viewActions : Data -> Element Msg
+viewActions { transaction, keyPairs, selectedKeyPair, selectionOpen } =
+    let
+        dropdown =
+            if selectionOpen then
+                Element.el
+                    [ Element.below <| viewKeyPairDropdown keyPairs ]
+                    Element.none
+
+            else
+                Element.none
+
+        selectionMsg =
+            if selectionOpen then
+                CloseDropdown
+
+            else
+                OpenDropdown
+
+        selectionText =
+            case selectedKeyPair of
+                Just keyPair ->
+                    KeyPair.toString keyPair
+
+                Nothing ->
+                    "no key pair selected"
+    in
+    Element.column
+        [ Element.width Element.fill ]
+        -- Keypair dropdown
+        [ Element.el
+            [ Border.color Color.grey
+            , Border.width 1
+            , Element.pointer
+            , Element.width Element.fill
+            , Events.onClick selectionMsg
+            ]
+          <|
+            Element.text selectionText
+        , dropdown
+
+        -- Buttons
+        , Element.row
+            [ Element.alignRight
+            ]
+            [ Button.transparent [ Events.onClick <| Reject transaction ] "Reject"
+            , viewAuthAction transaction selectedKeyPair
+            ]
         ]
 
 
-viewFlow : KeyPair -> Element msg
-viewFlow keyPair =
-    Element.row
-        [ Element.spacingXY 24 0
+viewAuthAction : Transaction -> Maybe KeyPair -> Element Msg
+viewAuthAction tx selectedKeyPair =
+    case selectedKeyPair of
+        Just keyPair ->
+            Button.accent [ Events.onClick <| Authorize tx keyPair ] "Authorize transaction"
+
+        Nothing ->
+            Button.inactive [] "Authorize transaction"
+
+
+viewKeyPairDropdown : List KeyPair -> Element Msg
+viewKeyPairDropdown keyPairs =
+    Element.column
+        []
+        (List.map viewOption keyPairs)
+
+
+viewOption : KeyPair -> Element Msg
+viewOption keyPair =
+    Element.el
+        [ Background.color Color.white
         , Element.width Element.fill
         ]
-        [ Element.text <| KeyPair.toString keyPair
-        , Element.el [ Element.centerX ] <| Element.text "=>"
-        , Element.el [ Element.alignRight ] <| Element.text "oscoin-ledger"
-        ]
+    <|
+        Element.el
+            [ Element.pointer
+            , Events.onClick <| SelectKeyPair keyPair
+            ]
+        <|
+            Element.text <|
+                KeyPair.toString keyPair
 
 
 viewMessage : Message -> Element msg

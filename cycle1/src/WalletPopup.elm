@@ -59,7 +59,7 @@ flagDecoder =
 type Model
     = KeyPairList KeyPair
     | KeyPairSetup Page.KeyPairSetup.Model
-    | ShowTransaction KeyPair Transaction
+    | ShowTransaction Page.SignTransaction.Model
     | NotFound
 
 
@@ -87,7 +87,7 @@ init flags =
                     KeyPairList keyPair
 
                 ( Sign, Just keyPair, Just transaction ) ->
-                    ShowTransaction keyPair transaction
+                    ShowTransaction <| Page.SignTransaction.init transaction [ keyPair ]
 
                 ( _, _, _ ) ->
                     NotFound
@@ -134,38 +134,14 @@ subscriptions _ =
 
 
 type Msg
-    = AuthorizeTransaction
-    | RejectTransaction
-    | KeyPairCreated (Maybe KeyPair)
+    = KeyPairCreated (Maybe KeyPair)
     | PageKeyPairSetup Page.KeyPairSetup.Msg
+    | PageSignTransaction Page.SignTransaction.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case ( Debug.log "WalletPopup.Msg" msg, Debug.log "WalletPopup.Model" model ) of
-        -- Communicate back when the transaction is authorized.
-        ( AuthorizeTransaction, ShowTransaction keyPair transaction ) ->
-            ( model
-            , authorizeTransaction
-                { keyPairId = KeyPair.id keyPair
-                , hash = Transaction.hash transaction
-                }
-            )
-
-        -- Ignore transaction authorization on other pages.
-        ( AuthorizeTransaction, _ ) ->
-            ( model, Cmd.none )
-
-        -- Communicate back when the transaction is authorized.
-        ( RejectTransaction, ShowTransaction keyPair transaction ) ->
-            ( model
-            , rejectTransaction <| Transaction.hash transaction
-            )
-
-        -- Ignore transaction rejection on other pages.
-        ( RejectTransaction, _ ) ->
-            ( model, Cmd.none )
-
         -- Relay created key pair event to the KeyPairSetup page.
         ( KeyPairCreated maybeKeyPair, KeyPairSetup pageModel ) ->
             case maybeKeyPair of
@@ -208,6 +184,39 @@ update msg model =
         ( PageKeyPairSetup _, _ ) ->
             ( model, Cmd.none )
 
+        -- Relay sub page messages to the SignTransaction page.
+        ( PageSignTransaction subCmd, ShowTransaction oldModel ) ->
+            let
+                ( pageModel, pageCmd ) =
+                    Page.SignTransaction.update subCmd oldModel
+
+                portCmd =
+                    case subCmd of
+                        -- Communicate back when the transaction is authorized.
+                        Page.SignTransaction.Authorize transaction keyPair ->
+                            authorizeTransaction
+                                { keyPairId = KeyPair.id keyPair
+                                , hash = Transaction.hash transaction
+                                }
+
+                        -- Communicate back when the transaction is authorized.
+                        Page.SignTransaction.Reject transaction ->
+                            rejectTransaction <| Transaction.hash transaction
+
+                        _ ->
+                            Cmd.none
+            in
+            ( ShowTransaction pageModel
+            , Cmd.batch
+                [ Cmd.map PageSignTransaction <| pageCmd
+                , portCmd
+                ]
+            )
+
+        -- Ignore page specific messages if it's not our current page.
+        ( PageSignTransaction _, _ ) ->
+            ( model, Cmd.none )
+
 
 
 -- VIEW
@@ -230,8 +239,14 @@ view model =
                     , Element.map PageKeyPairSetup <| pageView
                     )
 
-                ShowTransaction keyPair transaction ->
-                    Page.SignTransaction.view RejectTransaction AuthorizeTransaction keyPair transaction
+                ShowTransaction pageModel ->
+                    let
+                        ( pageTitle, pageView ) =
+                            Page.SignTransaction.view pageModel
+                    in
+                    ( pageTitle
+                    , Element.map PageSignTransaction <| pageView
+                    )
 
                 NotFound ->
                     Page.NotFound.view
