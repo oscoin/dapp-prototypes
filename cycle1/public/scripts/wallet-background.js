@@ -115,7 +115,18 @@ function keyPairSetupComplete() {
 }
 
 function getTransaction(hash) {
+  console.log(transactions[hash])
   return transactions[hash]
+}
+
+function rejectTransaction(hash) {
+  console.log('rejectTransaction.hash', hash)
+
+  browser.tabs.sendMessage(getCurrentTab().id, {
+    direction: 'wallet-to-page',
+    type: 'transactionRejected',
+    hash: hash,
+  })
 }
 
 function signTransaction(hash, keyPairId) {
@@ -135,6 +146,7 @@ window.createKeyPair = createKeyPair
 window.getKeyPair = getKeyPair
 window.keyPairSetupComplete = keyPairSetupComplete
 window.getTransaction = getTransaction
+window.rejectTransaction = rejectTransaction
 window.signTransaction = signTransaction
 
 // Helpers

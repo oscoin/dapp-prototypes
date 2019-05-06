@@ -11,21 +11,22 @@
     <script>
       let projectAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd';
       let maybeKeyPair = { id: 'fakeID', pubKey: 'a23hdj23dd2hekxsd' };
+      let cabalAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd';
       let maybeTransaction = {
         hash:
-          'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
+          'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa4',
         fee: 1038,
-        state: 'unconfirmed',
+        state: { type: 'confirmed' },
         messages: [
-          { type: 'project-registration', address: projectAddr },
+          { type: 'project-registration', address: cabalAddr },
           {
             type: 'update-contract-rule',
-            address: projectAddr,
+            address: cabalAddr,
             ruleChange: { type: 'reward', old: 'EqualDependency', new: 'Burn' },
           },
           {
             type: 'update-contract-rule',
-            address: projectAddr,
+            address: cabalAddr,
             ruleChange: {
               type: 'donation',
               old: 'FundSaving',
@@ -34,7 +35,7 @@
           },
           {
             type: 'update-contract-rule',
-            address: projectAddr,
+            address: cabalAddr,
             ruleChange: {
               type: 'role',
               old: 'MaintainerSingleSigner',
@@ -48,10 +49,7 @@
         flags: {
           maybeKeyPair,
           maybeTransaction,
-          location: {
-            hash: window.location.hash,
-            path: window.location.pathname,
-          },
+          page: 'sign',
         },
         node: document.getElementById('popup'),
       });

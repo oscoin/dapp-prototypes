@@ -15,8 +15,8 @@ import Transaction exposing (Message(..), RuleChange(..), Transaction)
 -- VIEW
 
 
-view : msg -> KeyPair -> Transaction -> ( String, Element msg )
-view signedMsg keyPair transaction =
+view : msg -> msg -> KeyPair -> Transaction -> ( String, Element msg )
+view rejectMsg authorizeMsg keyPair transaction =
     ( "sign transaction"
     , Element.column
         [ Element.height Element.fill
@@ -34,20 +34,17 @@ view signedMsg keyPair transaction =
           <|
             List.map viewMessage <|
                 Transaction.messages transaction
-        , viewActions signedMsg
+        , viewActions rejectMsg authorizeMsg
         ]
     )
 
 
-viewActions : msg -> Element msg
-viewActions authorizeMsg =
+viewActions : msg -> msg -> Element msg
+viewActions rejectMsg authorizeMsg =
     Element.row
         []
-        [ Button.transparent [] "Reject"
-        , Element.el
-            [ Events.onClick authorizeMsg ]
-          <|
-            Button.accent [] "Authorize transaction"
+        [ Button.transparent [ Events.onClick rejectMsg ] "Reject"
+        , Button.accent [ Events.onClick authorizeMsg ] "Authorize transaction"
         ]
 
 

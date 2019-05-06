@@ -32,6 +32,16 @@
     window.close()
   })
 
+  // Listen to rejectTransaction events and signal the wallet that the user
+  // doesn't want to sign this transaction.
+  popup.ports.rejectTransaction.subscribe(function(hash) {
+    console.log('ports.rejectTransaction', hash)
+
+    // Signal to reject the transaction and close.
+    background.rejectTransaction(hash)
+    window.close()
+  })
+
   // Listen to keyPairCreate events and signal the wallet to create one with the
   // given identifier.
   popup.ports.keyPairCreate.subscribe(function(id) {
