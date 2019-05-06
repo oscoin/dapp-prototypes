@@ -13,8 +13,6 @@ module Style.Color exposing
     , orange
     , pink
     , purple
-    , radicleBlue
-    , radicleGreen
     , red
     , teal
     , toCssString
@@ -135,13 +133,3 @@ pink =
 bordeaux : Color
 bordeaux =
     rgb255 207 56 107
-
-
-radicleBlue : Color
-radicleBlue =
-    rgb255 85 85 255
-
-
-radicleGreen : Color
-radicleGreen =
-    rgb255 85 255 85
