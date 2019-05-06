@@ -119,6 +119,9 @@ init flags url navKey =
 
         maybeOverlay =
             overlay page maybeWallet maybeKeyPair pendingTransactions
+
+        cmd =
+            cmdFromOverlay maybeOverlay
     in
     ( { address = address
       , keyPair = maybeKeyPair
@@ -131,7 +134,7 @@ init flags url navKey =
       , url = url
       , wallet = maybeWallet
       }
-    , Cmd.none
+    , cmd
     )
 
 
