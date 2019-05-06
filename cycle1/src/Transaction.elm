@@ -270,7 +270,7 @@ encodeRuleChange ruleChange =
 type State
     = WaitToAuthorize
     | Unauthorized
-    | Denied
+    | Rejected
     | Unconfirmed Int
     | Confirmed
 
@@ -284,7 +284,7 @@ stateString s =
         Unauthorized ->
             "unauthorized"
 
-        Denied ->
+        Rejected ->
             "denied"
 
         Unconfirmed _ ->
@@ -303,8 +303,8 @@ stateText s =
         Unauthorized ->
             "Unauthorized"
 
-        Denied ->
-            "Denied"
+        Rejected ->
+            "Rejected"
 
         Unconfirmed blocks ->
             if blocks < 1 then
@@ -333,7 +333,7 @@ stateDecoder =
     Decode.oneOf
         [ when typeDecoder (is "wait-to-authorize") <| Decode.succeed WaitToAuthorize
         , when typeDecoder (is "unauthorized") <| Decode.succeed Unauthorized
-        , when typeDecoder (is "denied") <| Decode.succeed Denied
+        , when typeDecoder (is "denied") <| Decode.succeed Rejected
         , when typeDecoder (is "unconfirmed") unconfirmedDecoder
         , when typeDecoder (is "confirmed") <| Decode.succeed Confirmed
         ]

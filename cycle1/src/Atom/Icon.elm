@@ -1,6 +1,7 @@
 module Atom.Icon exposing
     ( alert
     , copy
+    , cross
     , donation
     , initialCircle
     , largeLogoCircle
@@ -16,7 +17,6 @@ import Html exposing (..)
 import Project.Contract as Contract
 import Project.Funds as Funds
 import Style.Color as Color
-import Style.Font as Font
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 

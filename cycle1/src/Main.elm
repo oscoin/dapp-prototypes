@@ -205,6 +205,7 @@ type Msg
     | RegisterProject Project
     | KeyPairCreated (Maybe KeyPair)
     | KeyPairFetched (Maybe KeyPair)
+    | DismissTransaction Transaction.Hash
     | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
     | WalletWebExtPresent ()
 
@@ -317,6 +318,13 @@ update msg model =
 
         KeyPairFetched maybeKeyPair ->
             ( { model | keyPair = maybeKeyPair }, Cmd.none )
+
+        DismissTransaction hash ->
+            let
+                txs =
+                    List.filter (\tx -> Transaction.hash tx /= hash) model.pendingTransactions
+            in
+            ( { model | pendingTransactions = txs }, Cmd.none )
 
         TransactionAuthorized (Ok _) ->
             case model.overlay of
@@ -469,7 +477,7 @@ view model =
                 [ Element.map TopBarMsg <| TopBar.view model.topBarModel rUrl
                 , viewWallet model.wallet
                 , viewKeyPair model.keyPair
-                , Molecule.Transaction.viewProgress model.pendingTransactions
+                , Molecule.Transaction.viewProgress DismissTransaction model.pendingTransactions
                 , pageContent
                 , Footer.view
                 ]
