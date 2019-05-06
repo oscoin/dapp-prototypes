@@ -3,6 +3,7 @@ module Molecule.ProjectMeta exposing (view)
 import Atom.Icon as Icon
 import Element exposing (Element)
 import Element.Background as Background
+import Element.Font
 import Project as Project exposing (Project)
 import Project.Address as Address exposing (Address)
 import Project.Meta as Meta exposing (Meta)
@@ -76,10 +77,25 @@ viewMeta address meta =
         -- Description
         , Element.paragraph
             ([ Element.spacing 8
-             , Element.paddingEach { top = 6, right = 0, bottom = 0, left = 0 }
+             , Element.paddingEach { top = 6, right = 0, bottom = 12, left = 0 }
              ]
                 ++ Font.bodyText Color.black
             )
             [ Element.text <| Meta.description meta
+            ]
+        , Element.row
+            [ Element.spacing 24
+            , Element.paddingEach { top = 0, right = 0, bottom = 24, left = 0 }
+            ]
+            [ Element.el
+                ([ Element.pointer, Element.mouseOver [ Element.Font.color Color.blue ] ] ++ Font.mediumBodyText Color.darkGrey)
+              <|
+                Element.text <|
+                    Meta.websiteUrl meta
+            , Element.el
+                ([ Element.pointer, Element.mouseOver [ Element.Font.color Color.blue ] ] ++ Font.mediumBodyText Color.darkGrey)
+              <|
+                Element.text <|
+                    Meta.codeHostUrl meta
             ]
         ]
