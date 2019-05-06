@@ -197,6 +197,7 @@ view (Model step project fieldError) =
         ]
         [ Element.el
             ([ Element.centerX
+             , Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
              ]
                 ++ Font.bigHeader Color.black
             )
