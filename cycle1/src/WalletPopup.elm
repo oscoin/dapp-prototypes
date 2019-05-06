@@ -167,18 +167,14 @@ update msg model =
             ( model, Cmd.none )
 
         -- Relay created key pair event to the KeyPairSetup page.
-        ( KeyPairCreated maybeKeyPair, KeyPairSetup oldModel ) ->
+        ( KeyPairCreated maybeKeyPair, KeyPairSetup pageModel ) ->
             case maybeKeyPair of
                 Nothing ->
                     ( model, Cmd.none )
 
                 Just keyPair ->
-                    let
-                        ( pageModel, pageCmd ) =
-                            Page.KeyPairSetup.updateCreated oldModel keyPair
-                    in
                     ( KeyPairSetup pageModel
-                    , Cmd.map PageKeyPairSetup <| pageCmd
+                    , keyPairSetupComplete ()
                     )
 
         -- Ignore key pair create events for all other pages.
@@ -193,10 +189,6 @@ update msg model =
 
                 portCmd =
                     case subCmd of
-                        -- Call out to our port once the key setup is complete.
-                        Page.KeyPairSetup.Complete ->
-                            keyPairSetupComplete ()
-
                         -- Call out to our port to signal key creation, the wallet backend
                         -- should take care of persisting it.
                         Page.KeyPairSetup.Create id ->
@@ -219,16 +211,6 @@ update msg model =
 
 
 -- VIEW
-
-
-viewHeader : Element.Element msg
-viewHeader =
-    Element.el
-        ([ Element.centerX ]
-            ++ Font.bigHeader Color.black
-        )
-    <|
-        Element.text "oscoin wallet"
 
 
 view : Model -> Browser.Document Msg
@@ -256,21 +238,7 @@ view model =
     in
     { title = String.join " <> " [ title, "oscoin wallet" ]
     , body =
-        [ Element.layout [] <|
-            Element.column
-                [ Element.spacing 42
-                , Element.height
-                    (Element.fill |> Element.minimum 564)
-                , Element.width
-                    (Element.fill |> Element.minimum 420)
-                ]
-                [ viewHeader
-                , Element.el
-                    [ Element.centerX ]
-                  <|
-                    content
-                ]
-        ]
+        [ Element.layout [] <| content ]
     }
 
 
