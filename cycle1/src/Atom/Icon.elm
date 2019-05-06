@@ -1,5 +1,6 @@
 module Atom.Icon exposing
     ( alert
+    , checkbox
     , copy
     , cross
     , donation
@@ -51,7 +52,7 @@ largeLogoCircle bgColor =
             , fill "none"
             ]
             [ circle
-                [ cx "12"
+                [ cx "24"
                 , cy "24"
                 , r "23"
                 , stroke (Color.toCssString bgColor)
@@ -435,3 +436,35 @@ cross color =
                 ]
                 []
             ]
+
+
+checkbox : Element.Color -> Bool -> Element msg
+checkbox color checked =
+    let
+        child =
+            if checked then
+                Svg.path
+                    [ d "M8 8L16 16"
+                    , fill (Color.toCssString color)
+                    , fillRule "evenodd"
+                    , clipRule "evenodd"
+                    , d "M16 5C16.7448 5 17.4263 5.27144 17.9508 5.72079L16.5237 7.14791C16.3714 7.05411 16.192 7 16 7H8C7.44772 7 7 7.44772 7 8V11.4995V11.5005V16C7 16.5523 7.44772 17 8 17H16C16.5523 17 17 16.5523 17 16V12.3284L19 10.3284V16C19 17.6569 17.6569 19 16 19H8C6.34315 19 5 17.6569 5 16V8C5 6.34315 6.34315 5 8 5H16ZM12.7071 15.2071L20.2071 7.70711C20.5976 7.31658 20.5976 6.68342 20.2071 6.29289C19.8166 5.90237 19.1834 5.90237 18.7929 6.29289L12 13.0858L9.70711 10.7929C9.31658 10.4024 8.68342 10.4024 8.29289 10.7929C7.90237 11.1834 7.90237 11.8166 8.29289 12.2071L11.2929 15.2071C11.6834 15.5976 12.3166 15.5976 12.7071 15.2071Z"
+                    ]
+                    []
+
+            else
+                rect
+                    [ x "6"
+                    , y "6"
+                    , width "12"
+                    , height "12"
+                    , rx "2"
+                    , stroke (Color.toCssString color)
+                    , strokeWidth "2"
+                    ]
+                    []
+    in
+    Element.html <|
+        svg
+            [ width "24", height "24", viewBox "0 0 24 24", fill "none" ]
+            [ child ]
