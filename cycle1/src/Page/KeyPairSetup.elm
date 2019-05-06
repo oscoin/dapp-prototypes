@@ -106,7 +106,12 @@ viewInitial =
         , Element.centerY
         , Element.width (Element.fill |> Element.maximum 440)
         ]
-        [ Element.el [ Element.centerX, Element.paddingXY 0 32 ] <| Icon.largeLogoCircle Color.black
+        [ Element.el
+            [ Element.centerX
+            , Element.paddingEach { top = 0, left = 0, bottom = 32, right = 0 }
+            ]
+          <|
+            Icon.largeLogoCircle Color.black
         , Element.el
             ([ Element.Font.center
              , Element.width Element.fill
@@ -155,7 +160,12 @@ viewSetup id =
         , Element.centerY
         , Element.width (Element.fill |> Element.maximum 440)
         ]
-        [ Element.el [ Element.centerX, Element.paddingXY 0 32 ] <| Icon.largeLogoCircle Color.black
+        [ Element.el
+            [ Element.centerX
+            , Element.paddingEach { top = 0, left = 0, bottom = 32, right = 0 }
+            ]
+          <|
+            Icon.largeLogoCircle Color.black
         , Element.el
             ([ Element.Font.center
              , Element.width Element.fill
@@ -221,7 +231,12 @@ viewPassphrase id checked =
         , Element.centerY
         , Element.width (Element.fill |> Element.maximum 440)
         ]
-        [ Element.el [ Element.centerX, Element.paddingXY 0 32 ] <| Icon.largeLogoCircle Color.black
+        [ Element.el
+            [ Element.centerX
+            , Element.paddingEach { top = 0, left = 0, bottom = 32, right = 0 }
+            ]
+          <|
+            Icon.largeLogoCircle Color.black
         , Element.el
             ([ Element.Font.center
              , Element.width Element.fill
