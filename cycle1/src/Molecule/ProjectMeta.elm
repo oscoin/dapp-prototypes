@@ -16,7 +16,7 @@ view project =
     Element.row
         [ Element.spacing 24, Element.width Element.fill ]
         [ viewLogo <| Meta.imageUrl <| Project.meta project
-        , viewMeta (Project.address project) (Project.meta project)
+        , viewMeta project
         ]
 
 
@@ -40,11 +40,14 @@ viewLogo imgUrl =
             }
 
 
-viewMeta : Address -> Meta -> Element msg
-viewMeta address meta =
+viewMeta : Project -> Element msg
+viewMeta project =
     let
         addr =
-            (String.slice 0 15 <| Address.string address) ++ "..."
+            (String.slice 0 15 <| Project.prettyAddress project) ++ "..."
+
+        meta =
+            Project.meta project
     in
     Element.column
         [ Element.spacing 8
