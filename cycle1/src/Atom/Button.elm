@@ -20,57 +20,79 @@ import Style.Font as Font
 -- VIEW
 
 
-primary : List (Attribute msg) -> String -> Element msg
-primary attrs btnText =
-    stylePointer attrs Color.purple Color.white (Color.alpha Color.purple 0.85) btnText
+primary : List (Attribute msg) -> List (Element msg) -> Element msg
+primary attrs children =
+    stylePointer Color.purple Color.white (Color.alpha Color.purple 0.85) attrs children
 
 
-secondary : List (Attribute msg) -> String -> Element msg
-secondary attrs btnText =
-    stylePointer attrs Color.lightGrey Color.darkGrey (Color.alpha Color.lightGrey 0.85) btnText
+secondary : List (Attribute msg) -> List (Element msg) -> Element msg
+secondary attrs children =
+    stylePointer Color.lightGrey Color.darkGrey (Color.alpha Color.lightGrey 0.85) attrs children
 
 
-inactive : List (Attribute msg) -> String -> Element msg
-inactive attrs btnText =
-    style attrs Color.lightGrey Color.grey Color.lightGrey btnText
+inactive : List (Attribute msg) -> List (Element msg) -> Element msg
+inactive attrs children =
+    style Color.lightGrey Color.grey Color.lightGrey attrs children
 
 
-accent : List (Attribute msg) -> String -> Element msg
-accent attrs btnText =
-    stylePointer attrs Color.pink Color.white (Color.alpha Color.pink 0.85) btnText
+accent : List (Attribute msg) -> List (Element msg) -> Element msg
+accent attrs children =
+    stylePointer Color.pink Color.white (Color.alpha Color.pink 0.85) attrs children
 
 
-secondaryAccent : List (Attribute msg) -> String -> Element msg
-secondaryAccent attrs btnText =
-    stylePointer attrs Color.green Color.white (Color.alpha Color.green 0.85) btnText
+secondaryAccent : List (Attribute msg) -> List (Element msg) -> Element msg
+secondaryAccent attrs children =
+    stylePointer Color.green Color.white (Color.alpha Color.green 0.85) attrs children
 
 
-custom : List (Attribute msg) -> Element.Color -> Element.Color -> String -> Element msg
-custom attrs color textColor btnText =
-    stylePointer attrs color textColor (Color.alpha color 0.85) btnText
+custom :
+    Element.Color
+    -> Element.Color
+    -> List (Attribute msg)
+    -> List (Element msg)
+    -> Element msg
+custom color textColor attrs children =
+    stylePointer color textColor (Color.alpha color 0.85) attrs children
 
 
-transparent : List (Attribute msg) -> String -> Element msg
-transparent attrs btnText =
-    stylePointer attrs (Color.alpha Color.white 0) Color.darkGrey (Color.alpha Color.almostWhite 0.5) btnText
+transparent : List (Attribute msg) -> List (Element msg) -> Element msg
+transparent attrs children =
+    stylePointer
+        (Color.alpha Color.white 0)
+        Color.darkGrey
+        (Color.alpha Color.almostWhite 0.5)
+        attrs
+        children
 
 
-stylePointer : List (Attribute msg) -> Element.Color -> Element.Color -> Element.Color -> String -> Element msg
-stylePointer customAttrs bgColor textColor hoverColor btnText =
-    style ([ Element.pointer ] ++ customAttrs) bgColor textColor hoverColor btnText
+stylePointer :
+    Element.Color
+    -> Element.Color
+    -> Element.Color
+    -> List (Attribute msg)
+    -> List (Element msg)
+    -> Element msg
+stylePointer bgColor textColor hoverColor attrs children =
+    style bgColor textColor hoverColor (Element.pointer :: attrs) children
 
 
-style : List (Attribute msg) -> Element.Color -> Element.Color -> Element.Color -> String -> Element msg
-style customAttr bgColor textColor hoverColor btnText =
-    Element.el
+style :
+    Element.Color
+    -> Element.Color
+    -> Element.Color
+    -> List (Attribute msg)
+    -> List (Element msg)
+    -> Element msg
+style bgColor textColor hoverColor attr children =
+    Element.row
         ([ Background.color bgColor
          , Border.rounded 2
-         , Element.paddingEach { top = 9, right = 16, bottom = 11, left = 16 }
          , Element.mouseOver [ Background.color hoverColor ]
+         , Element.paddingEach { top = 9, right = 16, bottom = 11, left = 16 }
+         , Element.spacingXY 14 0
          , Element.Font.center
          ]
             ++ Font.mediumBodyText textColor
-            ++ customAttr
+            ++ attr
         )
-    <|
-        Element.text btnText
+        children

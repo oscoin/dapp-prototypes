@@ -54,16 +54,14 @@ viewListItem stepText helperText =
     Element.column
         []
         [ Element.el
-            ([ Element.paddingEach { top = 10, right = 0, bottom = 0, left = 10 }
-             ]
-                ++ Font.mediumBodyText Color.black
+            (Element.paddingEach { top = 10, right = 0, bottom = 0, left = 10 }
+                :: Font.mediumBodyText Color.black
             )
           <|
             Element.text stepText
         , Element.el
-            ([ Element.paddingEach { top = 10, right = 0, bottom = 0, left = 20 }
-             ]
-                ++ Font.bodyText Color.darkGrey
+            (Element.paddingEach { top = 10, right = 0, bottom = 0, left = 20 }
+                :: Font.bodyText Color.darkGrey
             )
           <|
             Element.text helperText
@@ -97,9 +95,8 @@ viewInfo backUrl =
                 [ Element.text "Welcome to open source coin"
                 ]
             , Element.paragraph
-                ([ Element.width (Element.px 300)
-                 ]
-                    ++ Font.bodyText Color.black
+                (Element.width (Element.px 300)
+                    :: Font.bodyText Color.black
                 )
                 [ Element.text "For you to be able to register your project you'll need a few things:" ]
             , Element.paragraph
@@ -112,9 +109,8 @@ viewInfo backUrl =
                     "2. Set up your oscoin wallet key pair."
                     "The key pair let's you securely access your account."
                 , Element.el
-                    ([ Element.paddingEach { top = 0, right = 0, bottom = 0, left = 20 }
-                     ]
-                        ++ Font.smallLinkText Color.purple
+                    (Element.paddingEach { top = 0, right = 0, bottom = 0, left = 20 }
+                        :: Font.smallLinkText Color.purple
                     )
                   <|
                     Element.text "Already have keys"
@@ -134,7 +130,7 @@ viewInfo backUrl =
                     ++ Font.mediumBodyText Color.darkGrey
                 )
               <|
-                { label = Button.transparent [] "Cancel"
+                { label = Button.transparent [] [ Element.text "Cancel" ]
                 , url = backUrl
                 }
             , Element.el
@@ -142,7 +138,7 @@ viewInfo backUrl =
                 , Events.onClick MoveToPick
                 ]
               <|
-                Button.accent [] "Get Started"
+                Button.accent [] [ Element.text "Get Started" ]
             ]
         ]
 
@@ -168,11 +164,28 @@ viewPick =
             [ Element.link
                 [ Element.width Element.fill ]
                 { url = "https://addons.mozilla.org/en-US/firefox/addon/oscoin-devnet-wallet/"
-                , label = Button.custom [ Element.width Element.fill ] Color.pink Color.white "Firefox add-on"
+                , label =
+                    Button.custom
+                        Color.pink
+                        Color.white
+                        [ Element.width Element.fill ]
+                        [ Element.text "Firefox add-on" ]
                 }
-            , Button.custom [ Element.width Element.fill ] Color.blue Color.white "Mobile app"
-            , Button.custom [ Element.width Element.fill ] Color.green Color.white "Ledger Nano S"
-            , Button.custom [ Element.width Element.fill ] Color.bordeaux Color.white "macOS app"
+            , Button.custom
+                Color.blue
+                Color.white
+                [ Element.width Element.fill ]
+                [ Element.text "Mobile app" ]
+            , Button.custom
+                Color.green
+                Color.white
+                [ Element.width Element.fill ]
+                [ Element.text "Ledger Nano S" ]
+            , Button.custom
+                Color.bordeaux
+                Color.white
+                [ Element.width Element.fill ]
+                [ Element.text "macOS app" ]
             ]
         , Element.column
             [ Background.color Color.almostWhite
@@ -182,9 +195,8 @@ viewPick =
             , Border.roundEach { topLeft = 0, topRight = 0, bottomLeft = 4, bottomRight = 4 }
             ]
             [ Element.paragraph
-                ([ Element.paddingEach { top = 0, right = 0, bottom = 16, left = 0 }
-                 ]
-                    ++ Font.mediumBodyText Color.darkGrey
+                (Element.paddingEach { top = 0, right = 0, bottom = 16, left = 0 }
+                    :: Font.mediumBodyText Color.darkGrey
                 )
                 [ Element.text "What's the difference between the wallets" ]
             , Element.paragraph (Font.bodyText Color.darkGrey) [ Element.text "The different wallets have different levels of security. If you're not sure which one is best for you, we recommend you start with the browser-extension. It's a good start and already very secure." ]

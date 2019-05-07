@@ -1,7 +1,6 @@
 module Page.Project.GetStarted exposing (view)
 
 import Atom.Button as Button
-import Atom.Heading as Heading
 import Atom.Icon as Icon
 import Element exposing (Element)
 import Element.Background as Background
@@ -53,9 +52,8 @@ view project =
             ]
             [ Element.el ([] ++ Font.mediumBodyText Color.black) <| Element.text "First time user"
             , Element.paragraph
-                ([ Element.width Element.fill
-                 ]
-                    ++ Font.bodyText Color.darkGrey
+                (Element.width Element.fill
+                    :: Font.bodyText Color.darkGrey
                 )
                 [ Element.text "In order to run any oscoin command the osc tool must be present, which can be acquired through brew if on macos"
                 ]
@@ -67,7 +65,7 @@ view project =
                 , Element.paddingXY 16 0
                 ]
                 [ Element.el ([] ++ Font.smallTextMono Color.black) <| Element.text "$ brew install oscoin-cli"
-                , Button.transparent [ Element.alignRight ] "copy"
+                , Button.transparent [ Element.alignRight ] [ Element.text "copy" ]
                 ]
             , Element.paragraph
                 ([ Element.width Element.fill
@@ -85,7 +83,7 @@ view project =
                 , Element.paddingXY 16 0
                 ]
                 [ Element.el ([] ++ Font.smallTextMono Color.black) <| Element.text "$ osc setup"
-                , Button.transparent [ Element.alignRight ] "copy"
+                , Button.transparent [ Element.alignRight ] [ Element.text "copy" ]
                 ]
             ]
         , Element.column
@@ -95,9 +93,8 @@ view project =
             ]
             [ Element.el ([] ++ Font.mediumBodyText Color.black) <| Element.text "You’ve done this before"
             , Element.paragraph
-                ([ Element.width Element.fill
-                 ]
-                    ++ Font.bodyText Color.darkGrey
+                (Element.width Element.fill
+                    :: Font.bodyText Color.darkGrey
                 )
                 [ Element.text "Open your project in the terminal and run the checkpoint command. It will automatically detect support package manager manifest files"
                 ]
@@ -109,7 +106,7 @@ view project =
                 , Element.paddingXY 16 0
                 ]
                 [ Element.el ([] ++ Font.smallTextMono Color.black) <| Element.text <| "$ osc checkpoint " ++ Project.prettyAddress project
-                , Button.transparent [ Element.alignRight ] "copy"
+                , Button.transparent [ Element.alignRight ] [ Element.text "copy" ]
                 ]
             ]
         ]

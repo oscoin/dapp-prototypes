@@ -5,9 +5,7 @@ import Atom.Currency as Currency
 import Atom.Heading as Heading
 import Atom.Icon as Icon
 import Atom.Table as Table
-import Element exposing (Attribute, Element)
-import Element.Background as Background
-import Element.Border as Border
+import Element exposing (Element)
 import Element.Font
 import Project.Contract as Contract exposing (Donation(..))
 import Project.Funds as Funds exposing (Exchange, Funds)
@@ -90,7 +88,11 @@ viewTable funds isMaintainer =
 
         viewMoreBtn =
             if List.length (Funds.exchanges funds) > 0 then
-                Button.custom [ Element.width Element.fill ] Color.almostWhite Color.darkGrey "View all"
+                Button.custom
+                    Color.almostWhite
+                    Color.darkGrey
+                    [ Element.width Element.fill ]
+                    [ Element.text "View all" ]
 
             else
                 Element.none

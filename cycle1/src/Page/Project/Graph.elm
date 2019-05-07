@@ -4,8 +4,6 @@ import Atom.Button as Button
 import Atom.Heading as Heading
 import Atom.Table as Table
 import Element exposing (Element)
-import Element.Background as Background
-import Element.Border as Border
 import Element.Font
 import Project.Graph as Graph exposing (Edge, Graph)
 import Style.Color as Color
@@ -71,7 +69,11 @@ viewProjects edges title isMaintainer =
 
         viewMoreBtn =
             if List.length edges > 0 then
-                Button.custom [ Element.width Element.fill ] Color.almostWhite Color.darkGrey "View all"
+                Button.custom
+                    Color.almostWhite
+                    Color.darkGrey
+                    [ Element.width Element.fill ]
+                    [ Element.text "View all" ]
 
             else
                 Element.none
