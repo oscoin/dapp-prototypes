@@ -49,7 +49,7 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case Debug.log "KeyPairSetup.Msg" msg of
+    case msg of
         -- We expect Create to be handled in the portion of the app
         -- that has access to ports in order to signal the completion of the
         -- setup to extension code which makes this part a Noop.

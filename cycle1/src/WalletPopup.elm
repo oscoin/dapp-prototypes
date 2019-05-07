@@ -8,8 +8,6 @@ import Page.KeyPairList
 import Page.KeyPairSetup
 import Page.NotFound
 import Page.SignTransaction
-import Style.Color as Color
-import Style.Font as Font
 import Transaction exposing (Hash, Transaction)
 
 
@@ -71,15 +69,11 @@ init flags =
                 Ok decodedFlags ->
                     decodedFlags
 
-                Err err ->
-                    let
-                        _ =
-                            Debug.log "flags decode error" err
-                    in
+                Err _ ->
                     emptyFlags
 
         model =
-            case ( Debug.log "WalletPopup.init.page" page, maybeKeyPair, maybeTransaction ) of
+            case ( page, maybeKeyPair, maybeTransaction ) of
                 ( Keys, Nothing, Nothing ) ->
                     KeyPairSetup Page.KeyPairSetup.init
 
@@ -92,7 +86,7 @@ init flags =
                 ( _, _, _ ) ->
                     NotFound
     in
-    ( Debug.log "WalletPopup.init.Model" model, Cmd.none )
+    ( model, Cmd.none )
 
 
 
@@ -141,14 +135,14 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case ( Debug.log "WalletPopup.Msg" msg, Debug.log "WalletPopup.Model" model ) of
+    case ( msg, model ) of
         -- Relay created key pair event to the KeyPairSetup page.
         ( KeyPairCreated maybeKeyPair, KeyPairSetup pageModel ) ->
             case maybeKeyPair of
                 Nothing ->
                     ( model, Cmd.none )
 
-                Just keyPair ->
+                Just _ ->
                     ( KeyPairSetup pageModel
                     , keyPairSetupComplete ()
                     )
