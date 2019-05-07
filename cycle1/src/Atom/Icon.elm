@@ -1,15 +1,20 @@
 module Atom.Icon exposing
     ( alert
+    , arrow
     , checkbox
     , copy
     , cross
     , donation
     , initialCircle
     , largeLogoCircle
+    , lock
     , logoCircle
     , progress
     , reward
     , role
+    , selectDown
+    , selectUp
+    , transaction
     , transfer
     )
 
@@ -433,6 +438,112 @@ cross color =
                 , stroke (Color.toCssString color)
                 , strokeWidth "2"
                 , strokeLinecap "round"
+                ]
+                []
+            ]
+
+
+transaction : Element.Color -> Element msg
+transaction color =
+    Element.html <|
+        svg
+            [ width "24", height "24", viewBox "0 0 24 24", fill "none" ]
+            [ circle
+                [ cx "12"
+                , cy "12"
+                , r "12"
+                , fill (Color.toCssString color)
+                ]
+                []
+            , Svg.path
+                [ d "M8 8L16 16"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
+                , strokeLinecap "round"
+                ]
+                []
+            , Svg.path
+                [ d "M7.41421 12L12 7.41421L16.5858 12L12 16.5858L7.41421 12Z"
+                , stroke (Color.toCssString Color.white)
+                , strokeWidth "2"
+                ]
+                []
+            ]
+
+
+arrow : Element.Color -> Element msg
+arrow color =
+    Element.html <|
+        svg
+            [ width "24", height "24", viewBox "0 0 24 24", fill "none" ]
+            [ Svg.path
+                [ d "M15 16L19 12L15 8"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
+                , strokeLinecap "round"
+                ]
+                []
+            , Svg.path
+                [ d "M5 12H13"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
+                , strokeLinecap "round"
+                ]
+                []
+            ]
+
+
+selectDown : Element.Color -> Element msg
+selectDown color =
+    Element.html <|
+        svg
+            [ height "7", width "10", viewBox "0 0 10 7", fill "none" ]
+            [ Svg.path
+                [ d "M1 1.76379L5 5.75364L9 1.76379"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
+                , strokeLinecap "round"
+                , strokeLinejoin "round"
+                ]
+                []
+            ]
+
+
+selectUp : Element.Color -> Element msg
+selectUp color =
+    Element.html <|
+        svg
+            [ height "7", width "10", viewBox "0 0 10 7", fill "none" ]
+            [ Svg.path
+                [ d "M9 5.71655L5 1.71655L1 5.71655"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
+                , strokeLinecap "round"
+                , strokeLinejoin "round"
+                ]
+                []
+            ]
+
+
+lock : Element.Color -> Element msg
+lock color =
+    Element.html <|
+        svg
+            [ width "24", height "24", viewBox "0 0 24 24", fill "none" ]
+            [ rect
+                [ x "6"
+                , y "11"
+                , width "12"
+                , height "9"
+                , rx "2"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
+                ]
+                []
+            , Svg.path
+                [ d "M8 8C8 5.79086 9.79086 4 12 4C14.2091 4 16 5.79086 16 8V11H8V8Z"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
                 ]
                 []
             ]
