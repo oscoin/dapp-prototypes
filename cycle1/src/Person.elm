@@ -1,6 +1,14 @@
-module Person exposing (Person, decoder, imageUrl, name)
+module Person exposing
+    ( Person
+    , decoder
+    , imageUrl
+    , keyPair
+    , name
+    , withKeyPair
+    )
 
 import Json.Decode as Decode
+import KeyPair as KeyPair exposing (KeyPair)
 
 
 type alias Name =
@@ -12,16 +20,26 @@ type alias ImageUrl =
 
 
 type Person
-    = Person Name ImageUrl
+    = Person KeyPair Name ImageUrl
+
+
+withKeyPair : KeyPair -> Person
+withKeyPair kp =
+    Person kp "unknonw" ""
 
 
 imageUrl : Person -> ImageUrl
-imageUrl (Person _ url) =
+imageUrl (Person _ _ url) =
     url
 
 
+keyPair : Person -> KeyPair
+keyPair (Person kp _ _) =
+    kp
+
+
 name : Person -> Name
-name (Person n _) =
+name (Person _ n _) =
     n
 
 
@@ -31,6 +49,7 @@ name (Person n _) =
 
 decoder : Decode.Decoder Person
 decoder =
-    Decode.map2 Person
+    Decode.map3 Person
+        (Decode.field "keyPair" KeyPair.decoder)
         (Decode.field "name" Decode.string)
         (Decode.field "imageUrl" Decode.string)

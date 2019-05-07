@@ -16,20 +16,66 @@ import Style.Font as Font
 -- VIEW
 
 
-view : Graph -> Element msg
-view graph =
+view : Graph -> Bool -> Element msg
+view graph isMaintainer =
     Element.row
         [ Element.spacing 24
         , Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
         , Element.width Element.fill
         ]
-        [ viewProjects (Graph.dependents graph) "Dependendents"
-        , viewProjects (Graph.dependencies graph) "Dependencies"
+        [ viewProjects (Graph.dependents graph) "Dependendents" isMaintainer
+        , viewProjects (Graph.dependencies graph) "Dependencies" isMaintainer
         ]
 
 
-viewProjects : List Edge -> String -> Element msg
-viewProjects edges title =
+viewProjects : List Edge -> String -> Bool -> Element msg
+viewProjects edges title isMaintainer =
+    let
+        ifEmpty =
+            if isMaintainer && List.length edges == 0 then
+                Element.el
+                    [ Element.width Element.fill
+                    , Element.height <| Element.px 120
+                    ]
+                <|
+                    Element.paragraph
+                        ([ Element.centerX
+                         , Element.centerY
+                         , Element.width
+                            (Element.fill |> Element.maximum 400)
+                         , Element.Font.center
+                         ]
+                            ++ Font.bodyText Color.grey
+                        )
+                        [ Element.text "Checkpoint your project to add dependents and dependencies." ]
+
+            else if List.length edges == 0 then
+                Element.el
+                    [ Element.width Element.fill
+                    , Element.height <| Element.px 120
+                    ]
+                <|
+                    Element.paragraph
+                        ([ Element.centerX
+                         , Element.centerY
+                         , Element.width
+                            (Element.fill |> Element.maximum 400)
+                         , Element.Font.center
+                         ]
+                            ++ Font.bodyText Color.grey
+                        )
+                        [ Element.text "This list is empty" ]
+
+            else
+                Element.none
+
+        viewMoreBtn =
+            if List.length edges > 0 then
+                Button.custom [ Element.width Element.fill ] Color.almostWhite Color.darkGrey "View all"
+
+            else
+                Element.none
+    in
     Element.column
         [ Element.width Element.fill ]
         [ Heading.sectionWithCount [] title <| List.length edges
@@ -53,7 +99,8 @@ viewProjects edges title =
                   }
                 ]
             }
-        , Button.custom [ Element.width Element.fill ] Color.almostWhite Color.darkGrey "View all"
+        , ifEmpty
+        , viewMoreBtn
         ]
 
 

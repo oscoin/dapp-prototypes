@@ -17,6 +17,7 @@ import Page.Home
 import Page.NotFound
 import Page.Project
 import Page.Register
+import Person
 import Project exposing (Project)
 import Project.Address as Address exposing (Address)
 import Route exposing (Route)
@@ -115,7 +116,7 @@ init flags url navKey =
             Route.fromUrl url
 
         page =
-            pageFromRoute address projects maybeRoute
+            pageFromRoute address projects maybeKeyPair maybeRoute
 
         maybeOverlay =
             overlay page maybeWallet maybeKeyPair pendingTransactions
@@ -237,7 +238,7 @@ update msg model =
                     Route.fromUrl url
 
                 page =
-                    pageFromRoute model.address model.projects maybeRoute
+                    pageFromRoute model.address model.projects model.keyPair maybeRoute
 
                 ov =
                     overlay page model.wallet model.keyPair model.pendingTransactions
@@ -444,8 +445,8 @@ viewOverlay maybeOverlay url =
             ( Just title, overlayAttrs content backUrl )
 
 
-viewPage : Page -> ( String, Element.Element Msg )
-viewPage page =
+viewPage : Maybe KeyPair -> Page -> ( String, Element.Element Msg )
+viewPage maybeKeyPair page =
     case page of
         Home ->
             Page.Home.view
@@ -454,7 +455,7 @@ viewPage page =
             Page.NotFound.view
 
         Project project ->
-            Page.Project.view project
+            Page.Project.view maybeKeyPair project
 
         Register pageModel ->
             let
@@ -489,7 +490,7 @@ view : Model -> Browser.Document Msg
 view model =
     let
         ( pageTitle, pageContent ) =
-            viewPage model.page
+            viewPage model.keyPair model.page
 
         ( overlayTitle, attrs ) =
             viewOverlay model.overlay model.url
@@ -497,10 +498,10 @@ view model =
         titleParts =
             case overlayTitle of
                 Nothing ->
-                    [ pageTitle, "oscoin" ]
+                    [ pageTitle, "Oscoin" ]
 
                 Just oTitle ->
-                    [ oTitle, pageTitle, "oscoin" ]
+                    [ oTitle, pageTitle, "Oscoin" ]
 
         rUrl =
             Route.toString Route.Register
@@ -584,8 +585,8 @@ overlay page maybeWallet maybeKeyPair txs =
                 Nothing
 
 
-pageFromRoute : Address -> List Project -> Maybe Route -> Page
-pageFromRoute newAddr projects maybeRoute =
+pageFromRoute : Address -> List Project -> Maybe KeyPair -> Maybe Route -> Page
+pageFromRoute newAddr projects maybeKeyPair maybeRoute =
     case Debug.log "Main.pageFromRoute" maybeRoute of
         Just Route.Home ->
             Home
@@ -599,7 +600,19 @@ pageFromRoute newAddr projects maybeRoute =
                     Project project
 
         Just Route.Register ->
-            Register <| Page.Register.init newAddr
+            let
+                keyPair =
+                    case maybeKeyPair of
+                        Just kp ->
+                            kp
+
+                        Nothing ->
+                            KeyPair.empty
+
+                owner =
+                    Person.withKeyPair keyPair
+            in
+            Register <| Page.Register.init newAddr owner
 
         _ ->
             NotFound

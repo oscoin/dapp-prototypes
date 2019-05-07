@@ -1,7 +1,7 @@
 {
   "description": "",
   "manifest_version": 2,
-  "name": "Oscoin devnet Wallet",
+  "name": "Oscoin Devnet Wallet",
   "version": "1.0",
   "homepage_url": "https://oscoin.io",
   "icons": {
@@ -16,7 +16,7 @@
   ],
   "browser_action": {
     "default_popup": "wallet-popup.html#keys",
-    "default_title": "oscoin wallet"
+    "default_title": "Oscoin wallet"
   },
   "background": {
     "page": "wallet-background.html",

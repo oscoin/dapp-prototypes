@@ -19,8 +19,8 @@ import Style.Font as Font
 -- VIEW
 
 
-view : Funds -> Element msg
-view funds =
+view : Funds -> Bool -> Element msg
+view funds isMaintainer =
     Element.column
         [ Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
         , Element.width Element.fill
@@ -43,7 +43,60 @@ view funds =
                             ++ ")"
                 ]
             )
-        , Element.table
+        , viewTable funds isMaintainer
+        ]
+
+
+viewTable : Funds -> Bool -> Element msg
+viewTable funds isMaintainer =
+    let
+        content =
+            if isMaintainer && List.length (Funds.exchanges funds) == 0 then
+                Element.el
+                    [ Element.width Element.fill
+                    , Element.height <| Element.px 120
+                    ]
+                <|
+                    Element.paragraph
+                        ([ Element.centerX
+                         , Element.centerY
+                         , Element.width
+                            (Element.fill |> Element.maximum 400)
+                         , Element.Font.center
+                         ]
+                            ++ Font.bodyText Color.grey
+                        )
+                        [ Element.text "Checkpoint your project to start receiving network rewards." ]
+
+            else if List.length (Funds.exchanges funds) == 0 then
+                Element.el
+                    [ Element.width Element.fill
+                    , Element.height <| Element.px 120
+                    ]
+                <|
+                    Element.paragraph
+                        ([ Element.centerX
+                         , Element.centerY
+                         , Element.width
+                            (Element.fill |> Element.maximum 400)
+                         , Element.Font.center
+                         ]
+                            ++ Font.bodyText Color.grey
+                        )
+                        [ Element.text "No current funds" ]
+
+            else
+                Element.none
+
+        viewMoreBtn =
+            if List.length (Funds.exchanges funds) > 0 then
+                Button.custom [ Element.width Element.fill ] Color.almostWhite Color.darkGrey "View all"
+
+            else
+                Element.none
+    in
+    Element.column []
+        [ Element.table
             []
             { data = Funds.exchanges funds
             , columns =
@@ -146,7 +199,8 @@ view funds =
                   }
                 ]
             }
-        , Button.custom [ Element.width Element.fill ] Color.almostWhite Color.darkGrey "View all"
+        , content
+        , viewMoreBtn
         ]
 
 

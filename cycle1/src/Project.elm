@@ -10,8 +10,10 @@ module Project exposing
     , findByAddr
     , funds
     , graph
+    , isMaintainer
     , maintainers
     , mapContract
+    , mapMaintainers
     , mapMeta
     , meta
     , prettyAddress
@@ -21,6 +23,7 @@ module Project exposing
 import Dict
 import Json.Decode as Decode
 import Json.Encode as Encode
+import KeyPair exposing (KeyPair)
 import Person as Person exposing (Person)
 import Project.Address as Address exposing (Address)
 import Project.Contract as Contract exposing (Contract)
@@ -117,9 +120,21 @@ contributors (Project data) =
     data.contributors
 
 
+mapMaintainers : (List Person -> List Person) -> Project -> Project
+mapMaintainers change (Project data) =
+    Project { data | maintainers = change data.maintainers }
+
+
 maintainers : Project -> List Person
 maintainers (Project data) =
     data.maintainers
+
+
+isMaintainer : KeyPair -> Project -> Bool
+isMaintainer keyPair project =
+    maintainers project
+        |> List.map Person.keyPair
+        |> List.any (KeyPair.equal keyPair)
 
 
 checkpoints : Project -> List Checkpoint
