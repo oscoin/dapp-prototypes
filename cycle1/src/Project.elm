@@ -1,6 +1,7 @@
 module Project exposing
     ( Project
     , address
+    , checkpoints
     , contract
     , contributors
     , decoder
@@ -13,6 +14,7 @@ module Project exposing
     , mapContract
     , mapMeta
     , meta
+    , prettyAddress
     , withAddress
     )
 
@@ -31,6 +33,10 @@ import Project.Meta as Meta exposing (Meta)
 -- DATA
 
 
+type alias Checkpoint =
+    String
+
+
 type alias Data =
     { address : Address
     , contract : Contract
@@ -39,12 +45,13 @@ type alias Data =
     , meta : Meta
     , contributors : List Person
     , maintainers : List Person
+    , checkpoints : List Checkpoint
     }
 
 
 emptyData : Data
 emptyData =
-    Data Address.empty Contract.default Funds.empty Graph.empty Meta.empty [] []
+    Data Address.empty Contract.default Funds.empty Graph.empty Meta.empty [] [] []
 
 
 
@@ -68,6 +75,11 @@ withAddress addr =
 address : Project -> Address
 address (Project data) =
     data.address
+
+
+prettyAddress : Project -> String
+prettyAddress project =
+    Meta.name (meta project) ++ "#" ++ Address.string (address project)
 
 
 mapContract : (Contract -> Contract) -> Project -> Project
@@ -110,6 +122,11 @@ maintainers (Project data) =
     data.maintainers
 
 
+checkpoints : Project -> List Checkpoint
+checkpoints (Project data) =
+    data.checkpoints
+
+
 
 -- PROJECT QUERY
 
@@ -137,7 +154,7 @@ decoder =
 
 dataDecoder : Decode.Decoder Data
 dataDecoder =
-    Decode.map7 Data
+    Decode.map8 Data
         (Decode.field "address" Address.decoder)
         (Decode.field "contract" Contract.decoder)
         (Decode.field "funds" Funds.decoder)
@@ -145,6 +162,7 @@ dataDecoder =
         (Decode.field "meta" Meta.decoder)
         (Decode.field "contributors" (Decode.list Person.decoder))
         (Decode.field "maintainers" (Decode.list Person.decoder))
+        (Decode.field "checkpoints" (Decode.list Decode.string))
 
 
 
