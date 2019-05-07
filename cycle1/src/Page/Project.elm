@@ -1,6 +1,7 @@
 module Page.Project exposing (view)
 
 import Element exposing (Element)
+import KeyPair exposing (KeyPair)
 import Page.Project.Contract as Contract
 import Page.Project.Fund as Fund
 import Page.Project.GetStarted as GetStarted
@@ -14,11 +15,19 @@ import Project as Project exposing (Project)
 -- VIEW
 
 
-view : Project -> ( String, Element msg )
-view project =
+view : Maybe KeyPair -> Project -> ( String, Element msg )
+view maybeKeyPair project =
     let
+        isMaintainer =
+            case maybeKeyPair of
+                Just keyPair ->
+                    Project.isMaintainer keyPair project
+
+                Nothing ->
+                    False
+
         viewCheckpointInfo proj =
-            if List.isEmpty <| Project.checkpoints project then
+            if isMaintainer && (List.isEmpty <| Project.checkpoints project) then
                 Element.el [ Element.paddingEach { top = 44, left = 0, bottom = 0, right = 0 } ] <| GetStarted.view proj
 
             else
