@@ -165,7 +165,11 @@ viewPick =
             , Element.width (Element.px 240)
             , Element.paddingEach { top = 0, right = 0, bottom = 32, left = 0 }
             ]
-            [ Button.custom [ Element.width Element.fill ] Color.pink Color.white "Firefox add-on"
+            [ Element.link
+                [ Element.width Element.fill ]
+                { url = "https://addons.mozilla.org/en-US/firefox/addon/oscoin-devnet-wallet/"
+                , label = Button.custom [ Element.width Element.fill ] Color.pink Color.white "Firefox add-on"
+                }
             , Button.custom [ Element.width Element.fill ] Color.blue Color.white "Mobile app"
             , Button.custom [ Element.width Element.fill ] Color.green Color.white "Ledger Nano S"
             , Button.custom [ Element.width Element.fill ] Color.bordeaux Color.white "macOS app"

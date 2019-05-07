@@ -11,10 +11,10 @@ import Element.Font
 import Element.Input as Input
 import Molecule.ContractPreview as ContractPreview
 import Molecule.ProjectMeta as ProjectMeta
-import Molecule.Rule as Rule
 import Page.Register.Contract as Contract
+import Person exposing (Person)
 import Project exposing (Project)
-import Project.Address as Address exposing (Address)
+import Project.Address exposing (Address)
 import Project.Contract as Contract
 import Project.Meta as Meta
 import Style.Color as Color
@@ -39,9 +39,9 @@ type Model
     = Model Step Project FieldError
 
 
-init : Address -> Model
-init addr =
-    Model Info (Project.withAddress addr) (FieldError False False)
+init : Address -> Person -> Model
+init addr owner =
+    Model Info (Project.mapMaintainers (\_ -> [ owner ]) <| Project.withAddress addr) (FieldError False False)
 
 
 

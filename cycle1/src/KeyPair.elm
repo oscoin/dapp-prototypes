@@ -1,4 +1,13 @@
-module KeyPair exposing (ID, KeyPair, decode, decoder, equal, id, toString)
+module KeyPair exposing
+    ( ID
+    , KeyPair
+    , decode
+    , decoder
+    , empty
+    , equal
+    , id
+    , toString
+    )
 
 import Json.Decode as Decode
 
@@ -13,6 +22,11 @@ type alias PubKey =
 
 type KeyPair
     = KeyPair ID PubKey
+
+
+empty : KeyPair
+empty =
+    KeyPair "" ""
 
 
 id : KeyPair -> ID
