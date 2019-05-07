@@ -49,7 +49,7 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case Debug.log "KeyPairSetup.Msg" msg of
+    case msg of
         -- We expect Create to be handled in the portion of the app
         -- that has access to ports in order to signal the completion of the
         -- setup to extension code which makes this part a Noop.
@@ -119,7 +119,7 @@ viewInitial =
                 ++ Font.mediumHeader Color.black
             )
           <|
-            Element.text "oscoin Wallet"
+            Element.text "Oscoin Wallet"
         , Element.paragraph
             ([ Element.Font.center
              , Element.width Element.fill
@@ -173,7 +173,7 @@ viewSetup id =
                 ++ Font.mediumHeader Color.black
             )
           <|
-            Element.text "oscoin Wallet"
+            Element.text "Oscoin Wallet"
         , Element.paragraph
             ([ Element.Font.center
              , Element.width Element.fill

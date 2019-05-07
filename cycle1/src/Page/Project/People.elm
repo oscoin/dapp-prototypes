@@ -2,6 +2,7 @@ module Page.Project.People exposing (view)
 
 import Atom.Button as Button
 import Atom.Heading as Heading
+import Atom.Icon as Icon
 import Element exposing (Element)
 import Element.Border as Border
 import Element.Font
@@ -141,17 +142,10 @@ viewTopPeopleSingle person =
         , Element.paddingEach { top = 0, right = 0, bottom = 24, left = 0 }
         , Element.alignTop
         ]
-        [ Element.image
-            [ Element.height (Element.px 48)
-            , Element.width (Element.px 48)
-            , Border.color Color.lightGrey
-            , Border.rounded 24
-            , Border.width 1
-            , Element.clip
-            ]
-            { src = Person.imageUrl person
-            , description = "avatar"
-            }
+        -- AVATAR
+        [ viewAvatar <| Person.imageUrl person
+
+        -- NAME
         , Element.column
             [ Element.spacing 4 ]
             [ Element.el
@@ -165,3 +159,22 @@ viewTopPeopleSingle person =
                 Element.text "Core maintainer"
             ]
         ]
+
+
+viewAvatar : String -> Element msg
+viewAvatar imgUrl =
+    if imgUrl == "" then
+        Element.el [] <| Icon.largeLogoCircle Color.lightGrey
+
+    else
+        Element.image
+            [ Element.height (Element.px 48)
+            , Element.width (Element.px 48)
+            , Border.color Color.lightGrey
+            , Border.rounded 24
+            , Border.width 1
+            , Element.clip
+            ]
+            { src = imgUrl
+            , description = "avatar"
+            }
