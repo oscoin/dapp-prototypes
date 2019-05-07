@@ -5,29 +5,18 @@ console.log('oscoin wallet | background | init')
 console.log(nacl.sign.keyPair())
 console.log(encode(nacl.sign.keyPair().publicKey))
 
-// Set the wallet icon dynamically.
-browser.browserAction
-  .setIcon({ path: 'icons/wallet-error.svg' })
-  .then(
-    () => {
-      console.log('icon success')
-    },
-    () => {
-      console.log('icon fail')
-    }
-  )
-  .catch(err => {
-    console.error(err)
-  })
-
 let currentTab = undefined
 // Non-present value must be `null` for Elm to accept it as a Maybe.
-// let keyPair = null
-let keyPair = {
-  id: 'fakeid',
-  pubKey: encode(nacl.sign.keyPair().publicKey),
-}
+let keyPair = null
+// let keyPair = {
+//   id: 'fakeid',
+//   pubKey: encode(nacl.sign.keyPair().publicKey),
+// }
 let transactions = {}
+
+if (keyPair !== null) {
+  setActiveIcon()
+}
 
 browser.runtime.onMessage.addListener((msg, sender) => {
   console.log(msg, sender)
@@ -112,6 +101,8 @@ function keyPairSetupComplete() {
     type: 'keyPairCreated',
     id: getKeyPair(),
   })
+
+  setActiveIcon()
 }
 
 function getTransaction(hash) {
@@ -150,6 +141,23 @@ window.rejectTransaction = rejectTransaction
 window.signTransaction = signTransaction
 
 // Helpers
+
+function setActiveIcon() {
+  // Set the wallet icon dynamically.
+  browser.browserAction
+    .setIcon({ path: 'icons/wallet-active.svg' })
+    .then(
+      () => {
+        console.log('icon success')
+      },
+      () => {
+        console.log('icon fail')
+      }
+    )
+    .catch(err => {
+      console.error(err)
+    })
+}
 
 function testTransaction() {
   let projectAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd'

@@ -92,7 +92,7 @@ const initialProjects = [
         imageUrl: 'https://avatars1.githubusercontent.com/u/16262137?s=400&v=4',
       },
     ],
-    checkpoints: [ 'abcd123' ],
+    checkpoints: ['abcd123'],
     graph: {
       edges: [
         { direction: 'outgoing', name: 'IPFS', osrank: 0.84 },
@@ -111,8 +111,7 @@ const initialProjects = [
     },
     funds: {
       oscoin: 0,
-      exchanges: [
-      ],
+      exchanges: [],
     },
     meta: {
       codeHostUrl: 'github.com/juliendonck',
@@ -121,9 +120,7 @@ const initialProjects = [
       name: 'Julien',
       websiteUrl: 'https://juliendonck.com',
     },
-    contributors: [
-
-    ],
+    contributors: [],
     maintainers: [
       {
         name: 'juliendonck',
@@ -132,16 +129,12 @@ const initialProjects = [
     ],
     checkpoints: [],
     graph: {
-      edges: [
-
-      ],
+      edges: [],
       osrank: 0,
       percentile: 0,
     },
   },
 ]
-
-
 
 let cabalAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd'
 let initialTransactions = [
@@ -214,11 +207,11 @@ window.addEventListener('DOMContentLoaded', _ => {
   var app = Elm.Main.init({
     flags: {
       address: encode(nacl.sign.keyPair().publicKey),
-      // maybeKeyPair: null,
-      maybeKeyPair: {
-        id: 'fakeid',
-        pubKey: encode(nacl.sign.keyPair().publicKey),
-      },
+      maybeKeyPair: null,
+      // maybeKeyPair: {
+      //   id: 'fakeid',
+      //   pubKey: encode(nacl.sign.keyPair().publicKey),
+      // },
       maybeWallet: document.getElementById('wallet') ? 'webext' : null,
       pendingTransactions: initialTransactions,
       projects: initialProjects,

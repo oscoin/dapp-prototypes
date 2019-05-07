@@ -37,11 +37,7 @@ decode json =
         Ok keyPair ->
             Just keyPair
 
-        Err err ->
-            let
-                _ =
-                    Debug.log "Error decoding key pair" err
-            in
+        Err _ ->
             Nothing
 
 
