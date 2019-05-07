@@ -32,7 +32,11 @@ viewMaintainers title people isMaintainer =
     let
         heading =
             if isMaintainer then
-                Heading.sectionWithCountInfo [] title (List.length people) (Button.secondary [] "Add")
+                Heading.sectionWithCountInfo
+                    []
+                    title
+                    (List.length people)
+                    (Button.secondary [] [ Element.text "Add" ])
 
             else
                 Heading.sectionWithCount [] title (List.length people)
@@ -47,7 +51,8 @@ viewMaintainers title people isMaintainer =
                     , Border.color Color.lightGrey
                     , Border.widthEach { top = 1, right = 0, bottom = 0, left = 0 }
                     ]
-                    "View all"
+                    [ Element.text "View all"
+                    ]
     in
     Element.column
         [ Border.color Color.lightGrey
@@ -83,7 +88,7 @@ viewContributors title people isMaintainer =
                     , Border.color Color.lightGrey
                     , Border.widthEach { top = 1, right = 0, bottom = 0, left = 0 }
                     ]
-                    "View all"
+                    [ Element.text "View all" ]
 
         emptyStateCopy =
             if isMaintainer then

@@ -85,6 +85,6 @@ view searchTerm registerUrl =
         , Element.link
             [ Element.alignRight ]
             { url = registerUrl
-            , label = Button.accent [] "Register a project"
+            , label = Button.accent [] [ Element.text "Register a project" ]
             }
         ]

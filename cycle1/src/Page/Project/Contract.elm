@@ -5,7 +5,7 @@ import Atom.Heading as Heading
 import Element exposing (Element)
 import Element.Border as Border
 import Molecule.ContractPreview as ContractPreview
-import Project.Contract as Contract exposing (Contract)
+import Project.Contract exposing (Contract)
 import Style.Color as Color
 
 
@@ -23,7 +23,7 @@ view contract isMaintainer =
                     , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
                     ]
                     "Project contract"
-                    (Button.transparent [] "Edit")
+                    (Button.transparent [] [ Element.text "Edit" ])
 
             else
                 Heading.section

@@ -1,4 +1,4 @@
-module Page.Project exposing (view)
+module Page.Project exposing (Model, Msg, init, update, view)
 
 import Element exposing (Element)
 import KeyPair exposing (KeyPair)
@@ -12,11 +12,43 @@ import Project as Project exposing (Project)
 
 
 
+-- MODEL
+
+
+type Model
+    = Model Project (Maybe KeyPair) Bool Bool
+
+
+init : Project -> Maybe KeyPair -> Model
+init project maybeKeyPair =
+    Model project maybeKeyPair False True
+
+
+
+-- UPDATE
+
+
+type Msg
+    = CloseGetStarted
+    | ToggleOverlay
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg (Model project maybeKeyPair showOverlay showGetStarted) =
+    case msg of
+        CloseGetStarted ->
+            ( Model project maybeKeyPair showOverlay False, Cmd.none )
+
+        ToggleOverlay ->
+            ( Model project maybeKeyPair (not showOverlay) showGetStarted, Cmd.none )
+
+
+
 -- VIEW
 
 
-view : Maybe KeyPair -> Project -> ( String, Element msg )
-view maybeKeyPair project =
+view : Model -> ( String, Element Msg )
+view (Model project maybeKeyPair showOverlay showGetStarted) =
     let
         isMaintainer =
             case maybeKeyPair of
@@ -26,9 +58,12 @@ view maybeKeyPair project =
                 Nothing ->
                     False
 
-        viewCheckpointInfo proj =
-            if isMaintainer && (List.isEmpty <| Project.checkpoints project) then
-                Element.el [ Element.paddingEach { top = 44, left = 0, bottom = 0, right = 0 } ] <| GetStarted.view proj
+        viewCheckpointInfo =
+            if isMaintainer && showGetStarted && (List.isEmpty <| Project.checkpoints project) then
+                Element.el
+                    [ Element.paddingEach { top = 44, left = 0, bottom = 0, right = 0 }
+                    ]
+                    (GetStarted.view project CloseGetStarted)
 
             else
                 Element.none
@@ -38,12 +73,12 @@ view maybeKeyPair project =
         [ Element.width Element.fill
         , Element.paddingEach { top = 0, right = 0, bottom = 96, left = 0 }
         ]
-        [ Header.view project isMaintainer
+        [ Header.view project isMaintainer showOverlay ToggleOverlay
         , Element.column
             [ Element.centerX
             , Element.width <| Element.px 1074
             ]
-            [ viewCheckpointInfo project
+            [ viewCheckpointInfo
             , Contract.view (Project.contract project) isMaintainer
             , People.view (Project.maintainers project) (Project.contributors project) isMaintainer
             , Fund.view (Project.funds project) isMaintainer

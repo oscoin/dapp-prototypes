@@ -178,12 +178,11 @@ view (Model step project fieldError) =
                             [ Element.el
                                 [ Events.onClick MoveStepInfo ]
                               <|
-                                Button.transparent []
-                                    "Back"
+                                Button.transparent [] [ Element.text "Back" ]
                             , Element.el
                                 [ Events.onClick <| MoveStepPreview ]
                               <|
-                                Button.primary [] "Next"
+                                Button.primary [] [ Element.text "Next" ]
                             ]
                         ]
 
@@ -213,8 +212,8 @@ viewInfoFormError : Bool -> Element Msg
 viewInfoFormError show =
     if show then
         Element.row
-            ([ Element.paddingEach { top = 0, left = 366, bottom = 0, right = 0 } ]
-                ++ Font.mediumBodyText Color.red
+            (Element.paddingEach { top = 0, left = 366, bottom = 0, right = 0 }
+                :: Font.mediumBodyText Color.red
             )
             [ Icon.alert
             , Element.el [ Element.paddingXY 8 0 ] <| Element.text "Not all mandatory fields have been filled in."
@@ -230,7 +229,7 @@ viewInfoNext blocked =
         Element.el
             [ Element.alignRight ]
         <|
-            Button.inactive [] "Next"
+            Button.inactive [] [ Element.text "Next" ]
 
     else
         Element.el
@@ -238,7 +237,7 @@ viewInfoNext blocked =
             , Element.alignRight
             ]
         <|
-            Button.primary [] "Next"
+            Button.primary [] [ Element.text "Next" ]
 
 
 viewInfo : Project -> FieldError -> Element Msg
@@ -258,8 +257,8 @@ viewInfo project (FieldError nameError codeHostError) =
             "Project information"
             "This is what users will see when they land on your project page. ( *Mandatory fields )"
         , Input.text
-            ([ Events.onLoseFocus BlurName ]
-                ++ inputAttrs
+            (Events.onLoseFocus BlurName
+                :: inputAttrs
                 ++ (if nameError then
                         errorAttrs
 
@@ -273,9 +272,8 @@ viewInfo project (FieldError nameError codeHostError) =
             , text = Meta.name meta
             }
         , Input.text
-            ([ Events.onLoseFocus BlurCodeHost
-             ]
-                ++ inputAttrs
+            (Events.onLoseFocus BlurCodeHost
+                :: inputAttrs
                 ++ (if codeHostError then
                         errorAttrs
 
@@ -318,7 +316,7 @@ viewInfo project (FieldError nameError codeHostError) =
             , Element.link
                 [ Element.alignRight ]
                 { url = "/"
-                , label = Button.transparent [] "Cancel"
+                , label = Button.transparent [] [ Element.text "Cancel" ]
                 }
             , viewInfoNext (nameError || codeHostError || Meta.name meta == "" || Meta.codeHostUrl meta == "")
             ]
@@ -358,12 +356,11 @@ viewPreview project =
             [ Element.el
                 [ Events.onClick MoveStepContract ]
               <|
-                Button.transparent []
-                    "Back"
+                Button.transparent [] [ Element.text "Back" ]
             , Element.el
                 [ Events.onClick <| Register project ]
               <|
-                Button.primary [] "Register this project"
+                Button.primary [] [ Element.text "Register this project" ]
             ]
         ]
 

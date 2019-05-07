@@ -15,8 +15,8 @@ import Style.Font as Font
 -- VIEW
 
 
-view : Project -> Bool -> Element msg
-view project isMaintainer =
+view : Project -> Bool -> Bool -> msg -> Element msg
+view project isMaintainer showOverlay toggleMsg =
     Element.el
         [ Background.color Color.almostWhite
         , Element.width Element.fill
@@ -34,7 +34,7 @@ view project isMaintainer =
                 [ ProjectMeta.view project
                 , viewStats <| Project.graph project
                 ]
-            , Actions.view isMaintainer
+            , Actions.view isMaintainer showOverlay toggleMsg
             ]
 
 

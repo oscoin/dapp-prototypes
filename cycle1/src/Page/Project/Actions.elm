@@ -1,31 +1,79 @@
 module Page.Project.Actions exposing (view)
 
 import Atom.Button as Button
-import Element exposing (Element)
+import Atom.Icon as Icon
+import Element exposing (Attribute, Element)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Events as Events
+import Style.Color as Color
+import Style.Font as Font
 
 
 
 -- VIEW
 
 
-view : Bool -> Element msg
-view isMaintainer =
+view : Bool -> Bool -> msg -> Element msg
+view isMaintainer showOverlay toggleMsg =
+    if isMaintainer then
+        viewMaintainer showOverlay toggleMsg
+
+    else
+        viewViewer
+
+
+viewMaintainer : Bool -> msg -> Element msg
+viewMaintainer showOverlay toggleMsg =
     let
-        actions =
-            if isMaintainer then
-                [ Button.primary [] "Checkpoint your project"
-                , Button.secondaryAccent [] "Share your project"
-                ]
+        ( icon, overlayAttrs ) =
+            if showOverlay then
+                ( Icon.selectUp, [ Element.below viewCheckpointOverlay ] )
 
             else
-                [ Button.primary [] "Donate"
-                , Button.secondary [] "Follow"
-                , Button.secondaryAccent [] "Support"
-                ]
+                ( Icon.selectDown, [] )
     in
     Element.row
-        [ Element.spacing 16
-        , Element.paddingEach { top = 16, right = 0, bottom = 0, left = 0 }
-        , Element.width Element.fill
+        (listAttrs ++ overlayAttrs)
+        [ Button.primary
+            [ Events.onClick toggleMsg ]
+            [ Element.text "Checkpoint your project"
+            , Element.el [] <| icon Color.white
+            ]
+        , Button.secondaryAccent [] [ Element.text "Share your project" ]
         ]
-        actions
+
+
+viewCheckpointOverlay : Element msg
+viewCheckpointOverlay =
+    Element.column
+        [ Background.color Color.white
+        , Border.color Color.lightGrey
+        , Border.rounded 2
+        , Border.width 1
+        , Element.padding 24
+        ]
+        [ Element.el (Font.bodyText Color.darkGrey) (Element.text "Run this command in the project folder")
+        ]
+
+
+viewViewer : Element msg
+viewViewer =
+    Element.row
+        listAttrs
+        [ Button.primary [] [ Element.text "Donate" ]
+        , Button.secondary [] [ Element.text "Follow" ]
+        , Button.secondaryAccent [] [ Element.text "Support" ]
+        ]
+
+
+
+-- ATTRS
+
+
+listAttrs : List (Attribute msg)
+listAttrs =
+    [ Element.paddingEach { top = 16, right = 0, bottom = 0, left = 0 }
+    , Element.spacing 16
+    , Element.width Element.fill
+    ]

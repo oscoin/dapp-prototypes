@@ -70,7 +70,7 @@ type Overlay
 type Page
     = Home
     | NotFound
-    | Project Project
+    | Project Page.Project.Model
     | Register Page.Register.Model
 
 
@@ -208,6 +208,7 @@ type Msg
     = UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
     | OverlayWalletSetup Overlay.WalletSetup.Msg
+    | PageProject Page.Project.Msg
     | PageRegister Page.Register.Msg
     | TopBarMsg TopBar.Msg
     | RegisterProject Project
@@ -262,6 +263,20 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        PageProject subCmd ->
+            case model.page of
+                Project subModel ->
+                    let
+                        ( pageModel, pageCmd ) =
+                            Page.Project.update subCmd subModel
+                    in
+                    ( { model | page = Project pageModel }
+                    , Cmd.map PageProject pageCmd
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
         PageRegister subCmd ->
             case model.page of
                 Register subModel ->
@@ -281,7 +296,7 @@ update msg model =
                     in
                     ( { model | page = Register pageModel }
                     , Cmd.batch
-                        [ Cmd.map PageRegister <| pageCmd
+                        [ Cmd.map PageRegister pageCmd
                         , registerCmd
                         ]
                     )
@@ -385,10 +400,6 @@ update msg model =
             ( { model | wallet = Just WebExt }, Cmd.none )
 
 
-
--- VIEW
-
-
 viewKeyPair : Maybe KeyPair -> Element.Element msg
 viewKeyPair maybeKeyPair =
     case maybeKeyPair of
@@ -454,17 +465,19 @@ viewPage maybeKeyPair page =
         NotFound ->
             Page.NotFound.view
 
-        Project project ->
-            Page.Project.view maybeKeyPair project
+        Project pageModel ->
+            let
+                ( pageTitle, pageView ) =
+                    Page.Project.view pageModel
+            in
+            ( pageTitle, Element.map PageProject <| pageView )
 
         Register pageModel ->
             let
                 ( pageTitle, pageView ) =
                     Page.Register.view pageModel
             in
-            ( pageTitle
-            , Element.map PageRegister <| pageView
-            )
+            ( pageTitle, Element.map PageRegister <| pageView )
 
 
 viewWallet : Maybe Wallet -> Element.Element msg
@@ -597,7 +610,7 @@ pageFromRoute newAddr projects maybeKeyPair maybeRoute =
                     NotFound
 
                 Just project ->
-                    Project project
+                    Project <| Page.Project.init project maybeKeyPair
 
         Just Route.Register ->
             let
