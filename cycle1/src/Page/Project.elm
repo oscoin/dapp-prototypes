@@ -16,12 +16,12 @@ import Project as Project exposing (Project)
 
 
 type Model
-    = Model Project (Maybe KeyPair) Bool
+    = Model Project (Maybe KeyPair) Bool Bool
 
 
 init : Project -> Maybe KeyPair -> Model
 init project maybeKeyPair =
-    Model project maybeKeyPair False
+    Model project maybeKeyPair False True
 
 
 
@@ -29,14 +29,18 @@ init project maybeKeyPair =
 
 
 type Msg
-    = ToggleOverlay
+    = CloseGetStarted
+    | ToggleOverlay
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg (Model project maybeKeyPair showOverlay) =
+update msg (Model project maybeKeyPair showOverlay showGetStarted) =
     case msg of
+        CloseGetStarted ->
+            ( Model project maybeKeyPair showOverlay False, Cmd.none )
+
         ToggleOverlay ->
-            ( Model project maybeKeyPair (not showOverlay), Cmd.none )
+            ( Model project maybeKeyPair (not showOverlay) showGetStarted, Cmd.none )
 
 
 
@@ -44,7 +48,7 @@ update msg (Model project maybeKeyPair showOverlay) =
 
 
 view : Model -> ( String, Element Msg )
-view (Model project maybeKeyPair showOverlay) =
+view (Model project maybeKeyPair showOverlay showGetStarted) =
     let
         isMaintainer =
             case maybeKeyPair of
@@ -54,12 +58,12 @@ view (Model project maybeKeyPair showOverlay) =
                 Nothing ->
                     False
 
-        viewCheckpointInfo proj =
-            if isMaintainer && (List.isEmpty <| Project.checkpoints project) then
+        viewCheckpointInfo =
+            if isMaintainer && showGetStarted && (List.isEmpty <| Project.checkpoints project) then
                 Element.el
                     [ Element.paddingEach { top = 44, left = 0, bottom = 0, right = 0 }
                     ]
-                    (GetStarted.view proj)
+                    (GetStarted.view project CloseGetStarted)
 
             else
                 Element.none
@@ -74,7 +78,7 @@ view (Model project maybeKeyPair showOverlay) =
             [ Element.centerX
             , Element.width <| Element.px 1074
             ]
-            [ viewCheckpointInfo project
+            [ viewCheckpointInfo
             , Contract.view (Project.contract project) isMaintainer
             , People.view (Project.maintainers project) (Project.contributors project) isMaintainer
             , Fund.view (Project.funds project) isMaintainer
