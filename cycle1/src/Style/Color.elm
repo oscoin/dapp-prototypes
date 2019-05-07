@@ -10,6 +10,7 @@ module Style.Color exposing
     , lightBlue
     , lightGreen
     , lightGrey
+    , lighterBlue
     , orange
     , pink
     , purple
@@ -88,6 +89,11 @@ blue =
 lightBlue : Color
 lightBlue =
     rgb255 144 160 175
+
+
+lighterBlue : Color
+lighterBlue =
+    rgb255 153 159 240
 
 
 purple : Color

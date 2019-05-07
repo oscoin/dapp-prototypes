@@ -12,6 +12,8 @@ module Atom.Icon exposing
     , progress
     , reward
     , role
+    , selectDown
+    , selectUp
     , transaction
     , transfer
     )
@@ -486,6 +488,38 @@ arrow color =
                 , stroke (Color.toCssString color)
                 , strokeWidth "2"
                 , strokeLinecap "round"
+                ]
+                []
+            ]
+
+
+selectDown : Element.Color -> Element msg
+selectDown color =
+    Element.html <|
+        svg
+            [ height "7", width "10", viewBox "0 0 10 7", fill "none" ]
+            [ Svg.path
+                [ d "M1 1.76379L5 5.75364L9 1.76379"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
+                , strokeLinecap "round"
+                , strokeLinejoin "round"
+                ]
+                []
+            ]
+
+
+selectUp : Element.Color -> Element msg
+selectUp color =
+    Element.html <|
+        svg
+            [ height "7", width "10", viewBox "0 0 10 7", fill "none" ]
+            [ Svg.path
+                [ d "M9 5.71655L5 1.71655L1 5.71655"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
+                , strokeLinecap "round"
+                , strokeLinejoin "round"
                 ]
                 []
             ]
