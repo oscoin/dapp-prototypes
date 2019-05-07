@@ -15,8 +15,8 @@ import Style.Font as Font
 -- VIEW
 
 
-view : Project -> Element msg
-view project =
+view : Project -> Bool -> Element msg
+view project isMaintainer =
     Element.el
         [ Background.color Color.almostWhite
         , Element.width Element.fill
@@ -34,7 +34,7 @@ view project =
                 [ ProjectMeta.view project
                 , viewStats <| Project.graph project
                 ]
-            , Actions.view
+            , Actions.view isMaintainer
             ]
 
 

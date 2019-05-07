@@ -38,16 +38,16 @@ view maybeKeyPair project =
         [ Element.width Element.fill
         , Element.paddingEach { top = 0, right = 0, bottom = 96, left = 0 }
         ]
-        [ Header.view project
+        [ Header.view project isMaintainer
         , Element.column
             [ Element.centerX
             , Element.width <| Element.px 1074
             ]
             [ viewCheckpointInfo project
-            , Contract.view <| Project.contract project
-            , People.view (Project.maintainers project) (Project.contributors project)
-            , Fund.view <| Project.funds project
-            , Graph.view <| Project.graph project
+            , Contract.view (Project.contract project) isMaintainer
+            , People.view (Project.maintainers project) (Project.contributors project) isMaintainer
+            , Fund.view (Project.funds project) isMaintainer
+            , Graph.view (Project.graph project) isMaintainer
             ]
         ]
     )
