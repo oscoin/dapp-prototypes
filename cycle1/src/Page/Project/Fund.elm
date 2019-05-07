@@ -83,7 +83,7 @@ viewTable funds isMaintainer =
                          ]
                             ++ Font.bodyText Color.grey
                         )
-                        [ Element.text "No funds yet" ]
+                        [ Element.text "No current funds" ]
 
             else
                 Element.none
