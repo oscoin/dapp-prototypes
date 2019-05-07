@@ -1,14 +1,11 @@
 module Page.Project.Contract exposing (view)
 
 import Atom.Heading as Heading
-import Atom.Icon as Icon
 import Element exposing (Element)
 import Element.Border as Border
 import Molecule.ContractPreview as ContractPreview
-import Molecule.Rule as Rule
 import Project.Contract as Contract exposing (Contract)
 import Style.Color as Color
-import Style.Font as Font
 
 
 
