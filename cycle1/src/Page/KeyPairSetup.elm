@@ -244,7 +244,7 @@ viewPassphrase id checked =
                 ++ Font.mediumHeader Color.black
             )
           <|
-            Element.text "You now have an oscoin account"
+            Element.text "Your key is now active"
         , Element.paragraph
             ([ Element.Font.center
              , Element.width Element.fill
