@@ -497,10 +497,10 @@ view model =
         titleParts =
             case overlayTitle of
                 Nothing ->
-                    [ pageTitle, "oscoin" ]
+                    [ pageTitle, "Oscoin" ]
 
                 Just oTitle ->
-                    [ oTitle, pageTitle, "oscoin" ]
+                    [ oTitle, pageTitle, "Oscoin" ]
 
         rUrl =
             Route.toString Route.Register
