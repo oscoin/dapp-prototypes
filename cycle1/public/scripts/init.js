@@ -92,6 +92,7 @@ const initialProjects = [
         imageUrl: 'https://avatars1.githubusercontent.com/u/16262137?s=400&v=4',
       },
     ],
+    checkpoints: [ 'abcd123' ],
     graph: {
       edges: [
         { direction: 'outgoing', name: 'IPFS', osrank: 0.84 },
@@ -101,7 +102,46 @@ const initialProjects = [
       percentile: 85,
     },
   },
+  {
+    address: '1b4atzir794d11ckjtk7xfsdqjizgwwabx9bun7qmw5ic7uxr1mj',
+    contract: {
+      reward: 'Burn',
+      donation: 'FundSaving',
+      role: 'MaintainerSingleSigner',
+    },
+    funds: {
+      oscoin: 0,
+      exchanges: [
+      ],
+    },
+    meta: {
+      codeHostUrl: 'github.com/juliendonck',
+      description: 'Juliens world',
+      imageUrl: 'https://avatars0.githubusercontent.com/u/48290027?s=144&v=4',
+      name: 'Julien',
+      websiteUrl: 'https://juliendonck.com',
+    },
+    contributors: [
+
+    ],
+    maintainers: [
+      {
+        name: 'juliendonck',
+        imageUrl: 'https://avatars2.githubusercontent.com/u/2326909?s=400&v=4',
+      },
+    ],
+    checkpoints: [],
+    graph: {
+      edges: [
+
+      ],
+      osrank: 0,
+      percentile: 0,
+    },
+  },
 ]
+
+
 
 let cabalAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd'
 let initialTransactions = [
