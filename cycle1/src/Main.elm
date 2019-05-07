@@ -444,8 +444,8 @@ viewOverlay maybeOverlay url =
             ( Just title, overlayAttrs content backUrl )
 
 
-viewPage : Page -> ( String, Element.Element Msg )
-viewPage page =
+viewPage : Maybe KeyPair -> Page -> ( String, Element.Element Msg )
+viewPage maybeKeyPair page =
     case page of
         Home ->
             Page.Home.view
@@ -454,7 +454,7 @@ viewPage page =
             Page.NotFound.view
 
         Project project ->
-            Page.Project.view project
+            Page.Project.view maybeKeyPair project
 
         Register pageModel ->
             let
@@ -489,7 +489,7 @@ view : Model -> Browser.Document Msg
 view model =
     let
         ( pageTitle, pageContent ) =
-            viewPage model.page
+            viewPage model.keyPair model.page
 
         ( overlayTitle, attrs ) =
             viewOverlay model.overlay model.url

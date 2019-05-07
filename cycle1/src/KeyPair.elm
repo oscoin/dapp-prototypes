@@ -1,4 +1,4 @@
-module KeyPair exposing (ID, KeyPair, decode, decoder, id, toString)
+module KeyPair exposing (ID, KeyPair, decode, decoder, equal, id, toString)
 
 import Json.Decode as Decode
 
@@ -20,11 +20,21 @@ id (KeyPair i _) =
     i
 
 
+pubKey : KeyPair -> PubKey
+pubKey (KeyPair _ pk) =
+    pk
+
+
 toString : KeyPair -> String
 toString keyPair =
     case keyPair of
         KeyPair i pk ->
             String.join "#" [ i, String.slice 0 6 pk ]
+
+
+equal : KeyPair -> KeyPair -> Bool
+equal a b =
+    id a == id b && pubKey a == pubKey b
 
 
 

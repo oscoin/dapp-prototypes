@@ -1,5 +1,59 @@
 import { encode } from './base32.js'
 
+const fakeKeyPair = {
+  id: 'fakeid',
+  pubKey: encode(nacl.sign.keyPair().publicKey),
+}
+const people = {
+  geigerzaehler: {
+    keyPair: {
+      id: 'geigerzaehler',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'geigerzaehler',
+    imageUrl: 'https://avatars2.githubusercontent.com/u/3919579?s=400&v=4',
+  },
+  jameshaydon: {
+    keyPair: {
+      id: 'jameshaydon',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'jameshaydon',
+    imageUrl: 'https://avatars2.githubusercontent.com/u/692690?s=400&v=4',
+  },
+  jkarni: {
+    keyPair: {
+      id: 'jkarni',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'jkarni',
+    imageUrl: 'https://avatars3.githubusercontent.com/u/1657498?s=400&v=4',
+  },
+  mebrei: {
+    keyPair: {
+      id: 'mebrei',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'MeBrei',
+    imageUrl: 'https://avatars1.githubusercontent.com/u/16262137?s=400&v=4',
+  },
+  luqui: {
+    keyPair: {
+      id: 'luqui',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'luqui',
+    imageUrl: 'https://avatars0.githubusercontent.com/u/22957?s=400&v=4',
+  },
+  juliendonck: {
+    keyPair: {
+      id: 'juliendonck',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'juliendonck',
+    imageUrl: 'https://avatars2.githubusercontent.com/u/2326909?s=400&v=4',
+  },
+}
 const initialProjects = [
   {
     address: '1b4atzir794d11ckjtk7xawsqjizgwwabx9bun7qmw5ic7uxr1mj',
@@ -53,46 +107,15 @@ const initialProjects = [
       websiteUrl: 'https://radicle.xyz',
     },
     contributors: [
-      {
-        name: 'geigerzaehler',
-        imageUrl: 'https://avatars2.githubusercontent.com/u/3919579?s=400&v=4',
-      },
-      {
-        name: 'jameshaydon',
-        imageUrl: 'https://avatars2.githubusercontent.com/u/692690?s=400&v=4',
-      },
-      {
-        name: 'jkarni',
-        imageUrl: 'https://avatars3.githubusercontent.com/u/1657498?s=400&v=4',
-      },
-      {
-        name: 'MeBrei',
-        imageUrl: 'https://avatars1.githubusercontent.com/u/16262137?s=400&v=4',
-      },
-      {
-        name: 'luqui',
-        imageUrl: 'https://avatars0.githubusercontent.com/u/22957?s=400&v=4',
-      },
-      {
-        name: 'juliendonck',
-        imageUrl: 'https://avatars2.githubusercontent.com/u/2326909?s=400&v=4',
-      },
+      people.geigerzaehler,
+      people.jameshaydon,
+      people.jkarni,
+      people.mebrei,
+      people.luqui,
+      people.juliendonck,
     ],
-    maintainers: [
-      {
-        name: 'jkarni',
-        imageUrl: 'https://avatars3.githubusercontent.com/u/1657498?s=400&v=4',
-      },
-      {
-        name: 'jameshaydon',
-        imageUrl: 'https://avatars2.githubusercontent.com/u/692690?s=400&v=4',
-      },
-      {
-        name: 'MeBrei',
-        imageUrl: 'https://avatars1.githubusercontent.com/u/16262137?s=400&v=4',
-      },
-    ],
-    checkpoints: [ 'abcd123' ],
+    maintainers: [people.jkarni, people.jameshaydon, people.mebrei],
+    checkpoints: ['abcd123'],
     graph: {
       edges: [
         { direction: 'outgoing', name: 'IPFS', osrank: 0.84 },
@@ -111,8 +134,7 @@ const initialProjects = [
     },
     funds: {
       oscoin: 0,
-      exchanges: [
-      ],
+      exchanges: [],
     },
     meta: {
       codeHostUrl: 'github.com/juliendonck',
@@ -121,27 +143,16 @@ const initialProjects = [
       name: 'Julien',
       websiteUrl: 'https://juliendonck.com',
     },
-    contributors: [
-
-    ],
-    maintainers: [
-      {
-        name: 'juliendonck',
-        imageUrl: 'https://avatars2.githubusercontent.com/u/2326909?s=400&v=4',
-      },
-    ],
+    contributors: [],
+    maintainers: [people.juliendonck],
     checkpoints: [],
     graph: {
-      edges: [
-
-      ],
+      edges: [],
       osrank: 0,
       percentile: 0,
     },
   },
 ]
-
-
 
 let cabalAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd'
 let initialTransactions = [
@@ -215,10 +226,7 @@ window.addEventListener('DOMContentLoaded', _ => {
     flags: {
       address: encode(nacl.sign.keyPair().publicKey),
       // maybeKeyPair: null,
-      maybeKeyPair: {
-        id: 'fakeid',
-        pubKey: encode(nacl.sign.keyPair().publicKey),
-      },
+      maybeKeyPair: people.juliendonck.keyPair,
       maybeWallet: document.getElementById('wallet') ? 'webext' : null,
       pendingTransactions: initialTransactions,
       projects: initialProjects,
