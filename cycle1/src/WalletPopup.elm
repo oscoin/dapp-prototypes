@@ -251,7 +251,7 @@ view model =
                 NotFound ->
                     Page.NotFound.view
     in
-    { title = String.join " <> " [ title, "oscoin wallet" ]
+    { title = String.join " <> " [ title, "Oscoin wallet" ]
     , body =
         [ Element.layout [] <| content ]
     }

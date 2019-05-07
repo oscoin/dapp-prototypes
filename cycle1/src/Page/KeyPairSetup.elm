@@ -119,7 +119,7 @@ viewInitial =
                 ++ Font.mediumHeader Color.black
             )
           <|
-            Element.text "oscoin Wallet"
+            Element.text "Oscoin Wallet"
         , Element.paragraph
             ([ Element.Font.center
              , Element.width Element.fill
@@ -173,7 +173,7 @@ viewSetup id =
                 ++ Font.mediumHeader Color.black
             )
           <|
-            Element.text "oscoin Wallet"
+            Element.text "Oscoin Wallet"
         , Element.paragraph
             ([ Element.Font.center
              , Element.width Element.fill
