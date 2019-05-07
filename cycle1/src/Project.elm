@@ -13,6 +13,7 @@ module Project exposing
     , isMaintainer
     , maintainers
     , mapContract
+    , mapMaintainers
     , mapMeta
     , meta
     , prettyAddress
@@ -117,6 +118,11 @@ meta (Project data) =
 contributors : Project -> List Person
 contributors (Project data) =
     data.contributors
+
+
+mapMaintainers : (List Person -> List Person) -> Project -> Project
+mapMaintainers change (Project data) =
+    Project { data | maintainers = change data.maintainers }
 
 
 maintainers : Project -> List Person

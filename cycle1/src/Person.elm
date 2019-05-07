@@ -4,6 +4,7 @@ module Person exposing
     , imageUrl
     , keyPair
     , name
+    , withKeyPair
     )
 
 import Json.Decode as Decode
@@ -20,6 +21,11 @@ type alias ImageUrl =
 
 type Person
     = Person KeyPair Name ImageUrl
+
+
+withKeyPair : KeyPair -> Person
+withKeyPair kp =
+    Person kp "unknonw" ""
 
 
 imageUrl : Person -> ImageUrl
