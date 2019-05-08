@@ -220,6 +220,8 @@ let initialTransactions = [
 ]
 
 window.addEventListener('DOMContentLoaded', _ => {
+  let hasWallet = document.getElementById('wallet') ? true : false
+
   console.log(document.getElementById('wallet') ? 'webext' : null)
 
   var app = Elm.Main.init({
@@ -232,12 +234,6 @@ window.addEventListener('DOMContentLoaded', _ => {
       projects: initialProjects,
     },
     node: document.getElementById('app'),
-  })
-
-  // Check if wallet is installed.
-  window.postMessage({
-    direction: 'page-to-wallet',
-    type: 'getKeyPair',
   })
 
   app.ports.requestProject.subscribe(function(address) {
@@ -282,17 +278,15 @@ window.addEventListener('DOMContentLoaded', _ => {
   })
 
   window.addEventListener('message', function(event) {
-    console.log('window.message', event)
-
     let msg = event.data
 
-    console.log('window.message.msg', msg)
-
     if (msg.direction === 'wallet-to-page') {
-      // A transaction has been reject.
-      if (msg.type === 'transactionRejected') {
-        console.log('SENDING', msg.hash)
-        app.ports.transactionRejected.send(msg.hash)
+      console.log('window.message.msg', msg)
+      console.log(msg.type, msg.type === 'transactionsFetched')
+
+      // An existing project was fetched.
+      if (msg.type === 'projectFetched' && msg.project !== null) {
+        app.ports.projectFetched.send(msg.project)
       }
 
       // A transaction has been authorized.
@@ -301,6 +295,11 @@ window.addEventListener('DOMContentLoaded', _ => {
           hash: msg.hash,
           keyPairId: msg.keyPairId,
         })
+      }
+
+      // A transaction has been reject.
+      if (msg.type === 'transactionRejected') {
+        app.ports.transactionRejected.send(msg.hash)
       }
 
       // Web extension wallet is signaling presence.
@@ -314,11 +313,6 @@ window.addEventListener('DOMContentLoaded', _ => {
         })
       }
 
-      // An existing project was fetched.
-      if (msg.type === 'projectFetched' && msg.project !== null) {
-        app.ports.projectFetched.send(msg.project)
-      }
-
       // A new key pair was created.
       if (msg.type === 'keyPairCreated') {
         app.ports.keyPairCreated.send(msg.id)
@@ -328,6 +322,24 @@ window.addEventListener('DOMContentLoaded', _ => {
       if (msg.type === 'keyPairFetched' && msg.id && msg.id !== null) {
         app.ports.keyPairFetched.send(msg.id)
       }
+
+      // Ongoing transactions are send from the wallet.
+      if (msg.type === 'transactionsFetched') {
+        console.log('ports.transactionsFetched', msg.transactions)
+        app.ports.transactionsFetched.send(msg.transactions)
+      }
     }
+  })
+
+  // Fetch key pair if already present.
+  // window.postMessage({
+  //   direction: 'page-to-wallet',
+  //   type: 'getKeyPair',
+  // })
+
+  // Fetch transactions if already present.
+  window.postMessage({
+    direction: 'page-to-wallet',
+    type: 'fetchTransactions',
   })
 })

@@ -40,6 +40,15 @@ browser.runtime.onMessage.addListener((msg, sender) => {
       })
     }
 
+    // Return all stored transactions.
+    if (msg.type == 'fetchTransactions') {
+      browser.tabs.sendMessage(sender.tab.id, {
+        direction: 'wallet-to-page',
+        type: 'transactionsFetched',
+        transactions: Object.keys(transactions).map(hash => transactions[hash]),
+      })
+    }
+
     // Present the transaction to sign to the user.
     if (msg.type === 'signTransaction') {
       currentTab = sender.tab
@@ -135,6 +144,12 @@ function getTransaction(hash) {
 function rejectTransaction(hash) {
   console.log('rejectTransaction.hash', hash)
 
+  let tx = transactions[hash]
+
+  tx.state = { type: 'rejected' }
+
+  transactions[hash] = tx
+
   browser.tabs.sendMessage(getCurrentTab().id, {
     direction: 'wallet-to-page',
     type: 'transactionRejected',
@@ -145,6 +160,12 @@ function rejectTransaction(hash) {
 function signTransaction(hash, keyPairId) {
   console.log('signTransaction.hash', hash)
   console.log('signTransaction.keyPairId', keyPairId)
+
+  let tx = transactions[hash]
+
+  tx.state = { type: 'unconfirmed', blocks: 0 }
+
+  transactions[hash] = tx
 
   browser.tabs.sendMessage(getCurrentTab().id, {
     direction: 'wallet-to-page',

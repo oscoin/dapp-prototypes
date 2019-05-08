@@ -177,6 +177,9 @@ port transactionAuthorized : (Decode.Value -> msg) -> Sub msg
 port transactionRejected : (Decode.Value -> msg) -> Sub msg
 
 
+port transactionsFetched : (Decode.Value -> msg) -> Sub msg
+
+
 port walletWebExtPresent : (() -> msg) -> Sub msg
 
 
@@ -209,6 +212,7 @@ subscriptions _ =
         , projectFetched (Decode.decodeValue Project.decoder >> ProjectFetched)
         , transactionAuthorized (Decode.decodeValue authorizeResponseDecoder >> TransactionAuthorized)
         , transactionRejected (Decode.decodeValue Decode.string >> TransactionRejected)
+        , transactionsFetched (Decode.decodeValue (Decode.list Transaction.decoder) >> TransactionsFetched)
         , walletWebExtPresent WalletWebExtPresent
         ]
 
@@ -231,6 +235,7 @@ type Msg
     | ProjectFetched (Result Decode.Error Project)
     | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
     | TransactionRejected (Result Decode.Error Transaction.Hash)
+    | TransactionsFetched (Result Decode.Error (List Transaction))
     | WalletWebExtPresent ()
 
 
@@ -438,7 +443,15 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        -- TODO(xla): Surface conversion errors properly and show them in the UI.
         TransactionRejected (Err _) ->
+            ( model, Cmd.none )
+
+        TransactionsFetched (Ok txs) ->
+            ( { model | pendingTransactions = txs }, Cmd.none )
+
+        -- TODO(xla): Surface conversion errors properly and show them in the UI.
+        TransactionsFetched (Err _) ->
             ( model, Cmd.none )
 
         WalletWebExtPresent _ ->
