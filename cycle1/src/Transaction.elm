@@ -316,7 +316,7 @@ stateText s =
             if blocks < 1 then
                 "Awaiting confirmation"
 
-            else if blocks < 5 then
+            else if blocks < 6 then
                 "Confirmation pending"
 
             else
