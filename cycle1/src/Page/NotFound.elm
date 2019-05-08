@@ -19,6 +19,6 @@ view =
         , Element.spacing 24
         ]
         [ Element.el [ Element.centerX ] <| Icon.notFound Color.black
-        , Element.el ([] ++ Font.mediumHeader Color.black) <| Element.text "Page Not Found"
+        , Element.el ([] ++ Font.mediumHeader Color.black) <| Element.text "Page not found"
         ]
     )
