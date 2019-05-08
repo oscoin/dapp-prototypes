@@ -71,9 +71,7 @@ viewMeta project =
                 )
               <|
                 Element.text <|
-                    Meta.name meta
-                        ++ "#"
-                        ++ addr
+                    addr
             , Icon.copy
             ]
 

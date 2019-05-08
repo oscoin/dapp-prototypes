@@ -138,7 +138,11 @@ viewInitial =
             )
             [ Element.text "We’ll start by setting up a key pair. This means we’ll create a public and secret key for you that we store locally on this device. This is to guarantee that transactions are signed with the keys of your account."
             ]
-        , Button.accent [ Element.width <| Element.px 320, Element.centerX, Events.onClick MoveStepSetup ] "Set up key pair"
+        , Button.accent
+            [ Element.width <| Element.px 320
+            , Events.onClick MoveStepSetup
+            ]
+            [ Element.el [ Element.centerX ] <| Element.text "Set up key pair" ]
         ]
 
 
@@ -150,10 +154,12 @@ viewSetup id =
 
         nextBtn =
             if id == "" then
-                Button.inactive nextAttrs "Next"
+                Button.inactive nextAttrs [ Element.text "Next" ]
 
             else
-                Button.accent ([ Events.onClick MoveStepPassphrase ] ++ nextAttrs) "Next"
+                Button.accent
+                    ([ Events.onClick MoveStepPassphrase ] ++ nextAttrs)
+                    [ Element.text "Next" ]
     in
     Element.column
         [ Element.centerX
@@ -209,7 +215,7 @@ viewSetup id =
             , Element.paddingEach { top = 12, left = 0, bottom = 0, right = 0 }
             ]
           <|
-            Button.transparent [] "Cancel"
+            Button.transparent [] [ Element.text "Cancel" ]
         ]
 
 
@@ -221,10 +227,10 @@ viewPassphrase id checked =
 
         doneBtn =
             if checked then
-                Button.accent ([ Events.onClick <| Create id ] ++ doneAttr) "All done"
+                Button.accent ([ Events.onClick <| Create id ] ++ doneAttr) [ Element.text "All done" ]
 
             else
-                Button.inactive doneAttr "All done"
+                Button.inactive doneAttr [ Element.text "All done" ]
     in
     Element.column
         [ Element.centerX
