@@ -187,6 +187,12 @@ dataDecoder =
 encode : Project -> Encode.Value
 encode (Project data) =
     Encode.object
-        [ ( "contract", Contract.encode data.contract )
+        [ ( "address", Address.encode data.address )
+        , ( "contract", Contract.encode data.contract )
+        , ( "funds", Funds.encode data.funds )
+        , ( "graph", Graph.encode data.graph )
         , ( "meta", Meta.encode data.meta )
+        , ( "contributors", Encode.list Person.encode data.contributors )
+        , ( "maintainers", Encode.list Person.encode data.maintainers )
+        , ( "checkpoints", Encode.list Encode.string data.checkpoints )
         ]

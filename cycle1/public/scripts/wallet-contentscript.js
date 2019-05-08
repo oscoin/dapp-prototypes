@@ -23,6 +23,8 @@
   window.addEventListener('message', event => {
     let msg = event.data
 
+    console.log('page-to-wallet', msg)
+
     if (msg.direction === 'page-to-wallet') {
       browser.runtime.sendMessage(msg).then(
         () => {

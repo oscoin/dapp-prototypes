@@ -7,6 +7,7 @@ module Project.Graph exposing
     , edgeName
     , edgeRank
     , empty
+    , encode
     , percentile
     , percentileString
     , rank
@@ -14,6 +15,7 @@ module Project.Graph exposing
     )
 
 import Json.Decode as Decode
+import Json.Encode as Encode
 
 
 type Graph
@@ -55,6 +57,19 @@ decoder =
         (Decode.field "osrank" (Decode.map Rank Decode.float))
         (Decode.field "percentile" (Decode.map Percentile Decode.int))
         (Decode.field "edges" (Decode.list edgeDecoder))
+
+
+
+-- ENCODING
+
+
+encode : Graph -> Encode.Value
+encode (Graph (Rank osr) (Percentile perc) _) =
+    Encode.object
+        [ ( "osrank", Encode.float osr )
+        , ( "percentile", Encode.int perc )
+        , ( "edges", Encode.list Encode.bool [] )
+        ]
 
 
 

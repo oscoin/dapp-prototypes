@@ -115,13 +115,13 @@ init flags url navKey =
         maybeRoute =
             Route.fromUrl url
 
-        page =
+        ( page, pageCmd ) =
             pageFromRoute address projects maybeKeyPair maybeRoute
 
         maybeOverlay =
             overlay page maybeWallet maybeKeyPair pendingTransactions
 
-        cmd =
+        overlayCmd =
             cmdFromOverlay maybeOverlay
     in
     ( { address = address
@@ -135,7 +135,10 @@ init flags url navKey =
       , url = url
       , wallet = maybeWallet
       }
-    , cmd
+    , Cmd.batch
+        [ overlayCmd
+        , pageCmd
+        ]
     )
 
 
@@ -146,7 +149,13 @@ init flags url navKey =
 port requireKeyPair : () -> Cmd msg
 
 
+port requestProject : String -> Cmd msg
+
+
 port signTransaction : Encode.Value -> Cmd msg
+
+
+port storeProject : Encode.Value -> Cmd msg
 
 
 
@@ -157,6 +166,9 @@ port keyPairCreated : (Decode.Value -> msg) -> Sub msg
 
 
 port keyPairFetched : (Decode.Value -> msg) -> Sub msg
+
+
+port projectFetched : (Decode.Value -> msg) -> Sub msg
 
 
 port transactionAuthorized : (Decode.Value -> msg) -> Sub msg
@@ -194,6 +206,7 @@ subscriptions _ =
     Sub.batch
         [ keyPairCreated (KeyPair.decode >> KeyPairCreated)
         , keyPairFetched (KeyPair.decode >> KeyPairFetched)
+        , projectFetched (Decode.decodeValue Project.decoder >> ProjectFetched)
         , transactionAuthorized (Decode.decodeValue authorizeResponseDecoder >> TransactionAuthorized)
         , transactionRejected (Decode.decodeValue Decode.string >> TransactionRejected)
         , walletWebExtPresent WalletWebExtPresent
@@ -215,6 +228,7 @@ type Msg
     | KeyPairCreated (Maybe KeyPair)
     | KeyPairFetched (Maybe KeyPair)
     | DismissTransaction Transaction.Hash
+    | ProjectFetched (Result Decode.Error Project)
     | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
     | TransactionRejected (Result Decode.Error Transaction.Hash)
     | WalletWebExtPresent ()
@@ -238,16 +252,16 @@ update msg model =
                 maybeRoute =
                     Route.fromUrl url
 
-                page =
+                ( page, pageCmd ) =
                     pageFromRoute model.address model.projects model.keyPair maybeRoute
 
                 ov =
                     overlay page model.wallet model.keyPair model.pendingTransactions
 
-                cmd =
+                overlayCmd =
                     cmdFromOverlay ov
             in
-            ( { model | overlay = ov, page = page, url = url }, cmd )
+            ( { model | overlay = ov, page = page, url = url }, Cmd.batch [ pageCmd, overlayCmd ] )
 
         OverlayWalletSetup subCmd ->
             case model.overlay of
@@ -325,6 +339,7 @@ update msg model =
               }
             , Cmd.batch
                 [ signTransaction <| Transaction.encode tx
+                , storeProject <| Project.encode project
                 , Project.address project
                     |> Address.string
                     |> Route.Project
@@ -349,6 +364,27 @@ update msg model =
                     List.filter (\tx -> Transaction.hash tx /= hash) model.pendingTransactions
             in
             ( { model | pendingTransactions = txs }, Cmd.none )
+
+        ProjectFetched (Ok project) ->
+            let
+                page =
+                    case model.page of
+                        NotFound ->
+                            Project <| Page.Project.init project model.keyPair
+
+                        _ ->
+                            model.page
+
+                projects =
+                    project :: model.projects
+            in
+            ( { model | page = page, projects = projects }
+            , Cmd.none
+            )
+
+        -- TODO(xla): Surface conversion errors properly and show them in the UI.
+        ProjectFetched (Err _) ->
+            ( model, Cmd.none )
 
         TransactionAuthorized (Ok res) ->
             case model.overlay of
@@ -598,19 +634,21 @@ overlay page maybeWallet maybeKeyPair txs =
                 Nothing
 
 
-pageFromRoute : Address -> List Project -> Maybe KeyPair -> Maybe Route -> Page
+pageFromRoute : Address -> List Project -> Maybe KeyPair -> Maybe Route -> ( Page, Cmd Msg )
 pageFromRoute newAddr projects maybeKeyPair maybeRoute =
     case Debug.log "Main.pageFromRoute" maybeRoute of
         Just Route.Home ->
-            Home
+            ( Home, Cmd.none )
 
         Just (Route.Project addr) ->
             case Project.findByAddr projects addr of
                 Nothing ->
-                    NotFound
+                    ( NotFound, requestProject addr )
 
                 Just project ->
-                    Project <| Page.Project.init project maybeKeyPair
+                    ( Project <| Page.Project.init project maybeKeyPair
+                    , Cmd.none
+                    )
 
         Just Route.Register ->
             let
@@ -625,10 +663,10 @@ pageFromRoute newAddr projects maybeKeyPair maybeRoute =
                 owner =
                     Person.withKeyPair keyPair
             in
-            Register <| Page.Register.init newAddr owner
+            ( Register <| Page.Register.init newAddr owner, Cmd.none )
 
         _ ->
-            NotFound
+            ( NotFound, Cmd.none )
 
 
 
