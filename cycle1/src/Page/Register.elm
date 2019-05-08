@@ -41,7 +41,7 @@ type Model
 
 init : Address -> Person -> Model
 init addr owner =
-    Model Info (Project.mapMaintainers (\_ -> [ owner ]) <| Project.withAddress addr) (FieldError False False)
+    Model Info (Project.mapMaintainers (\_ -> [ Debug.log "register.owner" owner ]) <| Project.withAddress addr) (FieldError False False)
 
 
 

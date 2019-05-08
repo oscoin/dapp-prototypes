@@ -17,7 +17,7 @@ import Page.Home
 import Page.NotFound
 import Page.Project
 import Page.Register
-import Person
+import Person exposing (Person)
 import Project exposing (Project)
 import Project.Address as Address exposing (Address)
 import Route exposing (Route)
@@ -177,6 +177,9 @@ port transactionAuthorized : (Decode.Value -> msg) -> Sub msg
 port transactionRejected : (Decode.Value -> msg) -> Sub msg
 
 
+port transactionsFetched : (Decode.Value -> msg) -> Sub msg
+
+
 port walletWebExtPresent : (() -> msg) -> Sub msg
 
 
@@ -209,6 +212,7 @@ subscriptions _ =
         , projectFetched (Decode.decodeValue Project.decoder >> ProjectFetched)
         , transactionAuthorized (Decode.decodeValue authorizeResponseDecoder >> TransactionAuthorized)
         , transactionRejected (Decode.decodeValue Decode.string >> TransactionRejected)
+        , transactionsFetched (Decode.decodeValue (Decode.list Transaction.decoder) >> TransactionsFetched)
         , walletWebExtPresent WalletWebExtPresent
         ]
 
@@ -231,6 +235,7 @@ type Msg
     | ProjectFetched (Result Decode.Error Project)
     | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
     | TransactionRejected (Result Decode.Error Transaction.Hash)
+    | TransactionsFetched (Result Decode.Error (List Transaction))
     | WalletWebExtPresent ()
 
 
@@ -353,7 +358,16 @@ update msg model =
                     ( model, Cmd.none )
 
                 Just keyPair ->
-                    ( { model | keyPair = Just keyPair, overlay = Nothing }, Cmd.none )
+                    let
+                        page =
+                            case model.overlay of
+                                Just WaitForKeyPair ->
+                                    Register <| Page.Register.init model.address <| deriveOwner (Just keyPair)
+
+                                _ ->
+                                    model.page
+                    in
+                    ( { model | keyPair = Just keyPair, page = page, overlay = Nothing }, Cmd.none )
 
         KeyPairFetched maybeKeyPair ->
             ( { model | keyPair = maybeKeyPair }, Cmd.none )
@@ -429,7 +443,15 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        -- TODO(xla): Surface conversion errors properly and show them in the UI.
         TransactionRejected (Err _) ->
+            ( model, Cmd.none )
+
+        TransactionsFetched (Ok txs) ->
+            ( { model | pendingTransactions = txs }, Cmd.none )
+
+        -- TODO(xla): Surface conversion errors properly and show them in the UI.
+        TransactionsFetched (Err _) ->
             ( model, Cmd.none )
 
         WalletWebExtPresent _ ->
@@ -601,6 +623,20 @@ cmdFromOverlay maybeOverlay =
             Cmd.none
 
 
+deriveOwner : Maybe KeyPair -> Person
+deriveOwner maybeKeyPair =
+    let
+        keyPair =
+            case maybeKeyPair of
+                Just kp ->
+                    kp
+
+                Nothing ->
+                    KeyPair.empty
+    in
+    Person.withKeyPair keyPair
+
+
 overlayAttrs : Element.Element msg -> String -> List (Element.Attribute msg)
 overlayAttrs content backUrl =
     [ background backUrl
@@ -651,19 +687,7 @@ pageFromRoute newAddr projects maybeKeyPair maybeRoute =
                     )
 
         Just Route.Register ->
-            let
-                keyPair =
-                    case maybeKeyPair of
-                        Just kp ->
-                            kp
-
-                        Nothing ->
-                            KeyPair.empty
-
-                owner =
-                    Person.withKeyPair keyPair
-            in
-            ( Register <| Page.Register.init newAddr owner, Cmd.none )
+            ( Register <| Page.Register.init newAddr (deriveOwner maybeKeyPair), Cmd.none )
 
         _ ->
             ( NotFound, Cmd.none )

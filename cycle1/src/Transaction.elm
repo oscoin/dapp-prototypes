@@ -291,7 +291,7 @@ stateString s =
             "unauthorized"
 
         Rejected ->
-            "denied"
+            "rejected"
 
         Unconfirmed _ ->
             "unconfirmed"
@@ -339,7 +339,7 @@ stateDecoder =
     Decode.oneOf
         [ when typeDecoder (is "wait-to-authorize") <| Decode.succeed WaitToAuthorize
         , when typeDecoder (is "unauthorized") <| Decode.succeed Unauthorized
-        , when typeDecoder (is "denied") <| Decode.succeed Rejected
+        , when typeDecoder (is "rejected") <| Decode.succeed Rejected
         , when typeDecoder (is "unconfirmed") unconfirmedDecoder
         , when typeDecoder (is "confirmed") <| Decode.succeed Confirmed
         ]
