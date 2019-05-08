@@ -225,8 +225,8 @@ window.addEventListener('DOMContentLoaded', _ => {
   var app = Elm.Main.init({
     flags: {
       address: encode(nacl.sign.keyPair().publicKey),
-      // maybeKeyPair: null,
-      maybeKeyPair: people.juliendonck.keyPair,
+      maybeKeyPair: null,
+      // maybeKeyPair: people.juliendonck.keyPair,
       maybeWallet: document.getElementById('wallet') ? 'webext' : null,
       pendingTransactions: initialTransactions,
       projects: initialProjects,
@@ -238,6 +238,16 @@ window.addEventListener('DOMContentLoaded', _ => {
   window.postMessage({
     direction: 'page-to-wallet',
     type: 'getKeyPair',
+  })
+
+  app.ports.requestProject.subscribe(function(address) {
+    console.log('ports.requestProject', address)
+
+    window.postMessage({
+      direction: 'page-to-wallet',
+      type: 'requestProject',
+      address: address,
+    })
   })
 
   app.ports.requireKeyPair.subscribe(function() {
@@ -257,6 +267,17 @@ window.addEventListener('DOMContentLoaded', _ => {
       direction: 'page-to-wallet',
       type: 'signTransaction',
       transaction: transaction,
+    })
+  })
+
+  // Store project for later retrieval.
+  app.ports.storeProject.subscribe(function(project) {
+    console.log('ports.storeProject', project)
+
+    window.postMessage({
+      direction: 'page-to-wallet',
+      type: 'storeProject',
+      project: project,
     })
   })
 
@@ -291,6 +312,11 @@ window.addEventListener('DOMContentLoaded', _ => {
           direction: 'page-to-wallet',
           type: 'getKeyPair',
         })
+      }
+
+      // An existing project was fetched.
+      if (msg.type === 'projectFetched' && msg.project !== null) {
+        app.ports.projectFetched.send(msg.project)
       }
 
       // A new key pair was created.

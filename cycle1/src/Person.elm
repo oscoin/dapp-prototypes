@@ -1,6 +1,7 @@
 module Person exposing
     ( Person
     , decoder
+    , encode
     , imageUrl
     , keyPair
     , name
@@ -8,6 +9,7 @@ module Person exposing
     )
 
 import Json.Decode as Decode
+import Json.Encode as Encode
 import KeyPair as KeyPair exposing (KeyPair)
 
 
@@ -53,3 +55,16 @@ decoder =
         (Decode.field "keyPair" KeyPair.decoder)
         (Decode.field "name" Decode.string)
         (Decode.field "imageUrl" Decode.string)
+
+
+
+-- ENCODER
+
+
+encode : Person -> Encode.Value
+encode (Person kp n iUrl) =
+    Encode.object
+        [ ( "keyPair", KeyPair.encode kp )
+        , ( "name", Encode.string n )
+        , ( "imageUrl", Encode.string iUrl )
+        ]

@@ -4,12 +4,14 @@ module KeyPair exposing
     , decode
     , decoder
     , empty
+    , encode
     , equal
     , id
     , toString
     )
 
 import Json.Decode as Decode
+import Json.Encode as Encode
 
 
 type alias ID =
@@ -70,3 +72,15 @@ decoder =
     Decode.map2 KeyPair
         (Decode.field "id" Decode.string)
         (Decode.field "pubKey" Decode.string)
+
+
+
+-- ENCODING
+
+
+encode : KeyPair -> Encode.Value
+encode (KeyPair i pk) =
+    Encode.object
+        [ ( "id", Encode.string i )
+        , ( "pubKey", Encode.string pk )
+        ]

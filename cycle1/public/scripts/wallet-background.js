@@ -12,6 +12,7 @@ let keyPair = null
 //   id: 'fakeid',
 //   pubKey: encode(nacl.sign.keyPair().publicKey),
 // }
+let projects = {}
 let transactions = {}
 
 if (keyPair !== null) {
@@ -59,6 +60,23 @@ browser.runtime.onMessage.addListener((msg, sender) => {
         })
     }
 
+    // Cache newly crated projects. Save the F5!
+    if (msg.type === 'storeProject') {
+      let project = msg.project
+
+      projects[project.address] = project
+    }
+
+    // A project that is stored is requested.
+    if (msg.type === 'requestProject') {
+      browser.tabs.sendMessage(sender.tab.id, {
+        direction: 'wallet-to-page',
+        type: 'projectFetched',
+        project: getProject(msg.address),
+        projects: projects,
+      })
+    }
+
     // A key pair is required to continue with the current operation on the
     // page.
     if (msg.type === 'requireKeyPair') {
@@ -103,6 +121,10 @@ function keyPairSetupComplete() {
   })
 
   setActiveIcon()
+}
+
+function getProject(address) {
+  return projects[address] || null
 }
 
 function getTransaction(hash) {

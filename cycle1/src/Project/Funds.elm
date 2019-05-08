@@ -7,13 +7,15 @@ module Project.Funds exposing
     , coinsString
     , decoder
     , empty
+    , encode
     , exchanges
-    , transferName
     , multiply
+    , transferName
     )
 
 import Json.Decode as Decode
 import Json.Decode.Extra exposing (when)
+import Json.Encode as Encode
 import Project.Contract as Contract
 
 
@@ -64,6 +66,28 @@ decoder =
 coinsDecoder : Decode.Decoder Coins
 coinsDecoder =
     Decode.map Coins Decode.int
+
+
+
+-- ENCODING
+
+
+encode : Funds -> Encode.Value
+encode (Funds c es) =
+    Encode.object
+        [ ( "oscoin", encodeCoins c )
+        , ( "exchanges", encodeExchanges es )
+        ]
+
+
+encodeCoins : Coins -> Encode.Value
+encodeCoins (Coins c) =
+    Encode.int c
+
+
+encodeExchanges : List Exchange -> Encode.Value
+encodeExchanges es =
+    Encode.list Encode.bool []
 
 
 
