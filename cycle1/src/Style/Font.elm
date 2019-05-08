@@ -6,7 +6,6 @@ module Style.Font exposing
     , boldBodyTextMono
     , linkText
     , mediumBodyText
-    , mediumBodyTextMono
     , mediumHeader
     , mediumHeaderMono
     , smallLinkText
@@ -70,17 +69,6 @@ mediumBodyText textColor =
     [ Font.color textColor
     , Font.family
         [ fontGTAmericaMedium
-        , Font.sansSerif
-        ]
-    , Font.size 16
-    ]
-
-
-mediumBodyTextMono : Color -> List (Attribute msg)
-mediumBodyTextMono textColor =
-    [ Font.color textColor
-    , Font.family
-        [ fontGTAmericaMonoBold
         , Font.sansSerif
         ]
     , Font.size 16

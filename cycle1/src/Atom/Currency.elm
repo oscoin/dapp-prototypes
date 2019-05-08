@@ -35,7 +35,7 @@ small amount bgColor =
         , Element.el
             ([ Element.paddingEach { top = 0, right = 0, bottom = 0, left = 8 }
              ]
-                ++ Font.mediumBodyTextMono bgColor
+                ++ Font.bodyTextMono bgColor
             )
           <|
             Element.text amount
