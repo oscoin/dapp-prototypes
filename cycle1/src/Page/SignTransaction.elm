@@ -145,7 +145,7 @@ viewActions { transaction, keyPairs, selectedKeyPair, selectionOpen } =
                 [ Element.alignRight
                 , Element.paddingEach { top = 24, left = 0, bottom = 0, right = 0 }
                 ]
-                [ Button.transparent [ Events.onClick <| Reject transaction ] "Reject"
+                [ Button.transparent [ Events.onClick <| Reject transaction ] [ Element.text "Reject" ]
                 , viewAuthAction transaction selectedKeyPair
                 ]
             ]
@@ -155,10 +155,10 @@ viewAuthAction : Transaction -> Maybe KeyPair -> Element Msg
 viewAuthAction tx selectedKeyPair =
     case selectedKeyPair of
         Just keyPair ->
-            Button.accent [ Events.onClick <| Authorize tx keyPair ] "Authorize transaction"
+            Button.accent [ Events.onClick <| Authorize tx keyPair ] [ Element.text "Authorize transaction" ]
 
         Nothing ->
-            Button.inactive [] "Authorize transaction"
+            Button.inactive [] [ Element.text "Authorize transaction" ]
 
 
 viewSelect : List KeyPair -> Element Msg

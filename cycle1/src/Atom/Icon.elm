@@ -5,6 +5,7 @@ module Atom.Icon exposing
     , copy
     , cross
     , donation
+    , imageFallback
     , initialCircle
     , largeLogoCircle
     , lock
@@ -498,9 +499,9 @@ selectDown : Element.Color -> Element msg
 selectDown color =
     Element.html <|
         svg
-            [ height "7", width "10", viewBox "0 0 10 7", fill "none" ]
+            [ height "24", width "24", viewBox "0 0 24 24", fill "none" ]
             [ Svg.path
-                [ d "M1 1.76379L5 5.75364L9 1.76379"
+                [ d "M8 10L12 14L16 10"
                 , stroke (Color.toCssString color)
                 , strokeWidth "2"
                 , strokeLinecap "round"
@@ -514,9 +515,9 @@ selectUp : Element.Color -> Element msg
 selectUp color =
     Element.html <|
         svg
-            [ height "7", width "10", viewBox "0 0 10 7", fill "none" ]
+            [ height "24", width "24", viewBox "0 0 24 24", fill "none" ]
             [ Svg.path
-                [ d "M9 5.71655L5 1.71655L1 5.71655"
+                [ d "M16 14L12 10L8 14"
                 , stroke (Color.toCssString color)
                 , strokeWidth "2"
                 , strokeLinecap "round"
@@ -617,3 +618,30 @@ checkbox color checked =
         svg
             [ width "24", height "24", viewBox "0 0 24 24", fill "none" ]
             [ child ]
+
+
+imageFallback : Element msg
+imageFallback =
+    Element.html <|
+        svg
+            [ width "72", height "72", viewBox "0 0 72 72", fill "none" ]
+            [ Svg.path
+                [ d "M72 0H0V72H72V0Z"
+                , fill "url(#paint0_radial)"
+                ]
+                []
+            , defs
+                []
+                [ radialGradient
+                    [ id "paint0_radial"
+                    , cx "0"
+                    , cy "0"
+                    , r "1"
+                    , gradientUnits "userSpaceOnUse"
+                    , gradientTransform "translate(36 36) rotate(90) scale(111)"
+                    ]
+                    [ stop [ stopColor "#E074CB" ] []
+                    , stop [ offset "1", stopColor "#6E41E0" ] []
+                    ]
+                ]
+            ]
