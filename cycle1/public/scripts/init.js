@@ -336,7 +336,6 @@ window.addEventListener('DOMContentLoaded', _ => {
         console.log('ports.transactionsFetched', msg.transactions)
         app.ports.transactionsFetched.send(msg.transactions)
       }
-
       // Get notice of transaction progress.
       if (msg.type == 'transactionProgress') {
         console.log('ports.transactionProgress', msg.transaction)

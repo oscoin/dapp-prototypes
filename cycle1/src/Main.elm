@@ -452,7 +452,6 @@ update msg model =
         TransactionRejected (Err _) ->
             ( model, Cmd.none )
 
-        -- TODO(xla): Surface conversion errors properly and show them in the UI.
         TransactionProgress (Ok newTx) ->
             let
                 mapTx tx =
