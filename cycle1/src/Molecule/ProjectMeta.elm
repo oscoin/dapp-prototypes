@@ -52,7 +52,7 @@ viewMeta : Project -> Element msg
 viewMeta project =
     let
         addr =
-            (String.slice 0 15 <| Project.prettyAddress project) ++ "..."
+            (String.slice 0 23 <| Project.prettyAddress project) ++ "..."
 
         meta =
             Project.meta project
@@ -75,7 +75,7 @@ viewMeta project =
             [ Element.pointer ]
             [ Element.el
                 ([ Element.paddingEach { top = 0, right = 8, bottom = 0, left = 0 } ]
-                    ++ Font.mediumBodyText Color.grey
+                    ++ Font.boldSmallTextMono Color.grey
                 )
               <|
                 Element.text <|
@@ -86,25 +86,27 @@ viewMeta project =
         -- Description
         , Element.paragraph
             ([ Element.spacing 8
-             , Element.paddingEach { top = 6, right = 0, bottom = 12, left = 0 }
+             , Element.paddingEach { top = 0, right = 0, bottom = 12, left = 0 }
              ]
                 ++ Font.bodyText Color.black
             )
             [ Element.text <| Meta.description meta
             ]
         , Element.row
-            [ Element.spacing 24
+            [ Element.spacing 36
             , Element.paddingEach { top = 0, right = 0, bottom = 24, left = 0 }
             ]
-            [ Element.el
+            [ Element.link
                 ([ Element.pointer, Element.mouseOver [ Element.Font.color Color.blue ] ] ++ Font.mediumBodyText Color.darkGrey)
               <|
-                Element.text <|
-                    Meta.codeHostUrl meta
-            , Element.el
+                { label = Element.text <| Meta.codeHostUrl meta
+                , url = Meta.codeHostUrl meta
+                }
+            , Element.link
                 ([ Element.pointer, Element.mouseOver [ Element.Font.color Color.blue ] ] ++ Font.mediumBodyText Color.darkGrey)
               <|
-                Element.text <|
-                    Meta.websiteUrl meta
+                { label = Element.text <| Meta.websiteUrl meta
+                , url = Meta.websiteUrl meta
+                }
             ]
         ]
