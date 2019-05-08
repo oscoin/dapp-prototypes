@@ -1,5 +1,6 @@
 (function() {
   console.log('oscoin wallet | popup | init')
+  console.log(browser.extension.getBackgroundPage)
 
   // Get background object to call API on it and current key pair if exists.
   let background = browser.extension.getBackgroundPage()

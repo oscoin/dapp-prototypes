@@ -109,7 +109,7 @@ viewActions { transaction, keyPairs, selectedKeyPair, selectionOpen } =
         ( selectColor, selectText ) =
             case selectedKeyPair of
                 Just keyPair ->
-                    ( Color.pink, KeyPair.toString keyPair )
+                    ( Color.pink, String.slice 0 31 <| KeyPair.toString keyPair )
 
                 Nothing ->
                     ( Color.lightGrey, "Select the key you want to use to sign this transaction" )
@@ -175,7 +175,7 @@ viewSelect keyPairs =
                 (\keyPair ->
                     viewSelectRowBottom
                         (Icon.lock Color.pink)
-                        (KeyPair.toString keyPair)
+                        (String.slice 0 31 <| KeyPair.toString keyPair)
                         Element.none
                         (SelectKeyPair keyPair)
                 )

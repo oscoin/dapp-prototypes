@@ -21,6 +21,7 @@ view =
         , Element.width <| Element.px 1074
         , Element.centerX
         , Element.spacing 24
+        , Element.alignBottom
         ]
         -- oscoin.io link
         [ Element.link

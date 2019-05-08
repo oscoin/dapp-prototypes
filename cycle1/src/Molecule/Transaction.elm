@@ -187,7 +187,7 @@ rowColor tx =
             if blocks == 6 then
                 Color.green
 
-            else if blocks > 3 then
+            else if blocks > 0 then
                 Color.orange
 
             else

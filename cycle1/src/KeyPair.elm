@@ -45,7 +45,7 @@ toString : KeyPair -> String
 toString keyPair =
     case keyPair of
         KeyPair i pk ->
-            String.join "#" [ i, String.slice 0 6 pk ]
+            String.join "#" [ i, pk ]
 
 
 equal : KeyPair -> KeyPair -> Bool

@@ -177,6 +177,9 @@ port transactionAuthorized : (Decode.Value -> msg) -> Sub msg
 port transactionRejected : (Decode.Value -> msg) -> Sub msg
 
 
+port transactionProgress : (Decode.Value -> msg) -> Sub msg
+
+
 port transactionsFetched : (Decode.Value -> msg) -> Sub msg
 
 
@@ -212,6 +215,7 @@ subscriptions _ =
         , projectFetched (Decode.decodeValue Project.decoder >> ProjectFetched)
         , transactionAuthorized (Decode.decodeValue authorizeResponseDecoder >> TransactionAuthorized)
         , transactionRejected (Decode.decodeValue Decode.string >> TransactionRejected)
+        , transactionProgress (Decode.decodeValue Transaction.decoder >> TransactionProgress)
         , transactionsFetched (Decode.decodeValue (Decode.list Transaction.decoder) >> TransactionsFetched)
         , walletWebExtPresent WalletWebExtPresent
         ]
@@ -235,6 +239,7 @@ type Msg
     | ProjectFetched (Result Decode.Error Project)
     | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
     | TransactionRejected (Result Decode.Error Transaction.Hash)
+    | TransactionProgress (Result Decode.Error Transaction)
     | TransactionsFetched (Result Decode.Error (List Transaction))
     | WalletWebExtPresent ()
 
@@ -447,6 +452,25 @@ update msg model =
         TransactionRejected (Err _) ->
             ( model, Cmd.none )
 
+        -- TODO(xla): Surface conversion errors properly and show them in the UI.
+        TransactionProgress (Ok newTx) ->
+            let
+                mapTx tx =
+                    if Transaction.hash newTx == Transaction.hash tx then
+                        newTx
+
+                    else
+                        tx
+
+                txs =
+                    List.map mapTx model.pendingTransactions
+            in
+            ( { model | pendingTransactions = txs }, Cmd.none )
+
+        -- TODO(xla): Surface conversion errors properly and show them in the UI.
+        TransactionProgress (Err _) ->
+            ( model, Cmd.none )
+
         TransactionsFetched (Ok txs) ->
             ( { model | pendingTransactions = txs }, Cmd.none )
 
@@ -587,8 +611,9 @@ view model =
                 , Element.width Element.fill
                 ]
                 [ Element.map TopBarMsg <| TopBar.view model.topBarModel rUrl
-                , viewWallet model.wallet
-                , viewKeyPair model.keyPair
+
+                -- , viewWallet model.wallet
+                -- , viewKeyPair model.keyPair
                 , Molecule.Transaction.viewProgress DismissTransaction model.pendingTransactions
                 , pageContent
                 , Footer.view

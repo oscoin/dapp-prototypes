@@ -14,6 +14,7 @@ let keyPair = null
 // }
 let projects = {}
 let transactions = {}
+let progress = {}
 
 if (keyPair !== null) {
   setActiveIcon()
@@ -91,6 +92,12 @@ browser.runtime.onMessage.addListener((msg, sender) => {
     if (msg.type === 'requireKeyPair') {
       currentTab = sender.tab
 
+      if (getKeyPair() !== null) {
+        keyPairSetupComplete()
+
+        return
+      }
+
       browser.windows
         .create({
           type: 'popup',
@@ -123,13 +130,17 @@ function getKeyPair() {
 }
 
 function keyPairSetupComplete() {
+  setActiveIcon()
+
+  if (getCurrentTab() === undefined) {
+    return
+  }
+
   browser.tabs.sendMessage(getCurrentTab().id, {
     direction: 'wallet-to-page',
     type: 'keyPairCreated',
     id: getKeyPair(),
   })
-
-  setActiveIcon()
 }
 
 function getProject(address) {
@@ -173,6 +184,8 @@ function signTransaction(hash, keyPairId) {
     hash: hash,
     keyPairId: getKeyPair().id,
   })
+
+  progress[hash] = setInterval(progressTransaction(hash), 10000)
 }
 
 // Public API for popup script.
@@ -182,6 +195,32 @@ window.keyPairSetupComplete = keyPairSetupComplete
 window.getTransaction = getTransaction
 window.rejectTransaction = rejectTransaction
 window.signTransaction = signTransaction
+
+// TRANSACTIONS
+
+function progressTransaction(hash) {
+  return function() {
+    let tx = transactions[hash]
+    let blocks = tx.state.blocks
+    let newBlocks = blocks + 1
+    let state = { type: 'unconfirmed', blocks: newBlocks }
+
+    if (blocks === 6) {
+      state.type = 'confirmed'
+
+      clearInterval(progress[hash])
+    }
+
+    tx.state = state
+    transactions[hash] = tx
+
+    browser.tabs.sendMessage(getCurrentTab().id, {
+      direction: 'wallet-to-page',
+      type: 'transactionProgress',
+      transaction: tx,
+    })
+  }
+}
 
 // Helpers
 
