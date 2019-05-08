@@ -4,6 +4,7 @@ module Style.Font exposing
     , bodyText
     , bodyTextMono
     , boldBodyTextMono
+    , boldSmallTextMono
     , linkText
     , mediumBodyText
     , mediumHeader
@@ -161,6 +162,17 @@ smallTextMono textColor =
     [ Font.color textColor
     , Font.family
         [ fontGTAmericaMonoRegular
+        , Font.monospace
+        ]
+    , Font.size 14
+    ]
+
+
+boldSmallTextMono : Color -> List (Attribute msg)
+boldSmallTextMono textColor =
+    [ Font.color textColor
+    , Font.family
+        [ fontGTAmericaMonoBold
         , Font.monospace
         ]
     , Font.size 14
