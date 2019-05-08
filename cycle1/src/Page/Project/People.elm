@@ -43,7 +43,7 @@ viewMaintainers title people isMaintainer =
 
         viewMoreBtn =
             if List.length people < 5 then
-                Element.none
+                Element.el [ Element.height <| Element.px 36 ] <| Element.none
 
             else
                 Button.transparent
