@@ -100,7 +100,7 @@ const initialProjects = [
       ],
     },
     meta: {
-      codeHostUrl: 'github.com/radicle-dev/radicle',
+      codeHostUrl: 'https://github.com/radicle-dev/radicle',
       description: 'A peer-to-peer stack for code collaboration',
       imageUrl: 'https://avatars0.githubusercontent.com/u/48290027?s=144&v=4',
       name: 'Radicle',
