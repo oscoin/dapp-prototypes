@@ -1,6 +1,7 @@
 module Page.KeyPairList exposing (view)
 
 import Element exposing (Element)
+import Element.Font
 import KeyPair exposing (KeyPair)
 import Style.Color as Color
 import Style.Font as Font
@@ -14,17 +15,28 @@ view : KeyPair -> ( String, Element msg )
 view keyPair =
     ( "key pair list"
     , Element.column
-        [ Element.spacingXY 0 42
+        [ Element.spacing 24
         , Element.height Element.fill
         , Element.width Element.fill
+        , Element.padding 64
+        , Element.centerX
         ]
         [ Element.el
             ([ Element.centerX
+             , Element.Font.center
              ]
-                ++ Font.mediumHeader Color.black
+                ++ Font.mediumBodyText Color.black
             )
           <|
-            Element.text "Key pair list"
-        , Element.el [] <| Element.text <| KeyPair.toString keyPair
+            Element.text "Active key pair"
+        , Element.el
+            ([ Element.centerX
+             , Element.Font.center
+             ]
+                ++ Font.smallTextMono Color.purple
+            )
+          <|
+            Element.text <|
+                KeyPair.toString keyPair
         ]
     )

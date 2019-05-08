@@ -68,7 +68,7 @@ viewProjects edges title isMaintainer =
                 Element.none
 
         viewMoreBtn =
-            if List.length edges > 0 then
+            if List.length edges > 5 then
                 Button.custom
                     Color.almostWhite
                     Color.darkGrey
@@ -79,11 +79,11 @@ viewProjects edges title isMaintainer =
                 Element.none
     in
     Element.column
-        [ Element.width Element.fill ]
+        [ Element.width Element.fill, Element.alignTop ]
         [ Heading.sectionWithCount [] title <| List.length edges
         , Element.table
             []
-            { data = edges
+            { data = List.take 5 edges
             , columns =
                 [ { header =
                         Table.headLeft

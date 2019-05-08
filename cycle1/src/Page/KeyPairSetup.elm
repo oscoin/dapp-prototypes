@@ -105,6 +105,7 @@ viewInitial =
         [ Element.centerX
         , Element.centerY
         , Element.width (Element.fill |> Element.maximum 440)
+        , Element.padding 64
         ]
         [ Element.el
             [ Element.centerX
@@ -141,6 +142,7 @@ viewInitial =
         , Button.accent
             [ Element.width <| Element.px 320
             , Events.onClick MoveStepSetup
+            , Element.centerX
             ]
             [ Element.el [ Element.centerX ] <| Element.text "Set up key pair" ]
         ]
@@ -154,17 +156,18 @@ viewSetup id =
 
         nextBtn =
             if id == "" then
-                Button.inactive nextAttrs [ Element.text "Next" ]
+                Button.inactive nextAttrs [ Element.el [ Element.centerX ] <| Element.text "Next" ]
 
             else
                 Button.accent
                     ([ Events.onClick MoveStepPassphrase ] ++ nextAttrs)
-                    [ Element.text "Next" ]
+                    [ Element.el [ Element.centerX ] <| Element.text "Next" ]
     in
     Element.column
         [ Element.centerX
         , Element.centerY
         , Element.width (Element.fill |> Element.maximum 440)
+        , Element.padding 64
         ]
         [ Element.el
             [ Element.centerX
@@ -227,15 +230,16 @@ viewPassphrase id checked =
 
         doneBtn =
             if checked then
-                Button.accent ([ Events.onClick <| Create id ] ++ doneAttr) [ Element.text "All done" ]
+                Button.accent ([ Events.onClick <| Create id ] ++ doneAttr) [ Element.el [ Element.centerX ] <| Element.text "All done" ]
 
             else
-                Button.inactive doneAttr [ Element.text "All done" ]
+                Button.inactive doneAttr [ Element.el [ Element.centerX ] <| Element.text "All done" ]
     in
     Element.column
         [ Element.centerX
         , Element.centerY
         , Element.width (Element.fill |> Element.maximum 440)
+        , Element.padding 64
         ]
         [ Element.el
             [ Element.centerX
