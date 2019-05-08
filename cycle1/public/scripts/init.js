@@ -119,6 +119,14 @@ const initialProjects = [
     graph: {
       edges: [
         { direction: 'outgoing', name: 'IPFS', osrank: 0.84 },
+        { direction: 'outgoing', name: 'Cabal', osrank: 0.84 },
+        { direction: 'outgoing', name: 'Other package', osrank: 0.84 },
+        { direction: 'outgoing', name: 'Amazing dependency', osrank: 0.84 },
+        { direction: 'outgoing', name: 'Project wow', osrank: 0.84 },
+        { direction: 'outgoing', name: 'Botcoin', osrank: 0.84 },
+        { direction: 'outgoing', name: 'Bosscoin', osrank: 0.84 },
+        { direction: 'outgoing', name: 'IPFS-front-end', osrank: 0.84 },
+        { direction: 'outgoing', name: 'wowza', osrank: 0.84 },
         { direction: 'incoming', name: 'Julien package', osrank: 0.99 },
       ],
       osrank: 0.86,
