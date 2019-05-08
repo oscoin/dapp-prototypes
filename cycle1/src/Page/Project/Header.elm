@@ -34,7 +34,7 @@ view project isMaintainer showOverlay toggleMsg =
                 [ ProjectMeta.view project
                 , viewStats <| Project.graph project
                 ]
-            , Actions.view isMaintainer showOverlay toggleMsg
+            , Actions.view isMaintainer showOverlay toggleMsg project
             ]
 
 
