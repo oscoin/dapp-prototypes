@@ -32,7 +32,7 @@ view funds isMaintainer =
                     ([ Element.alignBottom
                      , Element.paddingEach { top = 0, right = 0, bottom = 0, left = 12 }
                      ]
-                        ++ Font.mediumBodyTextMono Color.grey
+                        ++ Font.bodyTextMono Color.grey
                     )
                   <|
                     Element.text <|
