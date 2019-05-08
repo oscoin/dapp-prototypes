@@ -91,6 +91,7 @@ style bgColor textColor hoverColor attr children =
          , Element.paddingEach { top = 9, right = 16, bottom = 11, left = 16 }
          , Element.spacingXY 14 0
          , Element.Font.center
+         , Element.height <| Element.px 36
          ]
             ++ Font.mediumBodyText textColor
             ++ attr
