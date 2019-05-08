@@ -15,13 +15,29 @@ view : Project -> Element msg
 view project =
     Element.row
         [ Element.spacing 24, Element.width Element.fill ]
-        [ viewLogo <| Meta.imageUrl <| Project.meta project
+        [ viewLogo <| Project.meta project
         , viewMeta project
         ]
 
 
-viewLogo : String -> Element msg
-viewLogo imgUrl =
+viewLogo : Meta -> Element msg
+viewLogo meta =
+    let
+        image =
+            if Meta.imageUrl meta == "" then
+                Icon.imageFallback
+
+            else
+                Element.image
+                    [ Element.centerX
+                    , Element.centerY
+                    , Element.width <| Element.px 72
+                    , Element.height <| Element.px 72
+                    ]
+                    { src = Meta.imageUrl meta
+                    , description = Meta.name meta
+                    }
+    in
     Element.el
         [ Background.color Color.lightGrey
         , Element.width <| Element.px 72
@@ -29,15 +45,7 @@ viewLogo imgUrl =
         , Element.alignTop
         ]
     <|
-        Element.image
-            [ Element.centerX
-            , Element.centerY
-            , Element.width <| Element.px 72
-            , Element.height <| Element.px 72
-            ]
-            { src = imgUrl
-            , description = "radicle"
-            }
+        image
 
 
 viewMeta : Project -> Element msg
@@ -92,11 +100,11 @@ viewMeta project =
                 ([ Element.pointer, Element.mouseOver [ Element.Font.color Color.blue ] ] ++ Font.mediumBodyText Color.darkGrey)
               <|
                 Element.text <|
-                    Meta.websiteUrl meta
+                    Meta.codeHostUrl meta
             , Element.el
                 ([ Element.pointer, Element.mouseOver [ Element.Font.color Color.blue ] ] ++ Font.mediumBodyText Color.darkGrey)
               <|
                 Element.text <|
-                    Meta.codeHostUrl meta
+                    Meta.websiteUrl meta
             ]
         ]
