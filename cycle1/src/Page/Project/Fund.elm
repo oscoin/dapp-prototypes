@@ -92,7 +92,7 @@ viewTable funds isMaintainer =
                     Color.almostWhite
                     Color.darkGrey
                     [ Element.width Element.fill ]
-                    [ Element.text "View all" ]
+                    [ Element.el [ Element.centerX ] <| Element.text "View all" ]
 
             else
                 Element.none

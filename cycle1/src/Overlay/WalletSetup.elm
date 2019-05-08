@@ -169,23 +169,23 @@ viewPick =
                         Color.pink
                         Color.white
                         [ Element.width Element.fill ]
-                        [ Element.text "Firefox add-on" ]
+                        [ Element.el [ Element.centerX ] <| Element.text "Firefox add-on" ]
                 }
             , Button.custom
                 Color.blue
                 Color.white
                 [ Element.width Element.fill ]
-                [ Element.text "Mobile app" ]
+                [ Element.el [ Element.centerX ] <| Element.text "Mobile app" ]
             , Button.custom
                 Color.green
                 Color.white
                 [ Element.width Element.fill ]
-                [ Element.text "Ledger Nano S" ]
+                [ Element.el [ Element.centerX ] <| Element.text "Ledger Nano S" ]
             , Button.custom
                 Color.bordeaux
                 Color.white
                 [ Element.width Element.fill ]
-                [ Element.text "macOS app" ]
+                [ Element.el [ Element.centerX ] <| Element.text "macOS app" ]
             ]
         , Element.column
             [ Background.color Color.almostWhite
