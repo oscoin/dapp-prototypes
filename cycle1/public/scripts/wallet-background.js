@@ -2,10 +2,10 @@ import { encode } from './base32.js'
 
 console.log('oscoin wallet | background | init')
 
-console.log(nacl.sign.keyPair())
-console.log(encode(nacl.sign.keyPair().publicKey))
+// Start up checkpointer to get notice of new checkpoints.
+let port = browser.runtime.connectNative('checkpointer')
 
-let currentTab = undefined
+let windowId = 0
 // Non-present value must be `null` for Elm to accept it as a Maybe.
 let keyPair = null
 // let keyPair = {
@@ -20,6 +20,32 @@ if (keyPair !== null) {
   setActiveIcon()
 }
 
+// Listen to messages from native checkpointing process.
+port.onMessage.addListener(address => {
+  // We only have checkpoint signal for now.
+  console.log('received checkpoint', address)
+
+  let tx = {
+    hash: 'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa0',
+    fee: 9,
+    state: { type: 'unconfirmed', blocks: 0 },
+    messages: [{ type: 'checkpoint', address: address }],
+  }
+
+  transactions[tx.hash] = tx
+
+  getCurrentTab(tab => {
+    browser.tabs.sendMessage(tab.id, {
+      direction: 'wallet-to-page',
+      type: 'transactionAuthorized',
+      transaction: tx,
+    })
+
+    startProgress(tx.hash)
+  })
+})
+
+// Listen to messages from frontend app.
 browser.runtime.onMessage.addListener((msg, sender) => {
   console.log(msg, sender)
 
@@ -52,8 +78,6 @@ browser.runtime.onMessage.addListener((msg, sender) => {
 
     // Present the transaction to sign to the user.
     if (msg.type === 'signTransaction') {
-      currentTab = sender.tab
-
       let tx = msg.transaction
 
       transactions[tx.hash] = tx
@@ -90,8 +114,6 @@ browser.runtime.onMessage.addListener((msg, sender) => {
     // A key pair is required to continue with the current operation on the
     // page.
     if (msg.type === 'requireKeyPair') {
-      currentTab = sender.tab
-
       if (getKeyPair() !== null) {
         keyPairSetupComplete()
 
@@ -109,11 +131,31 @@ browser.runtime.onMessage.addListener((msg, sender) => {
           console.log('popup window info', windowInfo)
         })
     }
+
+    // Set the correct window id.
+    if (msg.type === 'setWindowId') {
+      windowId = sender.tab.windowId
+    }
   }
 })
 
-function getCurrentTab() {
-  return currentTab
+function getCurrentTab(cb) {
+  browser.tabs
+    .query({
+      active: true,
+      highlighted: true,
+      windowId: windowId,
+    })
+    .then(
+      tabs => {
+        console.log('active tabs', tabs)
+
+        cb(tabs[0])
+      },
+      err => {
+        console.error(`couldn't get current tab ${err}`)
+      }
+    )
 }
 
 function createKeyPair(id) {
@@ -132,14 +174,12 @@ function getKeyPair() {
 function keyPairSetupComplete() {
   setActiveIcon()
 
-  if (getCurrentTab() === undefined) {
-    return
-  }
-
-  browser.tabs.sendMessage(getCurrentTab().id, {
-    direction: 'wallet-to-page',
-    type: 'keyPairCreated',
-    id: getKeyPair(),
+  getCurrentTab(tab => {
+    browser.tabs.sendMessage(tab.id, {
+      direction: 'wallet-to-page',
+      type: 'keyPairCreated',
+      id: getKeyPair(),
+    })
   })
 }
 
@@ -161,10 +201,12 @@ function rejectTransaction(hash) {
 
   transactions[hash] = tx
 
-  browser.tabs.sendMessage(getCurrentTab().id, {
-    direction: 'wallet-to-page',
-    type: 'transactionRejected',
-    hash: hash,
+  getCurrentTab(tab => {
+    browser.tabs.sendMessage(tab.id, {
+      direction: 'wallet-to-page',
+      type: 'transactionRejected',
+      hash: hash,
+    })
   })
 }
 
@@ -178,14 +220,15 @@ function signTransaction(hash, keyPairId) {
 
   transactions[hash] = tx
 
-  browser.tabs.sendMessage(getCurrentTab().id, {
-    direction: 'wallet-to-page',
-    type: 'transactionAuthorized',
-    hash: hash,
-    keyPairId: getKeyPair().id,
-  })
+  getCurrentTab(tab => {
+    browser.tabs.sendMessage(tab.id, {
+      direction: 'wallet-to-page',
+      type: 'transactionAuthorized',
+      transaction: tx,
+    })
 
-  progress[hash] = setInterval(progressTransaction(hash), 10000)
+    startProgress(hash)
+  })
 }
 
 // Public API for popup script.
@@ -198,8 +241,8 @@ window.signTransaction = signTransaction
 
 // TRANSACTIONS
 
-function progressTransaction(hash) {
-  return function() {
+function startProgress(hash) {
+  progress[hash] = setInterval(function() {
     let tx = transactions[hash]
     let blocks = tx.state.blocks
     let newBlocks = blocks + 1
@@ -214,12 +257,14 @@ function progressTransaction(hash) {
     tx.state = state
     transactions[hash] = tx
 
-    browser.tabs.sendMessage(getCurrentTab().id, {
-      direction: 'wallet-to-page',
-      type: 'transactionProgress',
-      transaction: tx,
+    getCurrentTab(tab => {
+      browser.tabs.sendMessage(tab.id, {
+        direction: 'wallet-to-page',
+        type: 'transactionProgress',
+        transaction: tx,
+      })
     })
-  }
+  }, 10000)
 }
 
 // Helpers

@@ -20,6 +20,7 @@ import Page.Register
 import Person exposing (Person)
 import Project exposing (Project)
 import Project.Address as Address exposing (Address)
+import Project.Graph as Graph exposing (Graph)
 import Route exposing (Route)
 import Style.Color as Color
 import Task
@@ -213,7 +214,7 @@ subscriptions _ =
         [ keyPairCreated (KeyPair.decode >> KeyPairCreated)
         , keyPairFetched (KeyPair.decode >> KeyPairFetched)
         , projectFetched (Decode.decodeValue Project.decoder >> ProjectFetched)
-        , transactionAuthorized (Decode.decodeValue authorizeResponseDecoder >> TransactionAuthorized)
+        , transactionAuthorized (Decode.decodeValue Transaction.decoder >> TransactionAuthorized)
         , transactionRejected (Decode.decodeValue Decode.string >> TransactionRejected)
         , transactionProgress (Decode.decodeValue Transaction.decoder >> TransactionProgress)
         , transactionsFetched (Decode.decodeValue (Decode.list Transaction.decoder) >> TransactionsFetched)
@@ -237,7 +238,7 @@ type Msg
     | KeyPairFetched (Maybe KeyPair)
     | DismissTransaction Transaction.Hash
     | ProjectFetched (Result Decode.Error Project)
-    | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
+    | TransactionAuthorized (Result Decode.Error Transaction)
     | TransactionRejected (Result Decode.Error Transaction.Hash)
     | TransactionProgress (Result Decode.Error Transaction)
     | TransactionsFetched (Result Decode.Error (List Transaction))
@@ -405,26 +406,77 @@ update msg model =
         ProjectFetched (Err _) ->
             ( model, Cmd.none )
 
-        TransactionAuthorized (Ok res) ->
-            case model.overlay of
-                Just WaitForTransaction ->
+        TransactionAuthorized (Ok newTx) ->
+            let
+                isPresent =
+                    List.any (\tx -> Transaction.hash tx == Transaction.hash newTx) model.pendingTransactions
+
+                mapState tx =
+                    if Transaction.hash tx == Transaction.hash newTx then
+                        newTx
+
+                    else
+                        tx
+
+                txs =
+                    if Debug.log "transaction is present" isPresent then
+                        List.map mapState model.pendingTransactions
+
+                    else
+                        newTx :: model.pendingTransactions
+
+                hasCheckpoint =
                     let
-                        mapState tx =
-                            if Transaction.hash tx == res.hash then
-                                Transaction.mapState (\_ -> Transaction.Unconfirmed 0) tx
-
-                            else
-                                tx
-
-                        txs =
-                            List.map mapState model.pendingTransactions
+                        test tx =
+                            List.any (\m -> Transaction.messageIsCheckpoint m) <| Transaction.messages tx
                     in
-                    ( { model | overlay = Nothing, pendingTransactions = txs }
-                    , Cmd.none
-                    )
+                    List.any test txs
 
-                _ ->
-                    ( model, Cmd.none )
+                message =
+                    Transaction.messages newTx
+                        |> List.head
+
+                address =
+                    case Debug.log "TRANSACTION.MESSAGE" message of
+                        Just (Transaction.Checkpoint addr) ->
+                            Address.string <| addr
+
+                        _ ->
+                            ""
+
+                projects =
+                    if Debug.log "not present" (not isPresent) && Debug.log "has checkpoint" hasCheckpoint then
+                        let
+                            mapProject p =
+                                if Debug.log "PROJECT MATCHES" (Address.string (Project.address p) == address) then
+                                    Project.mapGraph (\_ -> checkpointGraph) p
+                                        |> Project.mapCheckpoints (\_ -> [ "abcd123" ])
+                                        |> Project.mapContributors (\_ -> checkpointContributors)
+
+                                else
+                                    p
+                        in
+                        List.map mapProject model.projects
+
+                    else
+                        model.projects
+
+                page =
+                    case model.page of
+                        Project pageModel ->
+                            case Project.findByAddr projects address of
+                                Just project ->
+                                    Project <| Page.Project.init project model.keyPair
+
+                                Nothing ->
+                                    Project pageModel
+
+                        _ ->
+                            model.page
+            in
+            ( { model | overlay = Nothing, pendingTransactions = txs, page = page, projects = projects }
+            , Cmd.none
+            )
 
         -- TODO(xla): Surface conversion errors properly and show them in the UI.
         TransactionAuthorized (Err _) ->
@@ -745,3 +797,51 @@ foreground content =
             ]
         <|
             content
+
+
+
+-- CHECKPOINT HELPERS
+
+
+checkpointContributors : List Person
+checkpointContributors =
+    [ Person.init KeyPair.empty "xla" "https://avatars0.githubusercontent.com/u/1585?s=400&v=4"
+    , Person.init KeyPair.empty "juliendonck" "https://avatars2.githubusercontent.com/u/2326909?s=400&v=4"
+    , Person.init KeyPair.empty "cory" "https://avatars1.githubusercontent.com/u/832188?s=400&v=4"
+    ]
+
+
+checkpointGraph : Graph
+checkpointGraph =
+    Graph.empty
+        |> Graph.mapRank (\_ -> 0.12)
+        |> Graph.mapPercentile (\_ -> 25)
+        |> Graph.mapEdges (\_ -> checkpointEdges)
+
+
+checkpointEdges : List Graph.Edge
+checkpointEdges =
+    [ Graph.initEdge "react" Graph.Incoming 0.69
+    , Graph.initEdge "react-dom" Graph.Incoming 0.63
+    , Graph.initEdge "react-router-dom" Graph.Incoming 0.68
+    , Graph.initEdge "react-scripts" Graph.Incoming 0.74
+    , Graph.initEdge "react-timestamp" Graph.Incoming 0.41
+    , Graph.initEdge "styled-components" Graph.Incoming 0.73
+    , Graph.initEdge "eslint-plugin-react" Graph.Incoming 0.38
+    , Graph.initEdge "prettier" Graph.Incoming 0.26
+    , Graph.initEdge "prop-types" Graph.Incoming 0.56
+    , Graph.initEdge "apollo-boost" Graph.Incoming 0.19
+    , Graph.initEdge "graphql" Graph.Incoming 0.02
+    , Graph.initEdge "graphql-tag" Graph.Incoming 0.39
+    , Graph.initEdge "IPFS" Graph.Outgoing 0.61
+    , Graph.initEdge "Cabal" Graph.Outgoing 0.6
+    , Graph.initEdge "Other package" Graph.Outgoing 0.24
+    , Graph.initEdge "Amazing dependency" Graph.Outgoing 0.46
+    , Graph.initEdge "Project wow" Graph.Outgoing 0.84
+    , Graph.initEdge "Botcoin" Graph.Outgoing 0.37
+    , Graph.initEdge "Bosscoin" Graph.Outgoing 0.84
+    , Graph.initEdge "IPFS-front-end" Graph.Outgoing 0.7
+    , Graph.initEdge "wowza" Graph.Outgoing 0.84
+    , Graph.initEdge "Julien package" Graph.Outgoing 0.02
+    , Graph.initEdge "react" Graph.Outgoing 0.69
+    ]

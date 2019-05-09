@@ -1,15 +1,17 @@
 #!/usr/bin/env node
+
+const http = require('http')
 const inquirer = require('inquirer')
 const program = require('commander')
 
-const sleep = (milliseconds) => {
+const sleep = milliseconds => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
 program
   .arguments('<package>')
   .usage('<package> [options]')
-  .action(function (project, cmd) {
+  .action(function(project) {
     console.log('Wasn\'t able to find prior checkpoint, starting fresh.')
     console.log('Reading package.json...')
     sleep(1000).then(() => {
@@ -34,41 +36,33 @@ program
       console.log('    new_dependencies:')
       console.log('      elm@1f4b321, react@7b3519a, styled-components@90b4524')
       console.log('    new_contributions:')
-      console.log('      19 new contributions by Julien Donck, Alexander Simmerl and Cory Levinson')
+      console.log(
+        '      19 new contributions by Julien Donck, Alexander Simmerl and Cory Levinson'
+      )
       console.log(' ')
       console.log('    transaction fee: 0.1 osc')
       console.log(' ')
       inquirer
-	    .prompt({
+        .prompt({
           type: 'confirm',
           name: 'authorize',
           message: 'Do you want to authorize this transaction?',
-          default: false
-        }).then(function (answer) {
-          console.log('Your checkpoint was submitted and is being confirmed through the network.')
-          console.log(' ')
-          console.log('See your project here: oscoin.io/projects/' + `${project}`)
-          console.log(' ')
+          default: false,
+        })
+        .then(function(answer) {
+          http
+            .get(`http://localhost:8003/${project}`, res => {})
+            .on('error', err => {
+              console.error(err)
+            })
+
+          console.log(
+            'Your checkpoint was submitted and is being confirmed through the network.'
+          )
+          console.log(
+            'See your project here: oscoin.io/projects/' + `${project}`
+          )
         })
     })
-
   })
   .parse(process.argv)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -10,6 +10,8 @@
   },
   "permissions": [
     "activeTab",
+    "nativeMessaging",
+    "tabs",
     "*://localhost:8000/*",
     "*://*.oscoin.io/*",
     "*://oscoin.io/*"
@@ -29,5 +31,11 @@
       "run_at": "document_start",
       "all_frames": true
     }
-  ]
+  ],
+  "applications": {
+    "gecko": {
+      "id": "wallet@oscoin.io",
+      "strict_min_version": "55.0"
+    }
+  }
 }

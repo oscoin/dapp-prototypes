@@ -384,7 +384,6 @@ window.addEventListener('DOMContentLoaded', _ => {
 
     if (msg.direction === 'wallet-to-page') {
       console.log('window.message.msg', msg)
-      console.log(msg.type, msg.type === 'transactionsFetched')
 
       // An existing project was fetched.
       if (msg.type === 'projectFetched' && msg.project !== null) {
@@ -393,10 +392,7 @@ window.addEventListener('DOMContentLoaded', _ => {
 
       // A transaction has been authorized.
       if (msg.type === 'transactionAuthorized') {
-        app.ports.transactionAuthorized.send({
-          hash: msg.hash,
-          keyPairId: msg.keyPairId,
-        })
+        app.ports.transactionAuthorized.send(msg.transaction)
       }
 
       // A transaction has been reject.
@@ -437,6 +433,12 @@ window.addEventListener('DOMContentLoaded', _ => {
         app.ports.transactionProgress.send(msg.transaction)
       }
     }
+  })
+
+  // Set window id.
+  window.postMessage({
+    direction: 'page-to-wallet',
+    type: 'setWindowId',
   })
 
   // Fetch key pair if already present.

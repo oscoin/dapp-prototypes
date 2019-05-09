@@ -12,7 +12,10 @@ module Project exposing
     , graph
     , isMaintainer
     , maintainers
+    , mapCheckpoints
     , mapContract
+    , mapContributors
+    , mapGraph
     , mapMaintainers
     , mapMeta
     , meta
@@ -105,6 +108,11 @@ graph (Project data) =
     data.graph
 
 
+mapGraph : (Graph -> Graph) -> Project -> Project
+mapGraph change (Project data) =
+    Project { data | graph = change data.graph }
+
+
 mapMeta : (Meta -> Meta) -> Project -> Project
 mapMeta change (Project data) =
     Project { data | meta = change data.meta }
@@ -113,6 +121,11 @@ mapMeta change (Project data) =
 meta : Project -> Meta
 meta (Project data) =
     data.meta
+
+
+mapContributors : (List Person -> List Person) -> Project -> Project
+mapContributors change (Project data) =
+    Project { data | contributors = change data.contributors }
 
 
 contributors : Project -> List Person
@@ -135,6 +148,11 @@ isMaintainer keyPair project =
     maintainers project
         |> List.map Person.keyPair
         |> List.any (KeyPair.equal keyPair)
+
+
+mapCheckpoints : (List Checkpoint -> List Checkpoint) -> Project -> Project
+mapCheckpoints change (Project data) =
+    Project { data | checkpoints = change data.checkpoints }
 
 
 checkpoints : Project -> List Checkpoint
