@@ -5,6 +5,14 @@ const fakeKeyPair = {
   pubKey: encode(nacl.sign.keyPair().publicKey),
 }
 const people = {
+  clevinson: {
+    keyPair: {
+      id: 'clevinson',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'Cory',
+    imageUrl: 'https://avatars1.githubusercontent.com/u/832188?s=400&v=4',
+  },
   geigerzaehler: {
     keyPair: {
       id: 'geigerzaehler',
@@ -245,6 +253,7 @@ const initialProjects = [
       percentile: 0,
     },
   },
+
 ]
 
 let cabalAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd'
