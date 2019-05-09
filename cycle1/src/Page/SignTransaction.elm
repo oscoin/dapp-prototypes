@@ -80,7 +80,7 @@ view (Model data) =
         [ Element.centerX
         , Element.centerY
         , Element.height Element.fill
-        , Element.width (Element.fill |> Element.maximum 520)
+        , Element.width (Element.fill |> Element.maximum 560)
         ]
         [ Element.el
             ([ Element.width Element.fill
@@ -125,6 +125,7 @@ viewActions { transaction, keyPairs, selectedKeyPair, selectionOpen } =
         [ Element.width Element.fill
         , Background.color Color.almostWhite
         , Element.padding 24
+        , Element.alignBottom
         ]
     <|
         Element.column
