@@ -22,13 +22,17 @@ type Message struct {
 func main() {
 	signalc := make(chan os.Signal, 1)
 
-	signal.Notify(signalc, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(signalc)
 
 	go func(c chan os.Signal) {
 		s := <-c
 
-		logFile(fmt.Sprintf("signal: %#v", s))
-		os.Exit(0)
+		logFile(fmt.Sprintf("got signal: %#v", s))
+
+		if s == syscall.SIGINT || s == syscall.SIGTERM {
+			logFile(fmt.Sprintf("exiting for signal: %#v", s))
+			os.Exit(0)
+		}
 	}(signalc)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

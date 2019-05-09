@@ -432,23 +432,23 @@ update msg model =
                     in
                     List.any test txs
 
+                message =
+                    Transaction.messages newTx
+                        |> List.head
+
+                address =
+                    case Debug.log "TRANSACTION.MESSAGE" message of
+                        Just (Transaction.Checkpoint addr) ->
+                            Address.string <| addr
+
+                        _ ->
+                            ""
+
                 projects =
-                    if not isPresent && hasCheckpoint then
+                    if Debug.log "not present" (not isPresent) && Debug.log "has checkpoint" hasCheckpoint then
                         let
-                            m =
-                                Transaction.messages newTx
-                                    |> List.head
-
-                            address =
-                                case m of
-                                    Just (Transaction.Checkpoint addr) ->
-                                        Address.string <| addr
-
-                                    _ ->
-                                        ""
-
                             mapProject p =
-                                if Address.string (Project.address p) == address then
+                                if Debug.log "PROJECT MATCHES" (Address.string (Project.address p) == address) then
                                     Project.mapGraph (\_ -> checkpointGraph) p
                                         |> Project.mapCheckpoints (\_ -> [ "abcd123" ])
                                         |> Project.mapContributors (\_ -> checkpointContributors)
@@ -460,8 +460,21 @@ update msg model =
 
                     else
                         model.projects
+
+                page =
+                    case model.page of
+                        Project pageModel ->
+                            case Project.findByAddr projects address of
+                                Just project ->
+                                    Project <| Page.Project.init project model.keyPair
+
+                                Nothing ->
+                                    Project pageModel
+
+                        _ ->
+                            model.page
             in
-            ( { model | overlay = Nothing, pendingTransactions = txs, projects = projects }
+            ( { model | overlay = Nothing, pendingTransactions = txs, page = page, projects = projects }
             , Cmd.none
             )
 
