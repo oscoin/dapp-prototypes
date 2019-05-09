@@ -99,13 +99,17 @@ encode (Transaction h fee msgs s) =
 
 
 type Message
-    = ProjectRegistration Address
+    = Checkpoint Address
+    | ProjectRegistration Address
     | UpdateContractRule Address RuleChange
 
 
 messageAddress : Message -> Address
 messageAddress msg =
     case msg of
+        Checkpoint addr ->
+            addr
+
         ProjectRegistration addr ->
             addr
 
@@ -129,6 +133,9 @@ messageDigest msg =
 messageType : Message -> String
 messageType message =
     case message of
+        Checkpoint _ ->
+            "checkpoint"
+
         ProjectRegistration _ ->
             "project-registration"
 
@@ -166,9 +173,16 @@ messageDecoder =
             Decode.field "type" Decode.string
     in
     Decode.oneOf
-        [ when typeDecoder (is (messageType (ProjectRegistration Address.empty))) projectRegistrationDecoder
+        [ when typeDecoder (is (messageType (Checkpoint Address.empty))) checkpointDecoder
+        , when typeDecoder (is (messageType (ProjectRegistration Address.empty))) projectRegistrationDecoder
         , when typeDecoder (is (messageType (UpdateContractRule Address.empty (Donation Contract.defaultDonation Contract.defaultDonation)))) updateContractRuleDecoder
         ]
+
+
+checkpointDecoder : Decode.Decoder Message
+checkpointDecoder =
+    Decode.map Checkpoint
+        (Decode.field "address" Address.decoder)
 
 
 projectRegistrationDecoder : Decode.Decoder Message
@@ -230,6 +244,12 @@ is expected =
 encodeMessage : Message -> Encode.Value
 encodeMessage msg =
     case msg of
+        Checkpoint addr ->
+            Encode.object
+                [ ( "type", Encode.string <| messageType msg )
+                , ( "address", Address.encode addr )
+                ]
+
         ProjectRegistration addr ->
             Encode.object
                 [ ( "type", Encode.string <| messageType msg )

@@ -319,6 +319,9 @@ viewMessage message =
     let
         viewDetail =
             case message of
+                Checkpoint _ ->
+                    Element.none
+
                 ProjectRegistration address ->
                     viewProjectAddress address
 

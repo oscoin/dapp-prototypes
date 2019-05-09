@@ -213,7 +213,7 @@ subscriptions _ =
         [ keyPairCreated (KeyPair.decode >> KeyPairCreated)
         , keyPairFetched (KeyPair.decode >> KeyPairFetched)
         , projectFetched (Decode.decodeValue Project.decoder >> ProjectFetched)
-        , transactionAuthorized (Decode.decodeValue authorizeResponseDecoder >> TransactionAuthorized)
+        , transactionAuthorized (Decode.decodeValue Transaction.decoder >> TransactionAuthorized)
         , transactionRejected (Decode.decodeValue Decode.string >> TransactionRejected)
         , transactionProgress (Decode.decodeValue Transaction.decoder >> TransactionProgress)
         , transactionsFetched (Decode.decodeValue (Decode.list Transaction.decoder) >> TransactionsFetched)
@@ -237,7 +237,7 @@ type Msg
     | KeyPairFetched (Maybe KeyPair)
     | DismissTransaction Transaction.Hash
     | ProjectFetched (Result Decode.Error Project)
-    | TransactionAuthorized (Result Decode.Error TransactionAuthorizedResponse)
+    | TransactionAuthorized (Result Decode.Error Transaction)
     | TransactionRejected (Result Decode.Error Transaction.Hash)
     | TransactionProgress (Result Decode.Error Transaction)
     | TransactionsFetched (Result Decode.Error (List Transaction))
@@ -405,26 +405,28 @@ update msg model =
         ProjectFetched (Err _) ->
             ( model, Cmd.none )
 
-        TransactionAuthorized (Ok res) ->
-            case model.overlay of
-                Just WaitForTransaction ->
-                    let
-                        mapState tx =
-                            if Transaction.hash tx == res.hash then
-                                Transaction.mapState (\_ -> Transaction.Unconfirmed 0) tx
+        TransactionAuthorized (Ok newTx) ->
+            let
+                isPresent =
+                    List.any (\tx -> Transaction.hash tx == Transaction.hash newTx) model.pendingTransactions
 
-                            else
-                                tx
+                mapState tx =
+                    if Transaction.hash tx == Transaction.hash newTx then
+                        Transaction.mapState (\_ -> Transaction.Unconfirmed 0) newTx
 
-                        txs =
-                            List.map mapState model.pendingTransactions
-                    in
-                    ( { model | overlay = Nothing, pendingTransactions = txs }
-                    , Cmd.none
-                    )
+                    else
+                        tx
 
-                _ ->
-                    ( model, Cmd.none )
+                txs =
+                    if Debug.log "transaction is present" isPresent then
+                        List.map mapState model.pendingTransactions
+
+                    else
+                        newTx :: model.pendingTransactions
+            in
+            ( { model | overlay = Nothing, pendingTransactions = txs }
+            , Cmd.none
+            )
 
         -- TODO(xla): Surface conversion errors properly and show them in the UI.
         TransactionAuthorized (Err _) ->
