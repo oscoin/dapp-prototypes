@@ -21,7 +21,7 @@ view graph isMaintainer =
         , Element.paddingEach { top = 64, right = 0, bottom = 0, left = 0 }
         , Element.width Element.fill
         ]
-        [ viewProjects (Graph.dependents graph) "Dependendents" isMaintainer
+        [ viewProjects (Graph.dependents graph) "Dependents" isMaintainer
         , viewProjects (Graph.dependencies graph) "Dependencies" isMaintainer
         ]
 
