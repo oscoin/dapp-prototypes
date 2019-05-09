@@ -7,6 +7,7 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Events as Events
 import Project as Project exposing (Project)
+import Project.Address as Address
 import Style.Color as Color
 import Style.Font as Font
 
@@ -71,7 +72,7 @@ viewCheckpointOverlay project =
             , Element.paddingXY 16 0
             , Element.spacing 16
             ]
-            [ Element.el ([] ++ Font.smallTextMono Color.black) <| Element.text ("$ osc checkpoint " ++ Project.prettyAddress project)
+            [ Element.el ([] ++ Font.smallTextMono Color.black) <| Element.text ("$ osc checkpoint " ++ (Address.string <| Project.address project))
             , Button.transparent [ Element.alignRight ] [ Element.text "copy" ]
             ]
         ]

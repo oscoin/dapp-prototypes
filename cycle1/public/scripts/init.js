@@ -53,6 +53,79 @@ const people = {
     name: 'juliendonck',
     imageUrl: 'https://avatars2.githubusercontent.com/u/2326909?s=400&v=4',
   },
+  adinapolimndc: {
+    keyPair: {
+      id: 'adinapoli-mndc',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'Alfredo Di Napoli',
+    imageUrl: 'https://avatars0.githubusercontent.com/u/45846748?s=400&v=4',
+  },
+  angedupre: {
+    keyPair: {
+      id: 'angedupre',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'Ange Dupre',
+    imageUrl: 'https://avatars3.githubusercontent.com/u/2607791?s=400&v=4',
+  },
+  cloudhead: {
+    keyPair: {
+      id: 'cloudhead',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'Alexis Sellier',
+    imageUrl: 'https://avatars1.githubusercontent.com/u/40774?s=400&v=4',
+  },
+  emmasiemens: {
+    keyPair: {
+      id: 'emmasiemens',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'Emma Siemens',
+    imageUrl: 'https://avatars0.githubusercontent.com/u/45005753?s=400&v=4',
+  },
+  hxrts: {
+    keyPair: {
+      id: 'hxrts',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'Sam Hart',
+    imageUrl: 'https://avatars3.githubusercontent.com/u/1831962?s=400&v=4',
+  },
+  kim: {
+    keyPair: {
+      id: 'kim',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'Kim Altintop',
+    imageUrl: 'https://avatars3.githubusercontent.com/u/6163?s=400&v=4',
+  },
+  lftherios: {
+    keyPair: {
+      id: 'lftherios',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'Eleftherios Diakomichalis',
+    imageUrl: 'https://avatars3.githubusercontent.com/u/853825?s=400&v=4',
+  },
+  onurakpolat: {
+    keyPair: {
+      id: 'onurakpolat',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'Onur Akpolat',
+    imageUrl: 'https://avatars2.githubusercontent.com/u/1712926?s=400&v=4',
+  },
+  xla: {
+    keyPair: {
+      id: 'xla',
+      pubKey: encode(nacl.sign.keyPair().publicKey),
+    },
+    name: 'Alexander Simmerl',
+    imageUrl: 'https://avatars0.githubusercontent.com/u/1585?s=400&v=4',
+  },
+
 }
 const initialProjects = [
   {
@@ -118,16 +191,28 @@ const initialProjects = [
     checkpoints: ['abcd123'],
     graph: {
       edges: [
-        { direction: 'outgoing', name: 'IPFS', osrank: 0.84 },
-        { direction: 'outgoing', name: 'Cabal', osrank: 0.84 },
-        { direction: 'outgoing', name: 'Other package', osrank: 0.84 },
-        { direction: 'outgoing', name: 'Amazing dependency', osrank: 0.84 },
+        { direction: 'incoming', name: 'react', osrank: 0.69},
+        { direction: 'incoming', name: 'react-dom', osrank: 0.63},
+        { direction: 'incoming', name: 'react-router-dom', osrank: 0.68},
+        { direction: 'incoming', name: 'react-scripts', osrank: 0.74},
+        { direction: 'incoming', name: 'react-timestamp', osrank: 0.41},
+        { direction: 'incoming', name: 'styled-components', osrank: 0.73},
+        { direction: 'incoming', name: 'eslint-plugin-react', osrank: 0.38},
+        { direction: 'incoming', name: 'prettier', osrank: 0.26},
+        { direction: 'incoming', name: 'prop-types', osrank: 0.56},
+        { direction: 'incoming', name: 'apollo-boost', osrank: 0.19},
+        { direction: 'incoming', name: 'graphql', osrank: 0.02},
+        { direction: 'incoming', name: 'graphql-tag', osrank: 0.39},
+        { direction: 'outgoing', name: 'IPFS', osrank: 0.61 },
+        { direction: 'outgoing', name: 'Cabal', osrank: 0.6 },
+        { direction: 'outgoing', name: 'Other package', osrank: 0.24 },
+        { direction: 'outgoing', name: 'Amazing dependency', osrank: 0.46 },
         { direction: 'outgoing', name: 'Project wow', osrank: 0.84 },
-        { direction: 'outgoing', name: 'Botcoin', osrank: 0.84 },
+        { direction: 'outgoing', name: 'Botcoin', osrank: 0.37 },
         { direction: 'outgoing', name: 'Bosscoin', osrank: 0.84 },
-        { direction: 'outgoing', name: 'IPFS-front-end', osrank: 0.84 },
+        { direction: 'outgoing', name: 'IPFS-front-end', osrank: 0.78},
         { direction: 'outgoing', name: 'wowza', osrank: 0.84 },
-        { direction: 'incoming', name: 'Julien package', osrank: 0.99 },
+        { direction: 'outgoing', name: 'Julien package', osrank: 0.02 },
       ],
       osrank: 0.86,
       percentile: 85,
