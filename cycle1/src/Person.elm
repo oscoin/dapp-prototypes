@@ -3,6 +3,7 @@ module Person exposing
     , decoder
     , encode
     , imageUrl
+    , init
     , keyPair
     , name
     , withKeyPair
@@ -23,6 +24,11 @@ type alias ImageUrl =
 
 type Person
     = Person KeyPair Name ImageUrl
+
+
+init : KeyPair -> String -> String -> Person
+init kp n imgUrl =
+    Person kp n imgUrl
 
 
 withKeyPair : KeyPair -> Person

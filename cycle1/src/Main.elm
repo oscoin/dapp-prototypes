@@ -20,6 +20,7 @@ import Page.Register
 import Person exposing (Person)
 import Project exposing (Project)
 import Project.Address as Address exposing (Address)
+import Project.Graph as Graph exposing (Graph)
 import Route exposing (Route)
 import Style.Color as Color
 import Task
@@ -412,7 +413,7 @@ update msg model =
 
                 mapState tx =
                     if Transaction.hash tx == Transaction.hash newTx then
-                        Transaction.mapState (\_ -> Transaction.Unconfirmed 0) newTx
+                        newTx
 
                     else
                         tx
@@ -423,8 +424,44 @@ update msg model =
 
                     else
                         newTx :: model.pendingTransactions
+
+                hasCheckpoint =
+                    let
+                        test tx =
+                            List.any (\m -> Transaction.messageIsCheckpoint m) <| Transaction.messages tx
+                    in
+                    List.any test txs
+
+                projects =
+                    if not isPresent && hasCheckpoint then
+                        let
+                            m =
+                                Transaction.messages newTx
+                                    |> List.head
+
+                            address =
+                                case m of
+                                    Just (Transaction.Checkpoint addr) ->
+                                        Address.string <| addr
+
+                                    _ ->
+                                        ""
+
+                            mapProject p =
+                                if Address.string (Project.address p) == address then
+                                    Project.mapGraph (\_ -> checkpointGraph) p
+                                        |> Project.mapCheckpoints (\_ -> [ "abcd123" ])
+                                        |> Project.mapContributors (\_ -> checkpointContributors)
+
+                                else
+                                    p
+                        in
+                        List.map mapProject model.projects
+
+                    else
+                        model.projects
             in
-            ( { model | overlay = Nothing, pendingTransactions = txs }
+            ( { model | overlay = Nothing, pendingTransactions = txs, projects = projects }
             , Cmd.none
             )
 
@@ -747,3 +784,27 @@ foreground content =
             ]
         <|
             content
+
+
+
+-- CHECKPOINT HELPERS
+
+
+checkpointContributors : List Person
+checkpointContributors =
+    [ Person.init KeyPair.empty "xla" "https://avatars0.githubusercontent.com/u/1585?s=400&v=4"
+    ]
+
+
+checkpointGraph : Graph
+checkpointGraph =
+    Graph.empty
+        |> Graph.mapRank (\_ -> 0.12)
+        |> Graph.mapPercentile (\_ -> 25)
+        |> Graph.mapEdges (\_ -> checkpointEdges)
+
+
+checkpointEdges : List Graph.Edge
+checkpointEdges =
+    [ Graph.initEdge "react" Graph.Outgoing 0.69
+    ]

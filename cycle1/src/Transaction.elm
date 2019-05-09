@@ -10,6 +10,7 @@ module Transaction exposing
     , hash
     , mapState
     , messageDigest
+    , messageIsCheckpoint
     , messageType
     , messages
     , registerProject
@@ -141,6 +142,16 @@ messageType message =
 
         UpdateContractRule _ _ ->
             "update-contract-rule"
+
+
+messageIsCheckpoint : Message -> Bool
+messageIsCheckpoint m =
+    case m of
+        Checkpoint _ ->
+            True
+
+        _ ->
+            False
 
 
 type RuleChange

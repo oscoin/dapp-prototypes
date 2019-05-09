@@ -1,5 +1,6 @@
 module Project.Graph exposing
-    ( Edge
+    ( Direction(..)
+    , Edge
     , Graph
     , decoder
     , dependencies
@@ -8,6 +9,10 @@ module Project.Graph exposing
     , edgeRank
     , empty
     , encode
+    , initEdge
+    , mapEdges
+    , mapPercentile
+    , mapRank
     , percentile
     , percentileString
     , rank
@@ -27,6 +32,11 @@ empty =
     Graph (Rank 0) (Percentile 0) []
 
 
+mapEdges : (List Edge -> List Edge) -> Graph -> Graph
+mapEdges change (Graph r p edges) =
+    Graph r p (change edges)
+
+
 dependencies : Graph -> List Edge
 dependencies (Graph _ _ es) =
     List.filter isOutgoing es
@@ -37,9 +47,19 @@ dependents (Graph _ _ es) =
     List.filter isIncoming es
 
 
+mapPercentile : (Int -> Int) -> Graph -> Graph
+mapPercentile change (Graph r (Percentile p) edges) =
+    Graph r (Percentile (change p)) edges
+
+
 percentile : Graph -> Percentile
 percentile (Graph _ p _) =
     p
+
+
+mapRank : (Float -> Float) -> Graph -> Graph
+mapRank change (Graph (Rank r) p edges) =
+    Graph (Rank (change r)) p edges
 
 
 rank : Graph -> Rank
@@ -132,6 +152,11 @@ type alias Name =
 
 type Edge
     = Edge Name Direction Rank
+
+
+initEdge : String -> Direction -> Float -> Edge
+initEdge name direction r =
+    Edge name direction (Rank r)
 
 
 edgeName : Edge -> String
