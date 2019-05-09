@@ -7,6 +7,7 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Events as Events
 import Project as Project exposing (Project)
+import Project.Address as Address
 import Style.Color as Color
 import Style.Font as Font
 
@@ -26,7 +27,7 @@ view project closeMsg =
         ]
         [ viewExplanation closeMsg
         , viewSetup
-        , viewCheckpoint <| Project.prettyAddress project
+        , viewCheckpoint <| Address.string <| Project.address project
         ]
 
 
@@ -82,7 +83,7 @@ viewSetup =
             , Element.height <| Element.px 44
             , Element.paddingXY 16 0
             ]
-            [ Element.el ([] ++ Font.smallTextMono Color.black) <| Element.text "$ brew install oscoin-cli"
+            [ Element.el ([] ++ Font.smallTextMono Color.black) <| Element.text "$ brow install oscoin-cli"
             , Button.transparent [ Element.alignRight ] [ Element.text "copy" ]
             ]
         , Element.paragraph

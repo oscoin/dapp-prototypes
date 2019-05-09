@@ -182,7 +182,7 @@ viewSetup id =
                 ++ Font.mediumHeader Color.black
             )
           <|
-            Element.text "Oscoin Wallet"
+            Element.text "Set Up Key"
         , Element.paragraph
             ([ Element.Font.center
              , Element.width Element.fill
@@ -190,7 +190,7 @@ viewSetup id =
              ]
                 ++ Font.bodyText Color.darkGrey
             )
-            [ Element.text "Give your key a name. This will become your unique username on the network. Some people like to use a username that they identify with. Note that this is how people will find you on the network."
+            [ Element.text "Give your key a human-readable name. Some people like to use a username or a device name. Other people can use this key name to search for you on the network, but it is not necessarily unique."
             ]
         , Input.text
             ([ Element.height <| Element.px 36

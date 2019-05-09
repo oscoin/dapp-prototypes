@@ -91,9 +91,9 @@ view contract =
             "Project contract"
             "This is where you can choose the rules that define how incoming funds get distributed within your project. You can change these at any moment."
         , Element.row
-            [ Element.paddingXY 0 32 ]
+            [ Element.paddingEach { top = 32, left = 24, bottom = 32, right = 0 } ]
             [ Element.column
-                [ Element.width <| Element.px 366
+                [ Element.width <| Element.px 342
                 , Element.alignTop
                 ]
                 [ Element.el ([] ++ Font.mediumBodyText Color.black) <| Element.text "Network reward distribution"
@@ -106,9 +106,9 @@ view contract =
             , Element.wrappedRow [ Element.width Element.fill, Element.spacing 24 ] <| List.map (viewRewardOption currentReward) rewards
             ]
         , Element.row
-            [ Element.paddingXY 0 32 ]
+            [ Element.paddingEach { top = 32, left = 24, bottom = 32, right = 0 } ]
             [ Element.column
-                [ Element.width <| Element.px 366
+                [ Element.width <| Element.px 342
                 , Element.alignTop
                 ]
                 [ Element.el ([] ++ Font.mediumBodyText Color.black) <| Element.text "Donation distribution"
@@ -121,9 +121,9 @@ view contract =
             , Element.wrappedRow [ Element.width Element.fill, Element.spacing 24 ] <| List.map (viewDonationOption currentDonation) donations
             ]
         , Element.row
-            [ Element.paddingXY 0 32 ]
+            [ Element.paddingEach { top = 32, left = 24, bottom = 32, right = 0 } ]
             [ Element.column
-                [ Element.width <| Element.px 366
+                [ Element.width <| Element.px 342
                 , Element.alignTop
                 ]
                 [ Element.el ([] ++ Font.mediumBodyText Color.black) <| Element.text "Roles & abilities"
