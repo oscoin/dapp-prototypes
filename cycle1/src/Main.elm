@@ -793,6 +793,8 @@ foreground content =
 checkpointContributors : List Person
 checkpointContributors =
     [ Person.init KeyPair.empty "xla" "https://avatars0.githubusercontent.com/u/1585?s=400&v=4"
+    , Person.init KeyPair.empty "juliendonck" "https://avatars2.githubusercontent.com/u/2326909?s=400&v=4"
+    , Person.init KeyPair.empty "cory" "https://avatars1.githubusercontent.com/u/832188?s=400&v=4"
     ]
 
 
@@ -806,5 +808,27 @@ checkpointGraph =
 
 checkpointEdges : List Graph.Edge
 checkpointEdges =
-    [ Graph.initEdge "react" Graph.Outgoing 0.69
+    [ Graph.initEdge "react" Graph.Incoming 0.69
+    , Graph.initEdge "react-dom" Graph.Incoming 0.63
+    , Graph.initEdge "react-router-dom" Graph.Incoming 0.68
+    , Graph.initEdge "react-scripts" Graph.Incoming 0.74
+    , Graph.initEdge "react-timestamp" Graph.Incoming 0.41
+    , Graph.initEdge "styled-components" Graph.Incoming 0.73
+    , Graph.initEdge "eslint-plugin-react" Graph.Incoming 0.38
+    , Graph.initEdge "prettier" Graph.Incoming 0.26
+    , Graph.initEdge "prop-types" Graph.Incoming 0.56
+    , Graph.initEdge "apollo-boost" Graph.Incoming 0.19
+    , Graph.initEdge "graphql" Graph.Incoming 0.02
+    , Graph.initEdge "graphql-tag" Graph.Incoming 0.39
+    , Graph.initEdge "IPFS" Graph.Outgoing 0.61
+    , Graph.initEdge "Cabal" Graph.Outgoing 0.6
+    , Graph.initEdge "Other package" Graph.Outgoing 0.24
+    , Graph.initEdge "Amazing dependency" Graph.Outgoing 0.46
+    , Graph.initEdge "Project wow" Graph.Outgoing 0.84
+    , Graph.initEdge "Botcoin" Graph.Outgoing 0.37
+    , Graph.initEdge "Bosscoin" Graph.Outgoing 0.84
+    , Graph.initEdge "IPFS-front-end" Graph.Outgoing 0.7
+    , Graph.initEdge "wowza" Graph.Outgoing 0.84
+    , Graph.initEdge "Julien package" Graph.Outgoing 0.02
+    , Graph.initEdge "react" Graph.Outgoing 0.69
     ]
