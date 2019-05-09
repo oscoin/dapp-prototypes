@@ -10,6 +10,7 @@ module Atom.Icon exposing
     , largeLogoCircle
     , lock
     , logoCircle
+    , notFound
     , progress
     , reward
     , role
@@ -440,6 +441,46 @@ cross color =
                 , stroke (Color.toCssString color)
                 , strokeWidth "2"
                 , strokeLinecap "round"
+                ]
+                []
+            ]
+
+
+notFound : Element.Color -> Element msg
+notFound color =
+    Element.html <|
+        svg
+            [ width "48", height "48", viewBox "0 0 48 48", fill "none" ]
+            [ circle
+                [ cx "24"
+                , cy "24"
+                , r "23"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
+                ]
+                []
+            , Svg.path
+                [ d "M33.3688 34.8269C30.457 33.6208 27.3361 33 24.1844 33C21.0327 33 17.9118 33.6208 15 34.8269"
+                , stroke (Color.toCssString color)
+                , strokeWidth "2"
+                ]
+                []
+            , rect
+                [ x "10.8721"
+                , y "18.5361"
+                , width "6"
+                , height "2"
+                , transform "rotate(-10 10.8721 18.5361)"
+                , fill (Color.toCssString color)
+                ]
+                []
+            , rect
+                [ x "31.2192"
+                , y "17.4943"
+                , width "6"
+                , height "2"
+                , transform "rotate(10 31.2192 17.4943)"
+                , fill (Color.toCssString color)
                 ]
                 []
             ]
