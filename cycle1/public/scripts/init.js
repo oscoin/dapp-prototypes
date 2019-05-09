@@ -253,60 +253,7 @@ const initialProjects = [
       percentile: 0,
     },
   },
-  {
-    address: '1b4atzir794d11ckjtk7xawsqjizgwwabx9bun7qmw5ic7uxr1mj',
-    contract: {
-      reward: 'Burn',
-      donation: 'FundSaving',
-      role: 'MaintainerSingleSigner',
-    },
-    funds: {
-      oscoin: 0,
-      exchanges: [],
-    },
-    meta: {
-      codeHostUrl: 'https://github.com/radicle-dev/radicle',
-      description: 'A peer-to-peer stack for code collaboration',
-      imageUrl: 'https://avatars0.githubusercontent.com/u/48290027?s=144&v=4',
-      name: 'Radicle',
-      websiteUrl: 'https://radicle.xyz',
-    },
-    contributors: [
-      people.xla,
-      people.clevinson,
-      people.juliendonck,
-    ],
-    maintainers: [people.jkarni, people.jameshaydon, people.mebrei],
-    checkpoints: ['abcd123'],
-    graph: {
-      edges: [
-        { direction: 'outgoing', name: 'react', osrank: 0.69},
-        { direction: 'outgoing', name: 'react-dom', osrank: 0.63},
-        { direction: 'outgoing', name: 'react-router-dom', osrank: 0.68},
-        { direction: 'outgoing', name: 'react-scripts', osrank: 0.74},
-        { direction: 'outgoing', name: 'react-timestamp', osrank: 0.41},
-        { direction: 'outgoing', name: 'styled-components', osrank: 0.73},
-        { direction: 'outgoing', name: 'eslint-plugin-react', osrank: 0.38},
-        { direction: 'outgoing', name: 'prettier', osrank: 0.26},
-        { direction: 'outgoing', name: 'prop-types', osrank: 0.56},
-        { direction: 'outgoing', name: 'apollo-boost', osrank: 0.19},
-        { direction: 'outgoing', name: 'graphql', osrank: 0.02},
-        { direction: 'outgoing', name: 'graphql-tag', osrank: 0.39},
-        { direction: 'incoming', name: 'IPFS', osrank: 0.61 },
-        { direction: 'incoming', name: 'Cabal', osrank: 0.6 },
-        { direction: 'incoming', name: 'Other package', osrank: 0.24 },
-        { direction: 'incoming', name: 'Amazing dependency', osrank: 0.46 },
-        { direction: 'incoming', name: 'Project wow', osrank: 0.84 },
-        { direction: 'incoming', name: 'Botcoin', osrank: 0.37 },
-        { direction: 'incoming', name: 'Bosscoin', osrank: 0.84 },
-        { direction: 'incoming', name: 'IPFS-front-end', osrank: 0.78},
-        { direction: 'incoming', name: 'wowza', osrank: 0.84 },
-        { direction: 'incoming', name: 'Julien package', osrank: 0.02 },
-      ],
-      osrank: 0.86,
-      percentile: 85,
-    },
-  },
+
 ]
 
 let cabalAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd'
