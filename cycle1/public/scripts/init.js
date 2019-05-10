@@ -139,7 +139,7 @@ const initialProjects = [
   {
     address: '1b4atzir794d11ckjtk7xawsqjizgwwabx9bun7qmw5ic7uxr1mj',
     contract: {
-      reward: 'Burn',
+      reward: 'EqualMaintainer',
       donation: 'FundSaving',
       role: 'MaintainerSingleSigner',
     },
@@ -152,7 +152,7 @@ const initialProjects = [
           incoming: 100,
           outgoing: 0,
           rule: { type: 'donation', rule: 'FundSaving' },
-          source: 'IPFS',
+          source: 'Redhat',
         },
         {
           date: 'Apr. 26, 2019',
@@ -168,13 +168,21 @@ const initialProjects = [
           incoming: 100,
           outgoing: 0,
           rule: { type: 'donation', rule: 'FundSaving' },
-          source: 'IPFS',
+          source: 'Soundcloud',
         },
         {
           date: 'Apr. 9, 2019',
           destinations: ['JA', 'JH', 'MB'],
-          incoming: 124,
-          outgoing: 112,
+          incoming: 112,
+          outgoing: 100,
+          rule: { type: 'reward', rule: 'EqualMaintainer' },
+          source: 'Network Reward',
+        },
+        {
+          date: 'Mar. 29, 2019',
+          destinations: ['JA', 'JH', 'MB'],
+          incoming: 100,
+          outgoing: 88,
           rule: { type: 'reward', rule: 'EqualMaintainer' },
           source: 'Network Reward',
         },
