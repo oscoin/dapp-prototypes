@@ -14,26 +14,28 @@ import Style.Font as Font
 
 active : (Element.Color -> Element msg) -> String -> String -> Element msg
 active ruleIcon ruleName ruleDesc =
-    view ruleIcon ruleName ruleDesc Color.purple Color.white Color.purple
+    view [] ruleIcon ruleName ruleDesc Color.purple Color.white Color.purple
 
 
 inactive : (Element.Color -> Element msg) -> String -> String -> Element msg
 inactive ruleIcon ruleName ruleDesc =
-    view ruleIcon ruleName ruleDesc Color.lightGrey Color.almostWhite Color.darkGrey
+    view [ Element.pointer ] ruleIcon ruleName ruleDesc Color.lightGrey Color.almostWhite Color.darkGrey
 
 
-view : (Element.Color -> Element msg) -> String -> String -> Element.Color -> Element.Color -> Element.Color -> Element msg
-view ruleIcon ruleName ruleDesc borderColor bgColor textColor =
+view : List (Attribute msg) -> (Element.Color -> Element msg) -> String -> String -> Element.Color -> Element.Color -> Element.Color -> Element msg
+view attr ruleIcon ruleName ruleDesc borderColor bgColor textColor =
     Element.column
-        [ Element.padding 24
-        , Border.color borderColor
-        , Border.rounded 2
-        , Border.width 1
-        , Element.spacing 24
-        , Background.color bgColor
-        , Element.width <| Element.px 342
-        , Element.height <| Element.px 184
-        ]
+        ([ Element.padding 24
+         , Border.color borderColor
+         , Border.rounded 2
+         , Border.width 1
+         , Element.spacing 24
+         , Background.color bgColor
+         , Element.width <| Element.px 342
+         , Element.height <| Element.px 184
+         ]
+            ++ attr
+        )
         [ Element.row
             []
             [ ruleIcon textColor
