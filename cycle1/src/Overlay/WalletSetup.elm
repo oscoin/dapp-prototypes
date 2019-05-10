@@ -104,7 +104,7 @@ viewInfo backUrl =
                 ]
                 [ viewListItem
                     "1. Install the oscoin wallet."
-                    "The oscoin wallet keeps trakc of your account."
+                    "The oscoin wallet keeps track of your account."
                 , viewListItem
                     "2. Set up your oscoin wallet key pair."
                     "The key pair let's you securely access your account."
