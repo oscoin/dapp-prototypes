@@ -189,11 +189,11 @@ const initialProjects = [
       ],
     },
     meta: {
-      codeHostUrl: 'https://github.com/radicle-dev/radicle',
-      description: 'A peer-to-peer stack for code collaboration',
-      imageUrl: 'https://avatars0.githubusercontent.com/u/48290027?s=144&v=4',
-      name: 'Radicle',
-      websiteUrl: 'https://radicle.xyz',
+      codeHostUrl: 'https://github.com/juliendonck/Monocle',
+      description: 'A peer-to-peer stack for code viewing',
+      imageUrl: 'https://res.cloudinary.com/juliendonck/image/upload/v1557488019/Frame_2_bhz6eq.svg',
+      name: 'Monocle',
+      websiteUrl: 'https://monocle.xyz',
     },
     contributors: [
       people.geigerzaehler,
