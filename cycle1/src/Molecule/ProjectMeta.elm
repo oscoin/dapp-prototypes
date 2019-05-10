@@ -3,6 +3,7 @@ module Molecule.ProjectMeta exposing (view)
 import Atom.Icon as Icon
 import Element exposing (Element)
 import Element.Background as Background
+import Element.Border as Border
 import Element.Font
 import Project as Project exposing (Project)
 import Project.Address as Address exposing (Address)
@@ -33,6 +34,8 @@ viewLogo meta =
                     , Element.centerY
                     , Element.width <| Element.px 72
                     , Element.height <| Element.px 72
+                    , Border.rounded 4
+                    , Element.clip
                     ]
                     { src = Meta.imageUrl meta
                     , description = Meta.name meta
