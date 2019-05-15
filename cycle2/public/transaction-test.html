@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link href="styles/fonts.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div id="popup"></div>
+    <script src="scripts/wallet-popup.js"></script>
+    <script>
+      let projectAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd';
+      let maybeKeyPair = { id: 'fakeID', pubKey: 'a23hdj23dd2hekxsd' };
+      let cabalAddr = 'cabal#3gd815h0c6x84hj03gd815h0f3gd815h0c6x84hj03gd';
+      let maybeTransaction = {
+        hash:
+          'ba929586d0955940962248f24c3f07305d943e4bea54f3b7e3cc2b98f3edefa4',
+        fee: 1038,
+        state: { type: 'confirmed' },
+        messages: [
+          { type: 'project-registration', address: cabalAddr },
+          {
+            type: 'update-contract-rule',
+            address: cabalAddr,
+            ruleChange: { type: 'reward', old: 'EqualDependency', new: 'Burn' },
+          },
+          {
+            type: 'update-contract-rule',
+            address: cabalAddr,
+            ruleChange: {
+              type: 'donation',
+              old: 'FundSaving',
+              new: 'EqualMaintainer',
+            },
+          },
+          {
+            type: 'update-contract-rule',
+            address: cabalAddr,
+            ruleChange: {
+              type: 'role',
+              old: 'MaintainerSingleSigner',
+              new: 'MaintainerMultiSig',
+            },
+          },
+        ],
+      };
+
+      var popup = Elm.WalletPopup.init({
+        flags: {
+          maybeKeyPair,
+          maybeTransaction,
+          page: 'sign',
+        },
+        node: document.getElementById('popup'),
+      });
+    </script>
+  </body>
+</html>
