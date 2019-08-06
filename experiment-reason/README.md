@@ -9,6 +9,13 @@
 * compiles real fast for small code bases
 * has builtin router with clean API -> pattern-matching !!!
 * strings in jsx are awkward
+* OCaml has naming conventions which prevent `-`, there are workarounds
+* ReasonReact explicitly prevents props spread for performance reasons
+  * they use callbacks for it
+  * gives clear ownership
+* ContextProvider works like normal React
+* no Mixins, fucntion composition instead
+* callback declaration can be a bit unwiedly at times
 
 ## Run Project
 

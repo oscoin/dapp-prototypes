@@ -29,6 +29,7 @@ module Navigation {
   let make = () => {
     <ul>
       <Link route="/" name="Home" />
+      <Link route="/form" name="Form" />
       <Link route="/about" name="About" />
     </ul>
   };
@@ -43,6 +44,10 @@ let make = () => {
     switch (url.path) {
     | [] => <Home />
     | ["about"] => <About />
+    | ["form"] => <Form
+                    label="WickedForm"
+                    onSubmit={value => Js.log("form submiteed with " ++ value)}
+                  />
     | _ => <h1>{"Not Found" |> React.string}</h1>
     };
 
