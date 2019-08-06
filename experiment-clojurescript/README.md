@@ -6,6 +6,8 @@ we decided to write a small SPA. This SPA will consist of:
 - a screen with a single button, which when clicked, launches a wizard
 - the wizard opens as a modal and implements the ["new proposal" feature][0]
 
+Further documentation can be found [here][4] and [here][5].
+
 
 # Setup
 Install [Leiningen][1].
@@ -62,3 +64,5 @@ gravitate towards pure JS + Typescript + React, besides cloudhead dislikes CLJS.
 [1]: https://leiningen.org/
 [2]: https://www.youtube.com/watch?v=R07s6JpJICo
 [3]: https://github.com/clojure/clojurescript-site/blob/master/content/reference/compiler-options.adoc#optimizations
+[4]: https://medium.com/@jacekschae/learn-how-to-build-functional-front-ends-with-clojurescript-and-react-733fa260dd6b
+[5]: https://reagent-project.github.io/
