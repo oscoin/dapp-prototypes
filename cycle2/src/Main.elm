@@ -10,6 +10,7 @@ import Page.Home
 import Page.NotFound
 import Page.Project
 import Project exposing (Project)
+import Proposal
 import Route exposing (Route)
 import TopBar
 import Url

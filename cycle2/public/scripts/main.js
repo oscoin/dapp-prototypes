@@ -5387,17 +5387,19 @@ var author$project$KeyPair$decoder = A3(
 var author$project$Project$Project = function (a) {
 	return {$: 'Project', a: a};
 };
-var author$project$Person$Person = F3(
-	function (a, b, c) {
-		return {$: 'Person', a: a, b: b, c: c};
+var author$project$Person$Person = F4(
+	function (a, b, c, d) {
+		return {$: 'Person', a: a, b: b, c: c, d: d};
 	});
-var elm$json$Json$Decode$map3 = _Json_map3;
-var author$project$Person$decoder = A4(
-	elm$json$Json$Decode$map3,
+var elm$json$Json$Decode$int = _Json_decodeInt;
+var elm$json$Json$Decode$map4 = _Json_map4;
+var author$project$Person$decoder = A5(
+	elm$json$Json$Decode$map4,
 	author$project$Person$Person,
 	A2(elm$json$Json$Decode$field, 'keyPair', author$project$KeyPair$decoder),
 	A2(elm$json$Json$Decode$field, 'name', elm$json$Json$Decode$string),
-	A2(elm$json$Json$Decode$field, 'imageUrl', elm$json$Json$Decode$string));
+	A2(elm$json$Json$Decode$field, 'imageUrl', elm$json$Json$Decode$string),
+	A2(elm$json$Json$Decode$field, 'coins', elm$json$Json$Decode$int));
 var author$project$Project$Data = F8(
 	function (address, contract, funds, graph, meta, contributors, maintainers, checkpoints) {
 		return {address: address, checkpoints: checkpoints, contract: contract, contributors: contributors, funds: funds, graph: graph, maintainers: maintainers, meta: meta};
@@ -5507,6 +5509,7 @@ var author$project$Project$Contract$decodeRole = A2(
 		}
 	},
 	elm$json$Json$Decode$string);
+var elm$json$Json$Decode$map3 = _Json_map3;
 var author$project$Project$Contract$decoder = A4(
 	elm$json$Json$Decode$map3,
 	author$project$Project$Contract$Contract,
@@ -5520,7 +5523,6 @@ var author$project$Project$Funds$Funds = F2(
 var author$project$Project$Funds$Coins = function (a) {
 	return {$: 'Coins', a: a};
 };
-var elm$json$Json$Decode$int = _Json_decodeInt;
 var elm$json$Json$Decode$map = _Json_map1;
 var author$project$Project$Funds$coinsDecoder = A2(elm$json$Json$Decode$map, author$project$Project$Funds$Coins, elm$json$Json$Decode$int);
 var author$project$Project$Funds$Exchange = F6(

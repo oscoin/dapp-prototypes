@@ -1,4 +1,4 @@
-module Project.Address exposing
+module Address exposing
     ( Address
     , decoder
     , empty
