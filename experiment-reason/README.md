@@ -16,6 +16,9 @@
 * ContextProvider works like normal React
 * no Mixins, fucntion composition instead
 * callback declaration can be a bit unwiedly at times
+* calling out and interfacing with raw JS is simple and safe
+* following and applying React exampels (e.g. Portal) is doable without much
+  overhead
 
 ## Run Project
 

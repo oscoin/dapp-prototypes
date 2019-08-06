@@ -1,17 +1,10 @@
-/* PAGES */
-module About {
-  [@react.component]
-  let make = () => {
-    <h1>{React.string("Ze ABOUT page")}</h1>
-  };
-};
-
-module Home {
-  [@react.component]
-  let make = () => {
-    <h1>{React.string("Home")}</h1>
-  };
-};
+let updateTitle: string => unit = [%bs.raw
+  {|
+  function updateTitle(name) {
+    document.title = name + " | oscoin";
+  }
+  |}
+];
 
 module Link {
   [@react.component]
@@ -28,31 +21,44 @@ module Navigation {
   [@react.component]
   let make = () => {
     <ul>
-      <Link route="/" name="Home" />
-      <Link route="/form" name="Form" />
-      <Link route="/about" name="About" />
+      <Link route="/" name="Overview" />
+      <Link route="/members" name="Members" />
+      <Link route="/proposals" name="Proposals" />
+      <Link route="/funds" name="Funds" />
+      <Link route="/contract" name="Contract" />
+      <Link route="/settings" name="Settings" />
     </ul>
+  };
+};
+
+module Page {
+  [@react.component]
+  let make = (~title) => {
+    <h1>{React.string(title)}</h1>
   };
 };
 
 [@react.component]
 let make = () => {
+  /* ROUTING */
   let url = ReasonReactRouter.useUrl();
 
-
-  let page =
+  let (page, title) =
     switch (url.path) {
-    | [] => <Home />
-    | ["about"] => <About />
-    | ["form"] => <Form
-                    label="WickedForm"
-                    onSubmit={value => Js.log("form submiteed with " ++ value)}
-                  />
-    | _ => <h1>{"Not Found" |> React.string}</h1>
+    | [] => (<Page title="Overview" />, "Overview")
+    | ["members"] => (<Page title="Members" />, "Members")
+    | ["proposals"] => (<Page title="Proposals" />, "Proposals")
+    | ["funds"] => (<Page title="Funds" />, "Funds")
+    | ["contract"] => (<Page title="Contract" />, "Contract")
+    | ["settings"] => (<Page title="Settings" />, "Settings")
+    | _ => (<h1>{"Not Found" |> React.string}</h1>, "Not Found")
     };
+
+  updateTitle(title);
 
   <div className="App">
     <Navigation />
     page
+    <Proposal />
   </div>
 };
