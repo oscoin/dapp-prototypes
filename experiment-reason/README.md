@@ -5,6 +5,10 @@
 * following ReasonReact
   [example](https://reasonml.github.io/reason-react/docs/en/installation)
 * ran `bsb -init experiment-reason -theme react-hooks`
+* tooling a bit more involved: `yarn start` + `yarn server` in parallel
+* compiles real fast for small code bases
+* has builtin router with clean API -> pattern-matching !!!
+* strings in jsx are awkward
 
 ## Run Project
 
