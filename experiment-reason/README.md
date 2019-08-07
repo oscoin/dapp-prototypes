@@ -19,6 +19,11 @@
 * calling out and interfacing with raw JS is simple and safe
 * following and applying React exampels (e.g. Portal) is doable without much
   overhead
+* no visual API docs for ReasonReact, one has to read .rei files
+* for unicode use special string syntax: `{js|...|js}`
+* encountered runtime exception on match failure - there was a compiler
+  warning. Maybe this can be bubbled up as error during compile time
+* namespacing with modules is clean
 
 ## Run Project
 
