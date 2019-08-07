@@ -13,6 +13,15 @@ to write a small SPA. This SPA will consist of:
 yarn create react-app experiment-typescript --typescript
 ```
 
+## NeoVim
+```
+Plug 'HerringtonDarkholme/yats.vim'
+Plug 'mhartington/nvim-typescript', { 'do': './install.sh' }
+
+:PlugInstall
+:UpdateRemotePlugins
+```
+
 # Observations
 
 - create-react-app has built-in support for TS
