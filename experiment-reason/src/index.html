@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reason Experiment</title>
+  <style>
+    a {
+      color: blue;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    #portal {
+      position: relative;
+      z-index: 999;
+    }
+
+    #portal .modal {
+      align-items: center;
+      background-color: rgba(0,0,0,0.5);
+      display: flex;
+      height: 100%;
+      justify-content: center;
+      left: 0;
+      top: 0;
+      position: fixed;
+      width: 100%;
+    }
+
+    #portal .modal .content {
+      background-color: white;
+      height: 640px;
+      width: 800px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="portal"></div>
+
+  <script src="Index.js"></script>
+</body>
+</html>
