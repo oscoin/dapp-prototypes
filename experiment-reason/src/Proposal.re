@@ -1,16 +1,40 @@
-type type_ =
-  | Membership
+// Person to be proposed as new member for the project.
+type candidate = string
+
+// Amount of shares granted for the new member.
+type shares = int
+
+// Amount of coins to be payed by the candidate in exchange for shares in the
+// project.
+type tribute = int
+
+type membership_state = {
+  candidate: option(candidate),
+  tribute: tribute,
+  shares: shares,
+}
+
+let emptyMembershipState = () => {
+  {
+    candidate: None,
+    tribute: 0,
+    shares: 0,
+  }
+}
+
+type proposal =
+  | Membership(membership_state)
   | Grant
   | Contract;
 
-let stringOfType = (t: type_) =>
+let stringOfType = (t: proposal) =>
   switch t {
-  | Membership => "Membership"
+  | Membership(_) => "Membership"
   | Grant => "Grant"
   | Contract => "Contract amendment"
   };
 
-let renderChoice = (t: type_, selected: type_, select) => {
+let renderChoice = (t: proposal, selected: proposal, select) => {
   <li onClick={_ => select(_ => t)} key=stringOfType(t)>
     <div>{React.string(stringOfType(t))}</div>
     {selected == t ? <div>{React.string({js|✅|js})}</div> : React.null }
@@ -19,24 +43,54 @@ let renderChoice = (t: type_, selected: type_, select) => {
 
 module MembershipProposal {
   [@react.component]
-  let make = () => {
+  let make = (~onStateChange, ~state: membership_state) => {
+    let candidate =
+      switch state.candidate {
+      | Some(c) => c
+      | None => ""
+      };
+
     <>
       <h2>{React.string("New membership Proposal")}</h2>
       <p>{React.string("Answer questions below to reason why this person should be added")}</p>
+      <form>
+        <label>{React.string("Candidate")}</label>
+        <input type_="text" value={candidate} onChange={evt => onStateChange({...state, candidate: Some(ReactEvent.Form.target(evt)##value)})} />
+      </form>
     </>
   }
 }
 
-module NewProposal {
+// Determines if a proposal is in a state to advance to the next step.
+let isSteppable = (p: proposal) => {
+  switch p {
+  | Membership(_) => false
+  | Grant => false
+  | Contract => false
+  }
+}
+
+module Wizard {
   type step =
     | Selection
-    | Selected(type_);
+    | Selected(proposal);
 
   [@react.component]
   let make = (~toggle) => {
-    let (selected, select) = React.useState(() => Membership);
-    let (step, setStep) = React.useState(() => Selected(Membership));
-    let choicesList = Array.map(t => renderChoice(t, selected, select), [|Membership, Grant, Contract|]);
+    // Keep track of current proposal at its state.
+    let (selected, setProposal) = React.useState(() => Membership(emptyMembershipState()));
+    /* let (step, setStep) = React.useState(() => Selected(Membership(emptyMembershipState()))); */
+    let (step, setStep) = React.useState(() => Selection);
+
+    // Setup choices to render.
+    let choices = [|Membership(emptyMembershipState()), Grant, Contract|];
+    let choicesList = Array.map(p => renderChoice(p, selected, setProposal), choices);
+
+    let steppable =
+      switch step {
+      | Selection => true
+      | Selected(p) => isSteppable(p)
+      };
 
     <Modal toggle>
       {switch step {
@@ -48,24 +102,26 @@ module NewProposal {
         </>
       | Selected(t) =>
         switch t {
-        | Membership => <MembershipProposal />
+        | Membership(state) => {
+          <MembershipProposal onStateChange={state => setStep(_ => Selected(Membership(state)))} state />
+        }
         | _ => <div>{React.string(stringOfType(t))}</div>
         }
       }}
       <button onClick={_ => toggle()}>{React.string("Cancel")}</button>
-      <button onClick={_ => setStep(_ => Selected(selected))}>{React.string("Next")}</button>
+      <button disabled={!steppable} onClick={_ => setStep(_ => Selected(selected))}>{React.string("Next")}</button>
     </Modal>
   };
 }
 
 [@react.component]
 let make = () => {
-  let (show, toggle) = React.useState(() => true);
+  let (show, toggle) = React.useState(() => false);
 
   <>
     <button onClick={_ => toggle(_ => true)}>
       {React.string("New Proposal")}
     </button>
-    { show ? <NewProposal toggle={_ => toggle(_ => false)}/> : React.null}
+    { show ? <Wizard toggle={_ => toggle(_ => false)}/> : React.null}
   </>
 };

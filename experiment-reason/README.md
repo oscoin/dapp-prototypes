@@ -24,6 +24,9 @@
 * encountered runtime exception on match failure - there was a compiler
   warning. Maybe this can be bubbled up as error during compile time
 * namespacing with modules is clean
+* Great resource about [Reason](https://2ality.com/2017/11/about-reasonml.html)
+  itself
+* [Reason book](http://reasonmlhub.com/exploring-reasonml/toc.html)
 
 ## Run Project
 
