@@ -13,20 +13,23 @@ to write a small SPA. This SPA will consist of:
 yarn create react-app experiment-typescript --typescript
 ```
 
-## NeoVim
-```
-Plug 'HerringtonDarkholme/yats.vim'
-Plug 'mhartington/nvim-typescript', { 'do': './install.sh' }
-
-:PlugInstall
-:UpdateRemotePlugins
-```
-
 # Observations
 
 - create-react-app has built-in support for TS
 - compiles to clean JS
 - Jest is [converting to TS][3] (good sign for industry adoption)
+- nvim-typescript is sketchy, breaks down in splits
+- trying out CoC to see if that's better
+  `:CocInstall coc-tsserver coc-tslint-plugin`
+- vim setup turned out not to work very well, decided not to invest time into
+  figuring out a working configuration, switched to vs code for the evaluation
+- compiler error messages are quite cryptic
+- no built-in pattern matching in TypeScript, everything needs to be built
+  manually via `switch` statements, which is quite some overhead
+- pattern matching exhaustiveness needs to be built manually
+- it's possible to build a MVP that has feature parity to Reason, but it
+  ends up being a lot more verbose
+- we would need more time to learn and evaluate the type system more thoroughly
 
 
 [0]: https://www.figma.com/file/MZMZAb21rrKaRJbYlg0XF44X/osc-prototype?node-id=1798%3A0
