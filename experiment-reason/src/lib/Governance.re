@@ -14,12 +14,10 @@ type membership_state = {
   shares: shares,
 }
 
-let emptyMembershipState = () => {
-  {
-    candidate: None,
-    tribute: 0,
-    shares: 0,
-  }
+let emptyMembershipState: membership_state = {
+  candidate: None,
+  tribute: 0,
+  shares: 0,
 }
 
 type proposal =

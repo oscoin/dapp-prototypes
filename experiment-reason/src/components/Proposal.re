@@ -45,11 +45,11 @@ module Wizard {
   [@react.component]
   let make = (~toggle) => {
     // Keep track of current proposal at its state.
-    let (selected, setProposal) = React.useState(() => Membership(emptyMembershipState()));
+    let (selected, setProposal) = React.useState(() => Membership(emptyMembershipState));
     let (step, setStep) = React.useState(() => Selection);
 
     // Setup choices to render.
-    let choices = [|Membership(emptyMembershipState()), Grant, Contract|];
+    let choices = [|Membership(emptyMembershipState), Grant, Contract|];
     let choicesList = Array.map(p => renderChoice(p, selected, setProposal), choices);
 
     let steppable =

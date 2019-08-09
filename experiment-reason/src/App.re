@@ -47,7 +47,7 @@ let make = () => {
     switch (url.path) {
     | [] => (<Page title="Overview" />, "Overview")
     | ["members"] => (<Page title="Members" />, "Members")
-    | ["proposals"] => (<Page title="Proposals" />, "Proposals")
+    | ["proposals"] => (<Proposals />, "Proposals")
     | ["funds"] => (<Page title="Funds" />, "Funds")
     | ["contract"] => (<Page title="Contract" />, "Contract")
     | ["settings"] => (<Page title="Settings" />, "Settings")

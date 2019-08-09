@@ -1,4 +1,4 @@
-// Person to be proposed as new member for the project.
+/* Person to be proposed as new member for the project. */
 type candidate = string
 
 // Amount of shares granted for the new member.
@@ -14,7 +14,7 @@ type membership_state = {
   shares: shares,
 }
 
-let emptyMembershipState: unit => membership_state
+let emptyMembershipState: membership_state
 
 type proposal =
   | Membership(membership_state)

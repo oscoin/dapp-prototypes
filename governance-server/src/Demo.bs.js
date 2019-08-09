@@ -99,7 +99,7 @@ var server = Http$1.createServer((function (request, response) {
                 var param = undefined;
                 var param$1 = eta;
                 return partial_arg$1(partial_arg, param, param$1);
-              })(Http.ServerResponse[/* setHeader */1]("content-type", "application/json", Http.ServerResponse[/* setStatusCode */2](200, response))).end();
+              })(Http.ServerResponse[/* setHeader */1]("content-type", "application/json", Http.ServerResponse[/* setHeader */1]("Access-Control-Allow-Origin", "*", Http.ServerResponse[/* setStatusCode */2](200, response)))).end();
         return /* () */0;
       }));
 

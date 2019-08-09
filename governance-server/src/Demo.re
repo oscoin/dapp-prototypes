@@ -82,6 +82,7 @@ let server =
     ServerResponse.(
       response
       |> setStatusCode(200)
+      |> setHeader("Access-Control-Allow-Origin", "*")
       |> setHeader("content-type", "application/json")
       |> write(payload |> Json.stringify)
       |> end_
