@@ -4,7 +4,7 @@ type candidate = string;
 /* Amount of shares granted for the new member. */
 type shares = int;
 
-/* Amount of coins to be payed by the candidate in exchange for shares in the
+/* Amount of coins to be paid by the candidate in exchange for shares in the
    project. */
 type tribute = int;
 
