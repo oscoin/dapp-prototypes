@@ -1,38 +1,4 @@
-// Person to be proposed as new member for the project.
-type candidate = string
-
-// Amount of shares granted for the new member.
-type shares = int
-
-// Amount of coins to be payed by the candidate in exchange for shares in the
-// project.
-type tribute = int
-
-type membership_state = {
-  candidate: option(candidate),
-  tribute: tribute,
-  shares: shares,
-}
-
-let emptyMembershipState = () => {
-  {
-    candidate: None,
-    tribute: 0,
-    shares: 0,
-  }
-}
-
-type proposal =
-  | Membership(membership_state)
-  | Grant
-  | Contract;
-
-let stringOfProposal = (t: proposal) =>
-  switch t {
-  | Membership(_) => "Membership"
-  | Grant => "Grant"
-  | Contract => "Contract amendment"
-  }
+open Governance
 
 // Determines if a proposal is in a state to advance to the next step.
 let isSteppable = (p: proposal) => {
@@ -79,11 +45,11 @@ module Wizard {
   [@react.component]
   let make = (~toggle) => {
     // Keep track of current proposal at its state.
-    let (selected, setProposal) = React.useState(() => Membership(emptyMembershipState()));
+    let (selected, setProposal) = React.useState(() => Membership(emptyMembershipState));
     let (step, setStep) = React.useState(() => Selection);
 
     // Setup choices to render.
-    let choices = [|Membership(emptyMembershipState()), Grant, Contract|];
+    let choices = [|Membership(emptyMembershipState), Grant, Contract|];
     let choicesList = Array.map(p => renderChoice(p, selected, setProposal), choices);
 
     let steppable =
